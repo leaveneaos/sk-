@@ -61,11 +61,14 @@ public class InvoiceController {
                 return XmlJaxbUtils.toXml(response);
             }
             String xml = getInvoiceXml(kpls);
+            logger.debug("kplsh:" + kplsh + " xml:");
+            logger.debug(xml);
             xml = Base64.encodeBase64String(xml.getBytes("UTF-8"));
             Map params = new HashMap();
             params.put("xml", xml);
             params.put("kpls", kpls);
             String content = TemplateUtils.generateContent("invoice-request.ftl", params);
+            logger.debug(content);
             String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.Invoice, content);
             return result;
         } catch (Exception e) {
