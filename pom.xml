@@ -2,10 +2,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.rjxx.taxeasy2</groupId>
-    <artifactId>sk-web</artifactId>
+    <artifactId>sk-server</artifactId>
     <packaging>war</packaging>
     <version>1.0.0-SNAPSHOT</version>
-    <name>sk-web</name>
+    <name>sk-server</name>
     <url>http://maven.apache.org</url>
 
     <parent>
@@ -181,6 +181,6 @@
             </plugin>
         </plugins>
 
-        <finalName>sk-web</finalName>
+        <finalName>sk-server</finalName>
     </build>
 </project>
