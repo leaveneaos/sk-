@@ -18,6 +18,7 @@ import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -57,14 +58,14 @@ public class LoginController {
     public String clientLogin(String p) throws Exception {
         Map map = new HashMap();
         String queryString = null;
-        try{
+        try {
             queryString = decryptQueryString(p);
-        }catch (Exception e){
+        } catch (Exception e) {
             map.put("success", "false");
             map.put("message", e.getMessage());
             return generateLoginResult(map);
         }
-        Map<String,String> queryMap = HtmlUtils.parseQueryString(queryString);
+        Map<String, String> queryMap = HtmlUtils.parseQueryString(queryString);
         String username = queryMap.get("username");
         String password = queryMap.get("password");
         String macAddr = queryMap.get("macAddr");
@@ -123,7 +124,6 @@ public class LoginController {
     }
 
 
-
     /**
      * 生成登录结果
      *
@@ -136,21 +136,27 @@ public class LoginController {
         return result;
     }
 
+    @Value("${socket.server}")
+    private String socketServer;
+
+    @Value("${socket.port}")
+    private int socketPort;
+
     @RequestMapping(value = "/getConnectInfo", method = RequestMethod.POST)
     @ResponseBody
     public String getConnectInfo(String p) throws Exception {
         Map map = new HashMap();
         String queryString = null;
-        try{
+        try {
             queryString = decryptQueryString(p);
-        }catch (Exception e){
+        } catch (Exception e) {
             map.put("success", "false");
             map.put("message", e.getMessage());
             return generateLoginResult(map);
         }
         //参数形式，sessionId=123
         //校验sessionId，暂时忽略
-        String connectStr = "ip=127.0.0.1&port=15001";
+        String connectStr = "ip=" + socketServer + "&port=" + socketPort;
         String encryptStr = DesUtils.DESEncrypt(connectStr, DesUtils.GLOBAL_DES_KEY);
         return encryptStr;
     }
