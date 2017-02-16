@@ -56,6 +56,10 @@ public class InvoiceController {
             int kplsh = Integer.valueOf(kplshStr);
             logger.debug("receive invoice request:" + kplsh);
             Kpls kpls = kplsService.findOne(kplsh);
+            if (kpls == null) {
+                InvoiceResponse response = InvoiceResponseUtils.responseError("开票流水号：" + kplsh + "没有该数据");
+                return XmlJaxbUtils.toXml(response);
+            }
             String xml = getInvoiceXml(kpls);
             xml = Base64.encodeBase64String(xml.getBytes("UTF-8"));
             Map params = new HashMap();
