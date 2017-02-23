@@ -17,6 +17,7 @@ public class HBCommand implements ICommand {
     @Override
     public void run(String commandId, String params, SocketSession socketSession) throws Exception {
         logger.debug("kpd:" + socketSession.getKpdid() + " heartbeat");
+        socketSession.getSession().write("");
         return;
     }
 }
