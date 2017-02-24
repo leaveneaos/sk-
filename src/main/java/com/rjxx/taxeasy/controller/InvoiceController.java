@@ -49,6 +49,19 @@ public class InvoiceController {
         }
     }
 
+    /**
+     * 测试，上线后删除
+     *
+     * @param kplsh
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/test")
+    public String test(int kplsh) throws Exception {
+        String encryptKplshStr = skService.encryptSkServerParameter("" + kplsh);
+        return invoice(encryptKplshStr);
+    }
+
     @RequestMapping(value = "/invoice")
     public String invoice(String p) throws Exception {
         try {
