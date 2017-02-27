@@ -15,6 +15,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -57,9 +58,11 @@ public class InvoiceController {
      * @throws Exception
      */
     @RequestMapping(value = "/test")
+    @ResponseBody
     public String test(int kplsh) throws Exception {
         String encryptKplshStr = skService.encryptSkServerParameter("" + kplsh);
-        return invoice(encryptKplshStr);
+        String result = invoice(encryptKplshStr);
+        return result;
     }
 
     @RequestMapping(value = "/invoice")
@@ -83,6 +86,7 @@ public class InvoiceController {
             String content = TemplateUtils.generateContent("invoice-request.ftl", params);
             logger.debug(content);
             String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.Invoice, content);
+            logger.debug(result);
             return result;
         } catch (Exception e) {
             logger.error("", e);
