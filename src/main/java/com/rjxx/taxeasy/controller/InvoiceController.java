@@ -9,9 +9,11 @@ import com.rjxx.taxeasy.service.KplsService;
 import com.rjxx.taxeasy.service.KpspmxService;
 import com.rjxx.taxeasy.socket.ServerHandler;
 import com.rjxx.taxeasy.socket.command.SendCommand;
+import com.rjxx.utils.HtmlUtils;
 import com.rjxx.utils.TemplateUtils;
 import com.rjxx.utils.XmlJaxbUtils;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,18 +42,31 @@ public class InvoiceController {
     private SkService skService;
 
     @RequestMapping(value = "/getCodeAndNo")
-    public String getCodeAndNo(int kpdid, String fplxdm) throws Exception {
+    public String getCodeAndNo(String p) throws Exception {
         try {
+            if(StringUtils.isBlank(p)){
+                throw new Exception("参数不能为空");
+            }
+            String params = skService.decryptSkServerParameter(p);
+            Map<String, String> map = HtmlUtils.parseQueryString(params);
+            int kpdid = Integer.valueOf(map.get("kpdid"));
+            String fplxdm = map.get("fplxdm");
             String result = ServerHandler.sendMessage(kpdid, SendCommand.GetCodeAndNo, fplxdm);
+            logger.debug(result);
             return result;
         } catch (Exception e) {
-            return e.getMessage();
+            logger.error("", e);
+            InvoiceResponse response = InvoiceResponseUtils.responseError(e.getMessage());
+            return XmlJaxbUtils.toXml(response);
         }
     }
 
     @RequestMapping(value = "/invoice")
     public String invoice(String p) throws Exception {
         try {
+            if(StringUtils.isBlank(p)){
+                throw new Exception("参数不能为空");
+            }
             String kplshStr = skService.decryptSkServerParameter(p);
             int kplsh = Integer.valueOf(kplshStr);
             logger.debug("receive invoice request:" + kplsh);
@@ -70,6 +85,7 @@ public class InvoiceController {
             String content = TemplateUtils.generateContent("invoice-request.ftl", params);
             logger.debug(content);
             String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.Invoice, content);
+            logger.debug(result);
             return result;
         } catch (Exception e) {
             logger.error("", e);
