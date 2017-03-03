@@ -29,7 +29,7 @@ public class SocketConfig {
     public void initialize() throws IOException {
 
         // Create an Acceptor
-        NioSocketAcceptor acceptor = new NioSocketAcceptor();
+        NioSocketAcceptor acceptor = new NioSocketAcceptor(Runtime.getRuntime().availableProcessors() + 1);
 
         // Add Handler
         acceptor.setHandler(new ServerHandler());
@@ -40,7 +40,7 @@ public class SocketConfig {
         textLineCodecFactory.setEncoderMaxLineLength(Integer.MAX_VALUE);
         acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(textLineCodecFactory));
         acceptor.getSessionConfig().setReadBufferSize(2048*10);
-        acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 30);
+        acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, 120);
         // Create Session Configuration
         acceptor.getSessionConfig().setReuseAddress(true);
         logger.info("Starting Server......");
