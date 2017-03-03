@@ -105,6 +105,9 @@ public class InvoiceController {
         Map params = new HashMap();
         params.put("kplsh", kpls.getKplsh());
         List<Kpspmx> kpspmxList = kpspmxService.findMxList(params);
+        if(kpspmxList == null || kpspmxList.isEmpty()){
+            throw new Exception("没有商品明细");
+        }
         params.put("kpls", kpls);
         params.put("kpspmxList", kpspmxList);
         String content = TemplateUtils.generateContent("invoice-xml.ftl", params);

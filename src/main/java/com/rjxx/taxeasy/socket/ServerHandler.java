@@ -153,22 +153,37 @@ public class ServerHandler extends IoHandlerAdapter {
             returnMessage = arr[2];
         }
         Integer kpdid = (Integer) session.getAttribute("kpdid");
-        if (kpdid == null && !ReceiveCommand.Login.name().equals(commandName)) {
-            //假如没有登录过并且不是登录命令，断开连接
-            session.closeNow();
-            return;
-        } else if (ReceiveCommand.Login.name().equals(commandName)) {
-            //假如是登录命令，此处处理登录命令
-            LoginCommand loginCommand = ApplicationContextUtils.getBean(LoginCommand.class);
-            SocketSession socketSession = new SocketSession();
-            socketSession.setSession(session);
-            loginCommand.run(null, returnMessage, socketSession);
-            if (socketSession.getKpdid() != null && socketSession.getKpdid() != 0) {
-                SocketSession old = cachedSession.get(socketSession.getKpdid());
-                if (old != null && old.getSession() != session) {
-                    sendMessage(old, SendCommand.Logout, "开票点已在其他地方登录！！！");
+        if (kpdid == null) {
+            if (ReceiveCommand.Login.name().equals(commandName)) {
+                //假如是登录命令，此处处理登录命令
+                LoginCommand loginCommand = ApplicationContextUtils.getBean(LoginCommand.class);
+                SocketSession socketSession = new SocketSession();
+                socketSession.setSession(session);
+                loginCommand.run(null, returnMessage, socketSession);
+                if (socketSession.getKpdid() != null && socketSession.getKpdid() != 0) {
+                    SocketSession old = cachedSession.get(socketSession.getKpdid());
+                    if (old != null && old.getSession() != session) {
+                        sendMessage(old, SendCommand.Logout, "开票点已在其他地方登录！！！");
+                    }
+                    cachedSession.put(socketSession.getKpdid(), socketSession);
                 }
-                cachedSession.put(socketSession.getKpdid(), socketSession);
+            } else if (ReceiveCommand.HB.name().equals(commandName)) {
+                //是心跳命令则进行判断
+                Integer count = (Integer) session.getAttribute("HBCount");
+                if (count == null) {
+                    session.setAttribute("HBCount", 1);
+                } else {
+                    if (count > 2) {
+                        session.write(SendCommand.Logout + " " + " ");
+                        Thread.sleep(2000l);
+                        session.closeNow();
+                    }
+                    count++;
+                    session.setAttribute("HBCount", count);
+                }
+            } else {
+                //假如没有登录过并且不是登录命令，断开连接
+                session.closeNow();
             }
             return;
         }
