@@ -30,13 +30,14 @@ public class ReturnInvoiceCommand implements ICommand {
         logger.info(data);
         InvoiceResponse response = XmlJaxbUtils.convertXmlStrToObject(InvoiceResponse.class, data);
         String returnCode = response.getReturnCode();
-        if("0000".equals(returnCode)){
+        if ("0000".equals(returnCode)) {
             String kplshStr = response.getLsh();
             int kplsh = Integer.valueOf(kplshStr);
             Kpls kpls = kplsService.findOne(kplsh);
             kpls.setFpdm(response.getFpdm());
             kpls.setFphm(response.getFphm());
             kpls.setFpztdm("00");
+            kpls.setPrintflag("" + response.getPrintFlag());
             kpls.setKprq(DateUtils.parseDate(response.getKprq(), "yyyy-MM-dd"));
             kpls.setXgsj(new Date());
             kpls.setXgry(1);
