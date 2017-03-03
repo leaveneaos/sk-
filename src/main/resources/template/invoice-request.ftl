@@ -6,5 +6,6 @@
     <ServiceType>${kpls.fpczlxdm!}</ServiceType>
     <ChargeTaxWay>${kpls.zsfs!0}</ChargeTaxWay>
     <InvoiceXml>${xml!}</InvoiceXml>
+    <PrintFlag>${kpls.printflag!"0"}</PrintFlag>
     <IsCaculateTailDiff>${IsCaculateTailDiff!"true"}</IsCaculateTailDiff>
 </InvoiceRequest>
