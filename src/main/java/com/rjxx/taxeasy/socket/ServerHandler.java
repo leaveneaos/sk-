@@ -141,7 +141,7 @@ public class ServerHandler extends IoHandlerAdapter {
     @Override
     public void messageReceived(IoSession session, Object message) throws Exception {
         String msg = (String) message;
-        logger.debug(msg);
+        logger.debug("receive message:" + msg);
         String[] arr = msg.split(" ");
         String commandName = arr[0];
         String commandId = "";
