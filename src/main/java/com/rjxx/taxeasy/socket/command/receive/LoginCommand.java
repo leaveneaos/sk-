@@ -79,7 +79,7 @@ public class LoginCommand implements ICommand {
         logger.info("kpd:" + kpdid + " " + ioSession + " connect to server");
         ioSession.setAttribute("kpdid", kpdid);
         String newCommandId = "";
-        ioSession.write(SendCommand.SetDesKey + " " + newCommandId + " " + socketSession.getDesKey() + "\n");
+        ioSession.write(SendCommand.SetDesKey + " " + newCommandId + " " + socketSession.getDesKey());
         return;
     }
 
@@ -89,7 +89,7 @@ public class LoginCommand implements ICommand {
      * @param ioSession
      */
     private void logout(IoSession ioSession, String message) throws Exception {
-        ioSession.write(SendCommand.Logout + " " + " " + message + "\n");
+        ioSession.write(SendCommand.Logout + " " + " " + message);
 //        Thread.sleep(1000l);
 //        ioSession.closeNow();
     }
