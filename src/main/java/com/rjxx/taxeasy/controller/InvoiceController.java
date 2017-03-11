@@ -110,7 +110,11 @@ public class InvoiceController {
         }
         params.put("kpls", kpls);
         params.put("kpspmxList", kpspmxList);
-        String content = TemplateUtils.generateContent("invoice-xml.ftl", params);
+        String templateName = "invoice-xml.ftl";
+        if("12".equals(kpls.getFpzldm())){
+            templateName = "dzfp-xml.ftl";
+        }
+        String content = TemplateUtils.generateContent(templateName, params);
         return content;
     }
 
