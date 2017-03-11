@@ -8,6 +8,7 @@ import com.rjxx.taxeasy.service.ClientLoginService;
 import com.rjxx.taxeasy.service.SkpService;
 import com.rjxx.taxeasy.service.XfService;
 import com.rjxx.taxeasy.service.YhService;
+import com.rjxx.taxeasy.utils.ClientDesUtils;
 import com.rjxx.utils.DesUtils;
 import com.rjxx.utils.HtmlUtils;
 import com.rjxx.utils.PasswordUtils;
@@ -57,15 +58,14 @@ public class LoginController {
     @ResponseBody
     public String clientLogin(String p) throws Exception {
         Map map = new HashMap();
-        String queryString = null;
+        Map<String, String> queryMap = null;
         try {
-            queryString = decryptQueryString(p);
+            queryMap = ClientDesUtils.decryptClientQueryString(p);
         } catch (Exception e) {
             map.put("success", "false");
             map.put("message", e.getMessage());
             return generateLoginResult(map);
         }
-        Map<String, String> queryMap = HtmlUtils.parseQueryString(queryString);
         String username = queryMap.get("username");
         String password = queryMap.get("password");
         String macAddr = queryMap.get("macAddr");
@@ -98,31 +98,21 @@ public class LoginController {
         List<Xf> xfList = xfService.getXfListByYhId(yh.getId());
         map.put("xfList", xfList);
         List<Skp> kpdList = skpService.getSkpListByYhId(yh.getId());
+        for (Skp skp : kpdList) {
+            if (StringUtils.isNotBlank(skp.getSbcs())) {
+                if ("1".equals(skp.getSbcs())) {
+                    skp.setSbcs("bw");
+                } else {
+                    skp.setSbcs("hx");
+                }
+            }
+        }
         map.put("kpdList", kpdList);
         map.put("success", "true");
         map.put("sessionId", sessionId);
         map.put("expireTime", expireTime);
         return generateLoginResult(map);
     }
-
-    /**
-     * 解密查询字符串，如果为空或者解密失败都会跑出异常
-     *
-     * @param queryString
-     * @return
-     */
-    private String decryptQueryString(String queryString) throws Exception {
-        if (StringUtils.isBlank(queryString)) {
-            throw new Exception("参数不能为空");
-        }
-        try {
-            String result = DesUtils.DESDecrypt(queryString, DesUtils.GLOBAL_DES_KEY);
-            return result;
-        } catch (Exception e) {
-            throw new Exception("非法请求");
-        }
-    }
-
 
     /**
      * 生成登录结果
@@ -146,9 +136,9 @@ public class LoginController {
     @ResponseBody
     public String getConnectInfo(String p) throws Exception {
         Map map = new HashMap();
-        String queryString = null;
+        Map<String, String> queryMap = null;
         try {
-            queryString = decryptQueryString(p);
+            queryMap = ClientDesUtils.decryptClientQueryString(p);
         } catch (Exception e) {
             map.put("success", "false");
             map.put("message", e.getMessage());

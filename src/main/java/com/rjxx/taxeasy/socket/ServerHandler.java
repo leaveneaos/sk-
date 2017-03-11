@@ -1,6 +1,8 @@
 package com.rjxx.taxeasy.socket;
 
 import com.rjxx.comm.utils.ApplicationContextUtils;
+import com.rjxx.taxeasy.domains.Skp;
+import com.rjxx.taxeasy.service.SkpService;
 import com.rjxx.taxeasy.socket.command.ICommand;
 import com.rjxx.taxeasy.socket.command.ReceiveCommand;
 import com.rjxx.taxeasy.socket.command.SendCommand;
@@ -62,7 +64,13 @@ public class ServerHandler extends IoHandlerAdapter {
     public static String sendMessage(int kpdid, SendCommand sendCommand, String data, boolean wait) throws Exception {
         SocketSession session = cachedSession.get(kpdid);
         if (session == null) {
-            throw new Exception("开票点：" + kpdid + "没有连上服务器");
+            SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
+            Skp skp = skpService.findOne(kpdid);
+            if (skp != null) {
+                throw new Exception("开票点：" + skp.getKpdmc() + "(" + skp.getKpddm() + ")" + "没有连上服务器");
+            } else {
+                throw new Exception("开票点：" + kpdid + "没有连上服务器");
+            }
         }
         String commandId = UUID.randomUUID().toString().replace("-", "");
         //加密数据
