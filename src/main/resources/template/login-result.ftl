@@ -23,7 +23,7 @@
             <Kpddm>${kpd.kpddm!}</Kpddm>
             <Kpdmc>${kpd.kpdmc!}</Kpdmc>
             <Xfid>${kpd.xfid!}</Xfid>
-            <Sksblx>${kpd.skplx!"bw"}</Sksblx>
+            <Sksblx>${kpd.sbcs!"bw"}</Sksblx>
         </Kpd>
         </#list>
     </KpdList>
