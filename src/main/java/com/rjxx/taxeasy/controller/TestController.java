@@ -57,4 +57,19 @@ public class TestController {
         return result;
     }
 
+    /**
+     * 测试，上线后删除
+     *
+     * @param kplsh
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/voidInvoice")
+    @ResponseBody
+    public String voidInvoice(int kplsh) throws Exception {
+        String encryptKplshStr = skService.encryptSkServerParameter("" + kplsh);
+        String result = invoiceController.voidInvoice(encryptKplshStr);
+        return result;
+    }
+
 }

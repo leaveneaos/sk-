@@ -11,10 +11,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Configuration
 public class ThreadPoolConfig {
 
-    @Value("${threadPool.corePoolSize:500}")
+    @Value("${threadPool.corePoolSize:100}")
     private int corePoolSize;
 
-    @Value("${threadPool.maxPoolSize:500}")
+    @Value("${threadPool.maxPoolSize:100}")
     private int maxPoolSize;
 
     @Value("${threadPool.keepAliveSeconds:99999999}")
