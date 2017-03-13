@@ -14,6 +14,7 @@ import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.Map;
 import java.util.Timer;
@@ -31,6 +32,11 @@ public class ServerHandler extends IoHandlerAdapter {
 
     private static Map<String, SocketRequest> cachedRequestMap = new ConcurrentHashMap<>();
 
+    /**
+     * 线程池执行任务
+     */
+    private static ThreadPoolTaskExecutor taskExecutor = null;
+
     static {
         Timer clearRequestTimer = new Timer();
         ClearRequestTask clearRequestTask = new ClearRequestTask();
@@ -47,8 +53,8 @@ public class ServerHandler extends IoHandlerAdapter {
      * @return
      * @throws Exception
      */
-    public static String sendMessage(int kpdid, SendCommand sendCommand, String data) throws Exception {
-        return sendMessage(kpdid, sendCommand, data, true);
+    public static String sendMessage(int kpdid, SendCommand sendCommand, String data, String commandId) throws Exception {
+        return sendMessage(kpdid, sendCommand, data, commandId, true);
     }
 
     /**
@@ -57,11 +63,26 @@ public class ServerHandler extends IoHandlerAdapter {
      * @param kpdid
      * @param sendCommand
      * @param data        原数据，未加密的数据
+     * @return
+     * @throws Exception
+     */
+    public static String sendMessage(int kpdid, SendCommand sendCommand, String data) throws Exception {
+        String commandId = UUID.randomUUID().toString().replace("-", "");
+        return sendMessage(kpdid, sendCommand, data, commandId);
+    }
+
+    /**
+     * 向客户端发送消息
+     *
+     * @param kpdid
+     * @param sendCommand
+     * @param data        原数据，未加密的数据
+     * @param commandId   命令id
      * @param wait        是否等待返回结果,true需要等待返回结果，false不等待返回结果
      * @return
      * @throws Exception
      */
-    public static String sendMessage(int kpdid, SendCommand sendCommand, String data, boolean wait) throws Exception {
+    public static String sendMessage(int kpdid, SendCommand sendCommand, String data, String commandId, boolean wait) throws Exception {
         SocketSession session = cachedSession.get(kpdid);
         if (session == null) {
             SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
@@ -72,7 +93,6 @@ public class ServerHandler extends IoHandlerAdapter {
                 throw new Exception("开票点：" + kpdid + "没有连上服务器");
             }
         }
-        String commandId = UUID.randomUUID().toString().replace("-", "");
         //加密数据
         if (!SendCommand.SetDesKey.equals(sendCommand) && StringUtils.isNotBlank(data)) {
             data = DesUtils.DESEncrypt(data, session.getDesKey());
@@ -84,7 +104,7 @@ public class ServerHandler extends IoHandlerAdapter {
             socketRequest.setCommandId(commandId);
             cachedRequestMap.put(commandId, socketRequest);
             synchronized (socketRequest) {
-                socketRequest.wait();
+                socketRequest.wait(120000);
             }
             if (socketRequest.getException() != null) {
                 throw socketRequest.getException();
@@ -148,90 +168,13 @@ public class ServerHandler extends IoHandlerAdapter {
 
     @Override
     public void messageReceived(IoSession session, Object message) throws Exception {
-        String msg = (String) message;
-        logger.debug("receive message:" + msg);
-        String[] arr = msg.split(" ");
-        String commandName = arr[0];
-        String commandId = "";
-        String returnMessage = "";
-        if (arr.length > 1) {
-            commandId = arr[1];
+        ReceiveTask receiveTask = new ReceiveTask();
+        receiveTask.setMsg((String) message);
+        receiveTask.setSession(session);
+        if (taskExecutor == null) {
+            taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
         }
-        if (arr.length > 2) {
-            returnMessage = arr[2];
-        }
-        Integer kpdid = (Integer) session.getAttribute("kpdid");
-        if (kpdid == null) {
-            if (ReceiveCommand.Login.name().equals(commandName)) {
-                //假如是登录命令，此处处理登录命令
-                LoginCommand loginCommand = ApplicationContextUtils.getBean(LoginCommand.class);
-                SocketSession socketSession = new SocketSession();
-                socketSession.setSession(session);
-                loginCommand.run(null, returnMessage, socketSession);
-                if (socketSession.getKpdid() != null && socketSession.getKpdid() != 0) {
-                    SocketSession old = cachedSession.get(socketSession.getKpdid());
-                    if (old != null && old.getSession() != session) {
-                        sendMessage(old, SendCommand.Logout, "开票点已在其他地方登录！！！");
-                    }
-                    cachedSession.put(socketSession.getKpdid(), socketSession);
-                }
-            } else if (ReceiveCommand.HB.name().equals(commandName)) {
-                //是心跳命令则进行判断
-                Integer count = (Integer) session.getAttribute("HBCount");
-                if (count == null) {
-                    session.setAttribute("HBCount", 1);
-                } else {
-                    if (count > 2) {
-                        session.write(SendCommand.Logout + " " + " ");
-                        Thread.sleep(2000l);
-                        session.closeNow();
-                    }
-                    count++;
-                    session.setAttribute("HBCount", count);
-                }
-            } else {
-                //假如没有登录过并且不是登录命令，断开连接
-                session.closeNow();
-            }
-            return;
-        }
-        SocketSession socketSession = cachedSession.get(kpdid);
-        if (socketSession == null) {
-            //没有缓存session，关闭回话，理论上不会
-            session.closeNow();
-            return;
-        }
-        String beanName = commandName + "Command";
-        ICommand command = null;
-        try {
-            command = ApplicationContextUtils.getBean(beanName, ICommand.class);
-        } catch (Exception e) {
-            logger.error("", e);
-        }
-        //使用des解密返回的信息
-        if (StringUtils.isNotBlank(returnMessage)) {
-            returnMessage = DesUtils.DESDecrypt(returnMessage, socketSession.getDesKey());
-        }
-        //进行业务处理
-        if (command != null) {
-            command.run(commandId, returnMessage, socketSession);
-        }
-        //存在commanId，需要唤醒原来的线程
-        if (StringUtils.isNotBlank(commandId)) {
-            SocketRequest socketRequest = cachedRequestMap.remove(commandId);
-            if (socketRequest != null) {
-                if (StringUtils.isNotBlank(returnMessage)) {
-                    socketRequest.setReturnMessage(returnMessage);
-                } else {
-                    socketRequest.setReturnMessage("");
-                }
-                synchronized (socketRequest) {
-                    socketRequest.notifyAll();
-                }
-            } else {
-//                logger.debug(commandName + " commandId:" + commandId + " not found");
-            }
-        }
+        taskExecutor.execute(receiveTask);
     }
 
     @Override
@@ -260,4 +203,116 @@ public class ServerHandler extends IoHandlerAdapter {
 //        }
 //        super.exceptionCaught(session, cause);
     }
+
+    /**
+     * 接收任务
+     */
+    class ReceiveTask implements Runnable {
+
+        private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+        private String msg;
+
+        private IoSession session;
+
+        @Override
+        public void run() {
+            try {
+                logger.debug("receive message:" + msg);
+                String[] arr = msg.split(" ");
+                String commandName = arr[0];
+                String commandId = "";
+                String returnMessage = "";
+                if (arr.length > 1) {
+                    commandId = arr[1];
+                }
+                if (arr.length > 2) {
+                    returnMessage = arr[2];
+                }
+                Integer kpdid = (Integer) session.getAttribute("kpdid");
+                if (kpdid == null) {
+                    if (ReceiveCommand.Login.name().equals(commandName)) {
+                        //假如是登录命令，此处处理登录命令
+                        LoginCommand loginCommand = ApplicationContextUtils.getBean(LoginCommand.class);
+                        SocketSession socketSession = new SocketSession();
+                        socketSession.setSession(session);
+                        loginCommand.run(null, returnMessage, socketSession);
+                        if (socketSession.getKpdid() != null && socketSession.getKpdid() != 0) {
+                            SocketSession old = cachedSession.get(socketSession.getKpdid());
+                            if (old != null && old.getSession() != session) {
+                                sendMessage(old, SendCommand.Logout, "开票点已在其他地方登录！！！");
+                            }
+                            cachedSession.put(socketSession.getKpdid(), socketSession);
+                        }
+                    } else if (ReceiveCommand.HB.name().equals(commandName)) {
+                        //是心跳命令则进行判断
+                        Integer count = (Integer) session.getAttribute("HBCount");
+                        if (count == null) {
+                            session.setAttribute("HBCount", 1);
+                        } else {
+                            if (count > 2) {
+                                session.write(SendCommand.Logout + " " + " ");
+                                Thread.sleep(2000l);
+                                session.closeNow();
+                            }
+                            count++;
+                            session.setAttribute("HBCount", count);
+                        }
+                    } else {
+                        //假如没有登录过并且不是登录命令，断开连接
+                        session.closeNow();
+                    }
+                    return;
+                }
+                SocketSession socketSession = cachedSession.get(kpdid);
+                if (socketSession == null) {
+                    //没有缓存session，关闭回话，理论上不会
+                    session.closeNow();
+                    return;
+                }
+                String beanName = commandName + "Command";
+                ICommand command = null;
+                try {
+                    command = ApplicationContextUtils.getBean(beanName, ICommand.class);
+                } catch (Exception e) {
+                    logger.error("", e);
+                }
+                //使用des解密返回的信息
+                if (StringUtils.isNotBlank(returnMessage)) {
+                    returnMessage = DesUtils.DESDecrypt(returnMessage, socketSession.getDesKey());
+                }
+                //进行业务处理
+                if (command != null) {
+                    command.run(commandId, returnMessage, socketSession);
+                }
+                //存在commanId，需要唤醒原来的线程
+                if (StringUtils.isNotBlank(commandId)) {
+                    SocketRequest socketRequest = cachedRequestMap.remove(commandId);
+                    if (socketRequest != null) {
+                        if (StringUtils.isNotBlank(returnMessage)) {
+                            socketRequest.setReturnMessage(returnMessage);
+                        } else {
+                            socketRequest.setReturnMessage("");
+                        }
+                        synchronized (socketRequest) {
+                            socketRequest.notifyAll();
+                        }
+                    } else {
+//                logger.debug(commandName + " commandId:" + commandId + " not found");
+                    }
+                }
+            } catch (Exception e) {
+                logger.error("", e);
+            }
+        }
+
+        public void setSession(IoSession session) {
+            this.session = session;
+        }
+
+        public void setMsg(String msg) {
+            this.msg = msg;
+        }
+    }
+
 }

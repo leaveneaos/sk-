@@ -44,7 +44,7 @@ public class InvoiceController {
     @RequestMapping(value = "/getCodeAndNo")
     public String getCodeAndNo(String p) throws Exception {
         try {
-            if(StringUtils.isBlank(p)){
+            if (StringUtils.isBlank(p)) {
                 throw new Exception("参数不能为空");
             }
             String params = skService.decryptSkServerParameter(p);
@@ -61,10 +61,48 @@ public class InvoiceController {
         }
     }
 
+    /**
+     * 作废发票
+     *
+     * @param p
+     * @return
+     * @throws Exception
+     */
+    public String voidInvoice(String p) throws Exception {
+        try {
+            if (StringUtils.isBlank(p)) {
+                throw new Exception("参数不能为空");
+            }
+            String kplshStr = skService.decryptSkServerParameter(p);
+            int kplsh = Integer.valueOf(kplshStr);
+            logger.debug("receive void invoice request:" + kplsh);
+            Kpls kpls = kplsService.findOne(kplsh);
+            if (kpls == null) {
+                InvoiceResponse response = InvoiceResponseUtils.responseError("开票流水号：" + kplsh + "没有该数据");
+                return XmlJaxbUtils.toXml(response);
+            }
+            if (StringUtils.isBlank(kpls.getFpdm()) || StringUtils.isBlank(kpls.getFphm())) {
+                InvoiceResponse response = InvoiceResponseUtils.responseError("开票流水号：" + kplsh + "没有发票代码或号码，无法作废");
+                return XmlJaxbUtils.toXml(response);
+            }
+            Map params = new HashMap();
+            params.put("kpls", kpls);
+            String content = TemplateUtils.generateContent("invoice-request.ftl", params);
+            logger.debug(content);
+            String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.VoidInvoice, content, kpls.getKplsh() + "");
+            logger.debug(result);
+            return result;
+        } catch (Exception e) {
+            logger.error("", e);
+            InvoiceResponse response = InvoiceResponseUtils.responseError(e.getMessage());
+            return XmlJaxbUtils.toXml(response);
+        }
+    }
+
     @RequestMapping(value = "/invoice")
     public String invoice(String p) throws Exception {
         try {
-            if(StringUtils.isBlank(p)){
+            if (StringUtils.isBlank(p)) {
                 throw new Exception("参数不能为空");
             }
             String kplshStr = skService.decryptSkServerParameter(p);
@@ -84,7 +122,7 @@ public class InvoiceController {
             params.put("kpls", kpls);
             String content = TemplateUtils.generateContent("invoice-request.ftl", params);
             logger.debug(content);
-            String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.Invoice, content);
+            String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.Invoice, content, kpls.getKplsh() + "");
             logger.debug(result);
             return result;
         } catch (Exception e) {
@@ -105,13 +143,13 @@ public class InvoiceController {
         Map params = new HashMap();
         params.put("kplsh", kpls.getKplsh());
         List<Kpspmx> kpspmxList = kpspmxService.findMxList(params);
-        if(kpspmxList == null || kpspmxList.isEmpty()){
+        if (kpspmxList == null || kpspmxList.isEmpty()) {
             throw new Exception("没有商品明细");
         }
         params.put("kpls", kpls);
         params.put("kpspmxList", kpspmxList);
         String templateName = "invoice-xml.ftl";
-        if("12".equals(kpls.getFpzldm())){
+        if ("12".equals(kpls.getFpzldm())) {
             templateName = "dzfp-xml.ftl";
         }
         String content = TemplateUtils.generateContent(templateName, params);
