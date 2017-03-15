@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="gbk" ?>
 <InvoiceRequest>
-    <SerialNumber>${(kpls.kplsh?string('###'))!}</SerialNumber>
+    <SerialNumber>${lsh}</SerialNumber>
     <AutoInvoiceWay>${kpfs!"manual_import"}</AutoInvoiceWay>
     <InvType>${kpls.fpzldm!}</InvType>
     <ServiceType>${kpls.fpczlxdm!}</ServiceType>
