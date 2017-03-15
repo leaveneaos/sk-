@@ -120,9 +120,15 @@ public class InvoiceController {
             Map params = new HashMap();
             params.put("xml", xml);
             params.put("kpls", kpls);
+            String lsh = kpls.getKplsh() + "$" + System.currentTimeMillis();
+            params.put("lsh", lsh);
             String content = TemplateUtils.generateContent("invoice-request.ftl", params);
             logger.debug(content);
-            String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.Invoice, content, kpls.getKplsh() + "");
+            String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.Invoice, content, lsh);
+            if (StringUtils.isBlank(result)) {
+                InvoiceResponse response = InvoiceResponseUtils.responseError("客户端没有返回结果，请去开票软件确认");
+                return XmlJaxbUtils.toXml(response);
+            }
             logger.debug(result);
             return result;
         } catch (Exception e) {

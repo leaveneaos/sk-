@@ -31,8 +31,14 @@ public class ReturnInvoiceCommand implements ICommand {
         InvoiceResponse response = XmlJaxbUtils.convertXmlStrToObject(InvoiceResponse.class, data);
         String returnCode = response.getReturnCode();
         if ("0000".equals(returnCode)) {
-            String kplshStr = response.getLsh();
-            int kplsh = Integer.valueOf(kplshStr);
+            String lsh = response.getLsh();
+            int pos = lsh.indexOf("$");
+            int kplsh;
+            if (pos != -1) {
+                kplsh = Integer.valueOf(lsh.substring(0, pos));
+            } else {
+                kplsh = Integer.valueOf(lsh);
+            }
             Kpls kpls = kplsService.findOne(kplsh);
             kpls.setFpdm(response.getFpdm());
             kpls.setFphm(response.getFphm());
