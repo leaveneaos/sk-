@@ -87,9 +87,11 @@ public class InvoiceController {
             }
             Map params = new HashMap();
             params.put("kpls", kpls);
+            String lsh = kpls.getKplsh() + "$" + System.currentTimeMillis();
+            params.put("lsh", lsh);
             String content = TemplateUtils.generateContent("invoice-request.ftl", params);
             logger.debug(content);
-            String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.VoidInvoice, content, kpls.getKplsh() + "");
+            String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.VoidInvoice, content, lsh);
             logger.debug(result);
             return result;
         } catch (Exception e) {
