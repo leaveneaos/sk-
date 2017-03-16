@@ -87,9 +87,11 @@ public class InvoiceController {
             }
             Map params = new HashMap();
             params.put("kpls", kpls);
+            String commandId = kpls.getKplsh() + "$" + System.currentTimeMillis();
+            params.put("lsh", kpls.getKplsh() + "");
             String content = TemplateUtils.generateContent("invoice-request.ftl", params);
             logger.debug(content);
-            String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.VoidInvoice, content, kpls.getKplsh() + "");
+            String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.VoidInvoice, content, commandId);
             logger.debug(result);
             return result;
         } catch (Exception e) {
@@ -99,6 +101,56 @@ public class InvoiceController {
         }
     }
 
+    /**
+     * 发票重打
+     *
+     * @param p
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/repeatInovice")
+    public String repeatInvoice(String p) throws Exception {
+        try {
+            if (StringUtils.isBlank(p)) {
+                throw new Exception("参数不能为空");
+            }
+            String kplshStr = skService.decryptSkServerParameter(p);
+            int kplsh = Integer.valueOf(kplshStr);
+            logger.debug("receive void invoice request:" + kplsh);
+            Kpls kpls = kplsService.findOne(kplsh);
+            if (kpls == null) {
+                InvoiceResponse response = InvoiceResponseUtils.responseError("开票流水号：" + kplsh + "没有该数据");
+                return XmlJaxbUtils.toXml(response);
+            }
+            if (StringUtils.isBlank(kpls.getFpdm()) || StringUtils.isBlank(kpls.getFphm())) {
+                InvoiceResponse response = InvoiceResponseUtils.responseError("开票流水号：" + kplsh + "没有发票代码或号码，无法重打");
+                return XmlJaxbUtils.toXml(response);
+            }
+            Map params = new HashMap();
+            params.put("kpls", kpls);
+            String content = TemplateUtils.generateContent("invoice-request.ftl", params);
+            logger.debug(content);
+            String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.RepeatInvoice, content, kpls.getKplsh() + "");
+            InvoiceResponse invoiceResponse = XmlJaxbUtils.convertXmlStrToObject(InvoiceResponse.class, result);
+            invoiceResponse.setKpddm(kpls.getKpddm());
+            invoiceResponse.setJylsh(kpls.getJylsh());
+            result = XmlJaxbUtils.toXml(invoiceResponse);
+            logger.debug(result);
+            return result;
+        } catch (Exception e) {
+            logger.error("", e);
+            InvoiceResponse response = InvoiceResponseUtils.responseError(e.getMessage());
+            return XmlJaxbUtils.toXml(response);
+        }
+    }
+
+    /**
+     * 打印发票
+     *
+     * @param p
+     * @return
+     * @throws Exception
+     */
     @RequestMapping(value = "/invoice")
     public String invoice(String p) throws Exception {
         try {
@@ -129,6 +181,10 @@ public class InvoiceController {
                 InvoiceResponse response = InvoiceResponseUtils.responseError("客户端没有返回结果，请去开票软件确认");
                 return XmlJaxbUtils.toXml(response);
             }
+            InvoiceResponse invoiceResponse = XmlJaxbUtils.convertXmlStrToObject(InvoiceResponse.class, result);
+            invoiceResponse.setKpddm(kpls.getKpddm());
+            invoiceResponse.setJylsh(kpls.getJylsh());
+            result = XmlJaxbUtils.toXml(invoiceResponse);
             logger.debug(result);
             return result;
         } catch (Exception e) {
