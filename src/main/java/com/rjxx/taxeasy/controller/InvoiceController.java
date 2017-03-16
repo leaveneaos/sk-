@@ -87,11 +87,11 @@ public class InvoiceController {
             }
             Map params = new HashMap();
             params.put("kpls", kpls);
-            String lsh = kpls.getKplsh() + "$" + System.currentTimeMillis();
-            params.put("lsh", lsh);
+            String commandId = kpls.getKplsh() + "$" + System.currentTimeMillis();
+            params.put("lsh", kpls.getKplsh() + "");
             String content = TemplateUtils.generateContent("invoice-request.ftl", params);
             logger.debug(content);
-            String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.VoidInvoice, content, lsh);
+            String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.VoidInvoice, content, commandId);
             logger.debug(result);
             return result;
         } catch (Exception e) {
@@ -100,7 +100,7 @@ public class InvoiceController {
             return XmlJaxbUtils.toXml(response);
         }
     }
-    
+
     /**
      * 发票重打
      *
@@ -143,10 +143,10 @@ public class InvoiceController {
             return XmlJaxbUtils.toXml(response);
         }
     }
-    
+
     /**
-     * 
      * 打印发票
+     *
      * @param p
      * @return
      * @throws Exception
