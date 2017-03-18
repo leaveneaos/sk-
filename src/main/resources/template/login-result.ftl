@@ -24,6 +24,8 @@
             <Kpdmc>${kpd.kpdmc!}</Kpdmc>
             <Xfid>${kpd.xfid!}</Xfid>
             <Sksblx>${kpd.sbcs!"bw"}</Sksblx>
+            <Skph>${kpd.skph!}</Skph>
+            <Kplx>${kpd.kplx!}</Kplx>
         </Kpd>
         </#list>
     </KpdList>

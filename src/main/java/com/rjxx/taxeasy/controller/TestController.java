@@ -72,11 +72,11 @@ public class TestController {
         return result;
     }
     
-    @RequestMapping(value = "/repeatInovice")
+    @RequestMapping(value = "/reprintInovice")
     @ResponseBody
     public String repeatInovice(int kplsh) throws Exception {
         String encryptKplshStr = skService.encryptSkServerParameter("" + kplsh);
-        String result = invoiceController.repeatInvoice(encryptKplshStr);
+        String result = invoiceController.reprintInovice(encryptKplshStr);
         return result;
     }
 

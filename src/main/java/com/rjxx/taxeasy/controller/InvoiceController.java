@@ -108,8 +108,8 @@ public class InvoiceController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/repeatInovice")
-    public String repeatInvoice(String p) throws Exception {
+    @RequestMapping(value = "/reprintInovice")
+    public String reprintInovice(String p) throws Exception {
         try {
             if (StringUtils.isBlank(p)) {
                 throw new Exception("参数不能为空");
