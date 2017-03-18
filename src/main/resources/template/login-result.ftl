@@ -11,6 +11,10 @@
             <Xfid>${xf.id!}</Xfid>
             <Xfsh>${xf.xfsh!}</Xfsh>
             <Xfmc>${xf.xfmc!}</Xfmc>
+            <Xfdz>${xf.xfdz!}</Xfdz>
+            <Xfdh>${xf.xfdh!}</Xfdh>
+            <Xfyh>${xf.xfyh!}</Xfyh>
+            <Xfyhzh>${xf.xfyhzh!}</Xfyhzh>
         </Xf>
         </#list>
     </XfList>
