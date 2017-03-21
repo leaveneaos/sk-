@@ -13,7 +13,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Version {
 
     @XmlElement
-    private int Kpdid;
+    private String Success;
+
+    @XmlElement
+    private String Message;
+
+    @XmlElement
+    private Integer Kpdid;
 
     @XmlElement
     private String CurrentVersion;
@@ -27,11 +33,27 @@ public class Version {
     @XmlElement
     private String UpdateUrl;
 
-    public int getKpdid() {
+    public String getSuccess() {
+        return Success;
+    }
+
+    public void setSuccess(String success) {
+        Success = success;
+    }
+
+    public String getMessage() {
+        return Message;
+    }
+
+    public void setMessage(String message) {
+        Message = message;
+    }
+
+    public Integer getKpdid() {
         return Kpdid;
     }
 
-    public void setKpdid(int kpdid) {
+    public void setKpdid(Integer kpdid) {
         Kpdid = kpdid;
     }
 

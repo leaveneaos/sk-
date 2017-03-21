@@ -5,9 +5,11 @@ import com.rjxx.taxeasy.service.KplsService;
 import com.rjxx.taxeasy.service.KpspmxService;
 import com.rjxx.taxeasy.socket.ServerHandler;
 import com.rjxx.taxeasy.socket.command.SendCommand;
+import com.rjxx.utils.DesUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -71,12 +73,52 @@ public class TestController {
         String result = invoiceController.voidInvoice(encryptKplshStr);
         return result;
     }
-    
+
     @RequestMapping(value = "/reprintInovice")
     @ResponseBody
     public String repeatInovice(int kplsh) throws Exception {
         String encryptKplshStr = skService.encryptSkServerParameter("" + kplsh);
         String result = invoiceController.reprintInovice(encryptKplshStr);
+        return result;
+    }
+
+    @Autowired
+    private VersionController versionController;
+
+    @RequestMapping(value = "/getVersion")
+    @ResponseBody
+    public String getVersion(String macAddr, @RequestParam(required = false) Integer kpdid) throws Exception {
+        String p = "macAddr=" + macAddr;
+        if (kpdid != null) {
+            p += "&kpdid=" + kpdid;
+        }
+        p = DesUtils.DESEncrypt(p, DesUtils.GLOBAL_DES_KEY);
+        String result = versionController.getVersion(p);
+        result = DesUtils.DESDecrypt(result, DesUtils.GLOBAL_DES_KEY);
+        return result;
+    }
+
+    @RequestMapping(value = "/updateVersion")
+    @ResponseBody
+    public String updateVersion(String macAddr, @RequestParam(required = false) Integer kpdid, String version) throws Exception {
+        String p = "macAddr=" + macAddr;
+        if (kpdid != null) {
+            p += "&kpdid=" + kpdid;
+        }
+        p += "&version=" + version;
+        p = DesUtils.DESEncrypt(p, DesUtils.GLOBAL_DES_KEY);
+        String result = versionController.updateVersion(p);
+        result = DesUtils.DESDecrypt(result, DesUtils.GLOBAL_DES_KEY);
+        return result;
+    }
+
+    @RequestMapping(value = "/getPendingData")
+    public String getPendingData(String kpdid) throws Exception {
+        String p = "kpdid=" + kpdid;
+        p = DesUtils.DESEncrypt(p, DesUtils.GLOBAL_DES_KEY);
+        System.out.println(p);
+        String result = invoiceController.getPendingData(p);
+        result = DesUtils.DESDecrypt(result, DesUtils.GLOBAL_DES_KEY);
         return result;
     }
 
