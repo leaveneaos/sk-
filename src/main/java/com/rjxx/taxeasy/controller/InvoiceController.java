@@ -9,6 +9,10 @@ import com.rjxx.taxeasy.service.KplsService;
 import com.rjxx.taxeasy.service.KpspmxService;
 import com.rjxx.taxeasy.socket.ServerHandler;
 import com.rjxx.taxeasy.socket.command.SendCommand;
+import com.rjxx.taxeasy.utils.ClientDesUtils;
+import com.rjxx.taxeasy.vo.FptjVo;
+import com.rjxx.taxeasy.vo.InvoicePendingData;
+import com.rjxx.utils.DesUtils;
 import com.rjxx.utils.HtmlUtils;
 import com.rjxx.utils.TemplateUtils;
 import com.rjxx.utils.XmlJaxbUtils;
@@ -216,6 +220,75 @@ public class InvoiceController {
         }
         String content = TemplateUtils.generateContent(templateName, params);
         return content;
+    }
+
+    /**
+     * 获取待开数据
+     *
+     * @param p
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/getPendingData")
+    public String getPendingData(String p) throws Exception {
+        InvoicePendingData result = new InvoicePendingData();
+        Map<String, String> queryMap = null;
+        try {
+            queryMap = ClientDesUtils.decryptClientQueryString(p);
+        } catch (Exception e) {
+            result.setSuccess("false");
+            result.setMessage(e.getMessage());
+            return generateInvoicePendingDataResult(result);
+        }
+        String kpdidStr = queryMap.get("kpdid");
+        int kpdid = Integer.valueOf(kpdidStr);
+        List<FptjVo> fptjVoList = kplsService.findFpdbtjjgByKpdid(kpdid);
+        for (FptjVo fptjVo : fptjVoList) {
+            String fpczlxdm = fptjVo.getFpczlxdm();
+            String fpzldm = fptjVo.getFpzldm();
+            int cnt = fptjVo.getCnt();
+            if ("11".equals(fpczlxdm)) {
+                //开具
+                if ("01".equals(fpzldm)) {
+                    result.setZpkjsl(cnt);
+                } else if ("02".equals(fpzldm)) {
+                    result.setPpkjsl(cnt);
+                } else if ("12".equals(fpzldm)) {
+                    result.setDzpkjsl(cnt);
+                }
+            } else if ("12".equals(fpczlxdm)) {
+                //红冲
+                if ("01".equals(fpzldm)) {
+                    result.setZphcsl(cnt);
+                } else if ("02".equals(fpzldm)) {
+                    result.setPphcsl(cnt);
+                } else if ("12".equals(fpzldm)) {
+                    result.setDzphcsl(cnt);
+                }
+            } else if ("14".equals(fpczlxdm)) {
+                //作废
+                if ("01".equals(fpzldm)) {
+                    result.setZpzfsl(cnt);
+                } else if ("02".equals(fpzldm)) {
+                    result.setPpzfsl(cnt);
+                }
+            }
+        }
+        result.setKpdid(kpdid);
+        result.setSuccess("true");
+        return generateInvoicePendingDataResult(result);
+    }
+
+    /**
+     * 生成版本结果
+     *
+     * @param invoicePendingData
+     * @return
+     */
+    private String generateInvoicePendingDataResult(InvoicePendingData invoicePendingData) throws Exception {
+        String result = XmlJaxbUtils.toXml(invoicePendingData);
+        result = DesUtils.DESEncrypt(result, DesUtils.GLOBAL_DES_KEY);
+        return result;
     }
 
 }

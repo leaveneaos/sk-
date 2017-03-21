@@ -112,4 +112,14 @@ public class TestController {
         return result;
     }
 
+    @RequestMapping(value = "/getPendingData")
+    public String getPendingData(String kpdid) throws Exception {
+        String p = "kpdid=" + kpdid;
+        p = DesUtils.DESEncrypt(p, DesUtils.GLOBAL_DES_KEY);
+        System.out.println(p);
+        String result = invoiceController.getPendingData(p);
+        result = DesUtils.DESDecrypt(result, DesUtils.GLOBAL_DES_KEY);
+        return result;
+    }
+
 }
