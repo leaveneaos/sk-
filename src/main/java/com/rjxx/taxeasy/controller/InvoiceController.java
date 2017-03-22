@@ -164,31 +164,8 @@ public class InvoiceController {
             String kplshStr = skService.decryptSkServerParameter(p);
             int kplsh = Integer.valueOf(kplshStr);
             logger.debug("receive invoice request:" + kplsh);
-            Kpls kpls = kplsService.findOne(kplsh);
-            if (kpls == null) {
-                InvoiceResponse response = InvoiceResponseUtils.responseError("开票流水号：" + kplsh + "没有该数据");
-                return XmlJaxbUtils.toXml(response);
-            }
-            String xml = getInvoiceXml(kpls);
-            logger.debug("kplsh:" + kplsh + " xml:");
-            logger.debug(xml);
-            xml = Base64.encodeBase64String(xml.getBytes("UTF-8"));
-            Map params = new HashMap();
-            params.put("xml", xml);
-            params.put("kpls", kpls);
-            String lsh = kpls.getKplsh() + "$" + System.currentTimeMillis();
-            params.put("lsh", lsh);
-            String content = TemplateUtils.generateContent("invoice-request.ftl", params);
-            logger.debug(content);
-            String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.Invoice, content, lsh);
-            if (StringUtils.isBlank(result)) {
-                InvoiceResponse response = InvoiceResponseUtils.responseError("客户端没有返回结果，请去开票软件确认");
-                return XmlJaxbUtils.toXml(response);
-            }
-            InvoiceResponse invoiceResponse = XmlJaxbUtils.convertXmlStrToObject(InvoiceResponse.class, result);
-            invoiceResponse.setKpddm(kpls.getKpddm());
-            invoiceResponse.setJylsh(kpls.getJylsh());
-            result = XmlJaxbUtils.toXml(invoiceResponse);
+            InvoiceResponse invoiceResponse = doKp(kplsh, true);
+            String result = XmlJaxbUtils.toXml(invoiceResponse);
             logger.debug(result);
             return result;
         } catch (Exception e) {
@@ -196,6 +173,40 @@ public class InvoiceController {
             InvoiceResponse response = InvoiceResponseUtils.responseError(e.getMessage());
             return XmlJaxbUtils.toXml(response);
         }
+    }
+
+    /**
+     * 执行开票
+     *
+     * @param kplsh
+     * @param wait  等待开票结果
+     */
+    public InvoiceResponse doKp(int kplsh, boolean wait) throws Exception {
+        Kpls kpls = kplsService.findOne(kplsh);
+        if (kpls == null) {
+            InvoiceResponse response = InvoiceResponseUtils.responseError("开票流水号：" + kplsh + "没有该数据");
+            return response;
+        }
+        String xml = getInvoiceXml(kpls);
+        logger.debug("kplsh:" + kplsh + " xml:");
+        logger.debug(xml);
+        xml = Base64.encodeBase64String(xml.getBytes("UTF-8"));
+        Map params = new HashMap();
+        params.put("xml", xml);
+        params.put("kpls", kpls);
+        String lsh = kpls.getKplsh() + "$" + System.currentTimeMillis();
+        params.put("lsh", lsh);
+        String content = TemplateUtils.generateContent("invoice-request.ftl", params);
+        logger.debug(content);
+        String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.Invoice, content, lsh, wait);
+        if (StringUtils.isBlank(result)) {
+            InvoiceResponse response = InvoiceResponseUtils.responseError("客户端没有返回结果，请去开票软件确认");
+            return response;
+        }
+        InvoiceResponse invoiceResponse = XmlJaxbUtils.convertXmlStrToObject(InvoiceResponse.class, result);
+        invoiceResponse.setKpddm(kpls.getKpddm());
+        invoiceResponse.setJylsh(kpls.getJylsh());
+        return invoiceResponse;
     }
 
     /**
