@@ -39,7 +39,7 @@ public class VersionController {
     @Autowired
     private ClientVersionService clientVersionService;
 
-    @RequestMapping(value = "/get", method = RequestMethod.POST)
+    @RequestMapping(value = "/getVersion", method = {RequestMethod.GET, RequestMethod.POST})
     public String getVersion(String p) throws Exception {
         Version result = new Version();
         Map<String, String> queryMap = null;
@@ -67,6 +67,7 @@ public class VersionController {
      * @return
      * @throws Exception
      */
+    @RequestMapping(value = "/updateVersion", method = {RequestMethod.GET, RequestMethod.POST})
     public String updateVersion(String p) throws Exception {
         Version result = new Version();
         Map<String, String> queryMap = null;

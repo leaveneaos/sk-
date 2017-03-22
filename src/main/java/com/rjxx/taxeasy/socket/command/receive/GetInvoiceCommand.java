@@ -32,21 +32,22 @@ public class GetInvoiceCommand implements ICommand {
 
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
-        String fplxdm = data;
+        String fpzldm = data;
         IoSession session = socketSession.getSession();
         Integer kpdid = (Integer) session.getAttribute("kpdid");
-        if (StringUtils.isBlank(fplxdm) || kpdid == null) {
-            logger.info("--------unknow fplxdm " + fplxdm + " or kpdid " + kpdid + "---------");
+        if (StringUtils.isBlank(fpzldm) || kpdid == null) {
+            logger.info("--------unknow fpzldm " + fpzldm + " or kpdid " + kpdid + "---------");
             return;
         }
         Map params = new HashMap();
-        params.put("fplxdm", fplxdm);
+        params.put("fpzldm", fpzldm);
         params.put("kpdid", kpdid);
         params.put("fpztdm", "04");
         params.put("orderBy", "lrsj asc");
         Kpls kpls = kplsService.findOneByParams(params);
         if (kpls == null) {
             logger.info("-----------has no invoice pending data--------------");
+            return;
         }
         invoiceController.doKp(kpls.getKplsh(), false);
     }

@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
@@ -45,7 +46,7 @@ public class InvoiceController {
     @Autowired
     private SkService skService;
 
-    @RequestMapping(value = "/getCodeAndNo")
+    @RequestMapping(value = "/getCodeAndNo", method = {RequestMethod.GET, RequestMethod.POST})
     public String getCodeAndNo(String p) throws Exception {
         try {
             if (StringUtils.isBlank(p)) {
@@ -72,6 +73,7 @@ public class InvoiceController {
      * @return
      * @throws Exception
      */
+    @RequestMapping(value = "/voidInvoice", method = {RequestMethod.GET, RequestMethod.POST})
     public String voidInvoice(String p) throws Exception {
         try {
             if (StringUtils.isBlank(p)) {
@@ -112,7 +114,7 @@ public class InvoiceController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/reprintInovice")
+    @RequestMapping(value = "/reprintInovice", method = {RequestMethod.GET, RequestMethod.POST})
     public String reprintInovice(String p) throws Exception {
         try {
             if (StringUtils.isBlank(p)) {
@@ -155,7 +157,7 @@ public class InvoiceController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/invoice")
+    @RequestMapping(value = "/invoice", method = {RequestMethod.GET, RequestMethod.POST})
     public String invoice(String p) throws Exception {
         try {
             if (StringUtils.isBlank(p)) {
@@ -240,7 +242,7 @@ public class InvoiceController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/getPendingData")
+    @RequestMapping(value = "/getPendingData", method = {RequestMethod.GET, RequestMethod.POST})
     public String getPendingData(String p) throws Exception {
         InvoicePendingData result = new InvoicePendingData();
         Map<String, String> queryMap = null;

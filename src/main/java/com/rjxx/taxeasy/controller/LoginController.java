@@ -53,7 +53,7 @@ public class LoginController {
      * @param p
      * @return
      */
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    @RequestMapping(value = "/login", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public String clientLogin(String p) throws Exception {
         Map map = new HashMap();
@@ -131,7 +131,7 @@ public class LoginController {
     @Value("${socket.port}")
     private int socketPort;
 
-    @RequestMapping(value = "/getConnectInfo", method = RequestMethod.POST)
+    @RequestMapping(value = "/getConnectInfo", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
     public String getConnectInfo(String p) throws Exception {
         Map map = new HashMap();
