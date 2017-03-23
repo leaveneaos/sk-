@@ -49,6 +49,8 @@ public class GetInvoiceCommand implements ICommand {
             logger.info("-----------has no invoice pending data--------------");
             return;
         }
+        kpls.setFpztdm("14");
+        kplsService.save(kpls);
         invoiceController.doKp(kpls.getKplsh(), false);
     }
 }

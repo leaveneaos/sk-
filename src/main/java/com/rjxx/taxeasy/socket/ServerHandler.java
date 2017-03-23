@@ -188,6 +188,7 @@ public class ServerHandler extends IoHandlerAdapter {
         if (kpdid != null) {
             logger.info("kpd:" + kpdid + " " + session + " idle time out!!!");
         }
+        logger.info("Server will interrupt the connection with the client");
         session.closeNow();
     }
 
@@ -195,13 +196,8 @@ public class ServerHandler extends IoHandlerAdapter {
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
         Integer kpdid = (Integer) session.getAttribute("kpdid");
         if (kpdid != null) {
-            logger.error("kpd:" + kpdid + " " + session + " exception caught!!!", cause.getMessage());
+            logger.error("kpd:" + kpdid + " " + session + " exception caught!!!", cause);
         }
-//        Integer kpdid = (Integer) session.getAttribute("kpdid");
-//        if (kpdid != null) {
-//            logger.info("kpd:" + kpdid + " has disconnected");
-//        }
-//        super.exceptionCaught(session, cause);
     }
 
     /**
