@@ -8,7 +8,7 @@ import com.rjxx.taxeasy.socket.command.ReceiveCommand;
 import com.rjxx.taxeasy.socket.command.SendCommand;
 import com.rjxx.taxeasy.socket.command.receive.LoginCommand;
 import com.rjxx.utils.DesUtils;
-import org.apache.commons.lang.StringUtils;
+import com.rjxx.utils.StringUtils;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
@@ -67,8 +67,7 @@ public class ServerHandler extends IoHandlerAdapter {
      * @throws Exception
      */
     public static String sendMessage(int kpdid, SendCommand sendCommand, String data) throws Exception {
-        String commandId = UUID.randomUUID().toString().replace("-", "");
-        return sendMessage(kpdid, sendCommand, data, commandId);
+        return sendMessage(kpdid, sendCommand, data, null);
     }
 
     /**
@@ -83,6 +82,9 @@ public class ServerHandler extends IoHandlerAdapter {
      * @throws Exception
      */
     public static String sendMessage(int kpdid, SendCommand sendCommand, String data, String commandId, boolean wait) throws Exception {
+        if (StringUtils.isBlank(commandId)) {
+            commandId = UUID.randomUUID().toString().replace("-", "");
+        }
         SocketSession session = cachedSession.get(kpdid);
         if (session == null) {
             SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);

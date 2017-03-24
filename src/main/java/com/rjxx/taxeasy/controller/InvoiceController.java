@@ -114,8 +114,8 @@ public class InvoiceController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/reprintInovice", method = {RequestMethod.GET, RequestMethod.POST})
-    public String reprintInovice(String p) throws Exception {
+    @RequestMapping(value = "/reprintInvoice", method = {RequestMethod.GET, RequestMethod.POST})
+    public String reprintInvoice(String p) throws Exception {
         try {
             if (StringUtils.isBlank(p)) {
                 throw new Exception("参数不能为空");
@@ -255,6 +255,17 @@ public class InvoiceController {
         }
         String kpdidStr = queryMap.get("kpdid");
         int kpdid = Integer.valueOf(kpdidStr);
+        result = this.generatePendingData(kpdid);
+        return generateInvoicePendingDataResult(result);
+    }
+
+    /**
+     * 生成待开票数据
+     *
+     * @return
+     */
+    public InvoicePendingData generatePendingData(int kpdid) {
+        InvoicePendingData result = new InvoicePendingData();
         List<FptjVo> fptjVoList = kplsService.findFpdbtjjgByKpdid(kpdid);
         for (FptjVo fptjVo : fptjVoList) {
             String fpczlxdm = fptjVo.getFpczlxdm();
@@ -289,7 +300,7 @@ public class InvoiceController {
         }
         result.setKpdid(kpdid);
         result.setSuccess("true");
-        return generateInvoicePendingDataResult(result);
+        return result;
     }
 
     /**

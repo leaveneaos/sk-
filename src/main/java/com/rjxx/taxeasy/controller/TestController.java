@@ -78,7 +78,7 @@ public class TestController {
     @ResponseBody
     public String repeatInovice(int kplsh) throws Exception {
         String encryptKplshStr = skService.encryptSkServerParameter("" + kplsh);
-        String result = invoiceController.reprintInovice(encryptKplshStr);
+        String result = invoiceController.reprintInvoice(encryptKplshStr);
         return result;
     }
 

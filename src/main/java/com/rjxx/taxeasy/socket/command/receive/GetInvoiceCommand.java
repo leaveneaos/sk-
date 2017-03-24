@@ -3,10 +3,12 @@ package com.rjxx.taxeasy.socket.command.receive;
 import com.rjxx.taxeasy.controller.InvoiceController;
 import com.rjxx.taxeasy.domains.Kpls;
 import com.rjxx.taxeasy.service.KplsService;
+import com.rjxx.taxeasy.socket.ServerHandler;
 import com.rjxx.taxeasy.socket.SocketSession;
 import com.rjxx.taxeasy.socket.command.ICommand;
-import com.rjxx.utils.StringUtils;
-import org.apache.mina.core.session.IoSession;
+import com.rjxx.taxeasy.socket.command.SendCommand;
+import com.rjxx.taxeasy.vo.InvoicePendingData;
+import com.rjxx.utils.XmlJaxbUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +35,8 @@ public class GetInvoiceCommand implements ICommand {
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
         String fpzldm = data;
-        IoSession session = socketSession.getSession();
-        Integer kpdid = (Integer) session.getAttribute("kpdid");
-        if (StringUtils.isBlank(fpzldm) || kpdid == null) {
-            logger.info("--------unknow fpzldm " + fpzldm + " or kpdid " + kpdid + "---------");
-            return;
-        }
+        Integer kpdid = socketSession.getKpdid();
+        logger.debug("-----------receive kpdid " + kpdid + " GetInvoice request---------");
         Map params = new HashMap();
         params.put("fpzldm", fpzldm);
         params.put("kpdid", kpdid);
@@ -46,7 +44,10 @@ public class GetInvoiceCommand implements ICommand {
         params.put("orderBy", "lrsj asc");
         Kpls kpls = kplsService.findOneByParams(params);
         if (kpls == null) {
-            logger.info("-----------has no invoice pending data--------------");
+            logger.info("-----kpdid " + kpdid + " has no pending data-------");
+            InvoicePendingData invoicePendingData = invoiceController.generatePendingData(kpdid);
+            String xml = XmlJaxbUtils.toXml(invoicePendingData);
+            ServerHandler.sendMessage(kpdid, SendCommand.SendPendingData, xml, "", false);
             return;
         }
         kpls.setFpztdm("14");
