@@ -64,16 +64,16 @@ public class ReturnInvoiceFileCommand implements ICommand {
             if ("12".equals(fpzldm)) {
                 //按电子发票返回的结果处理
                 Map<String, String> resultMap = new HashMap<>();
-                boolean suc = parseDzfpResultXml(resultMap, content);
-                if (!suc) {
-                    //解析xml异常
-                    kpls.setFpztdm("05");
-                    kpls.setErrorReason("返回的xml异常，无法解析");
-                    kpls.setXgsj(new Date());
-                    kplsService.save(kpls);
-                    updateJyls(kpls.getDjh(), "92");
-                    logger.error("dzfp return xml error!!!kplsh:" + kplsh + ",xml:" + content);
-                    return;
+                    boolean suc = parseDzfpResultXml(resultMap, content);
+                    if (!suc) {
+                        //解析xml异常
+                        kpls.setFpztdm("05");
+                        kpls.setErrorReason("返回的xml异常，无法解析");
+                        kpls.setXgsj(new Date());
+                        kplsService.save(kpls);
+                        updateJyls(kpls.getDjh(), "92");
+                        logger.error("dzfp return xml error!!!kplsh:" + kplsh + ",xml:" + content);
+                        return;
                 }
                 String dzfpReturnCode = resultMap.get("RETURNCODE");
                 if (!"0000".equals(dzfpReturnCode)) {
@@ -145,6 +145,7 @@ public class ReturnInvoiceFileCommand implements ICommand {
             String kprq = map.get("KPRQ");
             kpls.setKprq(TimeUtil.getSysDateInDate(kprq, null));
             kpls.setFpztdm("00");
+            kpls.setErrorReason(null);
             kpls.setXgsj(new Date());
             kplsService.save(kpls);
         } catch (Exception e) {
