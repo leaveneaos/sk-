@@ -100,8 +100,8 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 String czlxdm = kpls.getFpczlxdm();
                 if ("12".equals(czlxdm) || "13".equals(czlxdm)) {
                     updateJyls(kpls.getDjh(), "91");
-                   if(!kpls.getHkFphm().equals("")&&!kpls.getHkFpdm().equals("")){
-                	 Kpls ykpls=kplsService.findByyfphm(kpls);
+                   if(kpls.getHkFphm()!=null&&kpls.getHkFpdm()!=null){
+                	  Kpls ykpls=kplsService.findByyfphm(kpls);
                 	  Map param2 = new HashMap<>();
           			  param2.put("kplsh", ykpls.getKplsh());
 	          			// 全部红冲后修改
