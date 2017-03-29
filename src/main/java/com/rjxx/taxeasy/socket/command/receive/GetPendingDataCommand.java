@@ -7,6 +7,8 @@ import com.rjxx.taxeasy.socket.command.ICommand;
 import com.rjxx.taxeasy.socket.command.SendCommand;
 import com.rjxx.taxeasy.vo.InvoicePendingData;
 import com.rjxx.utils.XmlJaxbUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,8 @@ import org.springframework.stereotype.Service;
 @Service("GetPendingDataCommand")
 public class GetPendingDataCommand implements ICommand {
 
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Autowired
     private InvoiceController invoiceController;
 
@@ -25,6 +29,7 @@ public class GetPendingDataCommand implements ICommand {
         int kpdid = socketSession.getKpdid();
         InvoicePendingData invoicePendingData = invoiceController.generatePendingData(kpdid);
         String xml = XmlJaxbUtils.toXml(invoicePendingData);
+        logger.debug(socketSession.getKpdid() + " SendPendingData:" + xml);
         ServerHandler.sendMessage(kpdid, SendCommand.SendPendingData, xml, "", false);
     }
 }

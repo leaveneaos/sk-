@@ -5,8 +5,10 @@ import com.rjxx.taxeasy.domains.Jyls;
 import com.rjxx.taxeasy.domains.Kpls;
 import com.rjxx.taxeasy.service.JylsService;
 import com.rjxx.taxeasy.service.KplsService;
+import com.rjxx.taxeasy.service.KpspmxService;
 import com.rjxx.taxeasy.socket.SocketSession;
 import com.rjxx.taxeasy.socket.command.ICommand;
+import com.rjxx.taxeasy.vo.Kpspmxvo;
 import com.rjxx.time.TimeUtil;
 import com.rjxx.utils.StringUtils;
 import com.rjxx.utils.XmlJaxbUtils;
@@ -37,6 +39,9 @@ public class ReturnInvoiceFileCommand implements ICommand {
 
     @Autowired
     private JylsService jylsService;
+    
+    @Autowired
+    private KpspmxService kpspmxService;
 
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
@@ -64,16 +69,16 @@ public class ReturnInvoiceFileCommand implements ICommand {
             if ("12".equals(fpzldm)) {
                 //按电子发票返回的结果处理
                 Map<String, String> resultMap = new HashMap<>();
-                boolean suc = parseDzfpResultXml(resultMap, content);
-                if (!suc) {
-                    //解析xml异常
-                    kpls.setFpztdm("05");
-                    kpls.setErrorReason("返回的xml异常，无法解析");
-                    kpls.setXgsj(new Date());
-                    kplsService.save(kpls);
-                    updateJyls(kpls.getDjh(), "92");
-                    logger.error("dzfp return xml error!!!kplsh:" + kplsh + ",xml:" + content);
-                    return;
+                    boolean suc = parseDzfpResultXml(resultMap, content);
+                    if (!suc) {
+                        //解析xml异常
+                        kpls.setFpztdm("05");
+                        kpls.setErrorReason("返回的xml异常，无法解析");
+                        kpls.setXgsj(new Date());
+                        kplsService.save(kpls);
+                        updateJyls(kpls.getDjh(), "92");
+                        logger.error("dzfp return xml error!!!kplsh:" + kplsh + ",xml:" + content);
+                        return;
                 }
                 String dzfpReturnCode = resultMap.get("RETURNCODE");
                 if (!"0000".equals(dzfpReturnCode)) {
@@ -95,6 +100,20 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 String czlxdm = kpls.getFpczlxdm();
                 if ("12".equals(czlxdm) || "13".equals(czlxdm)) {
                     updateJyls(kpls.getDjh(), "91");
+                   if(!kpls.getHkFphm().equals("")&&!kpls.getHkFpdm().equals("")){
+                	 Kpls ykpls=kplsService.findByyfphm(kpls);
+                	  Map param2 = new HashMap<>();
+          			  param2.put("kplsh", ykpls.getKplsh());
+	          			// 全部红冲后修改
+	          			Kpspmxvo mxvo = kpspmxService.findKhcje(param2);
+	          			if (mxvo.getKhcje() == 0) {
+	          				param2.put("fpztdm", "02");
+	          				kplsService.updateFpczlx(param2);
+	          			} else {
+	          				param2.put("fpztdm", "01");
+	          				kplsService.updateFpczlx(param2);
+	          			}
+                   }
                 } else {
                     updateJyls(kpls.getDjh(), "21");
                 }
@@ -145,6 +164,7 @@ public class ReturnInvoiceFileCommand implements ICommand {
             String kprq = map.get("KPRQ");
             kpls.setKprq(TimeUtil.getSysDateInDate(kprq, null));
             kpls.setFpztdm("00");
+            kpls.setErrorReason(null);
             kpls.setXgsj(new Date());
             kplsService.save(kpls);
         } catch (Exception e) {

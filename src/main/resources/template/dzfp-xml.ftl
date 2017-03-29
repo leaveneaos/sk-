@@ -19,9 +19,9 @@
             <FHR>${kpls.fhr!}</FHR>
             <YFP_DM>${kpls.hzyfpdm!}</YFP_DM>
             <YFP_HM>${kpls.hzyfphm!}</YFP_HM>
-            <JSHJ>${kpls.jshj!}</JSHJ>
-            <HJJE>${kpls.hjje!}</HJJE>
-            <HJSE>${kpls.hjse!}</HJSE>
+            <JSHJ>${(kpls.jshj?string('#.######'))!}</JSHJ>
+            <HJJE>${(kpls.hjje!?string('#.######'))!}</HJJE>
+            <HJSE>${(kpls.hjse!?string('#.######'))!}</HJSE>
             <BZ>${kpls.bz!}</BZ>
             <BMB_BBH>${spbmbbh!"12.0"}</BMB_BBH>
         </COMMON_FPKJ_FPT>
