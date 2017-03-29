@@ -5,8 +5,10 @@ import com.rjxx.taxeasy.domains.Jyls;
 import com.rjxx.taxeasy.domains.Kpls;
 import com.rjxx.taxeasy.service.JylsService;
 import com.rjxx.taxeasy.service.KplsService;
+import com.rjxx.taxeasy.service.KpspmxService;
 import com.rjxx.taxeasy.socket.SocketSession;
 import com.rjxx.taxeasy.socket.command.ICommand;
+import com.rjxx.taxeasy.vo.Kpspmxvo;
 import com.rjxx.time.TimeUtil;
 import com.rjxx.utils.StringUtils;
 import com.rjxx.utils.XmlJaxbUtils;
@@ -37,6 +39,9 @@ public class ReturnInvoiceFileCommand implements ICommand {
 
     @Autowired
     private JylsService jylsService;
+    
+    @Autowired
+    private KpspmxService kpspmxService;
 
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
@@ -95,6 +100,20 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 String czlxdm = kpls.getFpczlxdm();
                 if ("12".equals(czlxdm) || "13".equals(czlxdm)) {
                     updateJyls(kpls.getDjh(), "91");
+                   if(!kpls.getHkFphm().equals("")&&!kpls.getHkFpdm().equals("")){
+                	 Kpls ykpls=kplsService.findByyfphm(kpls);
+                	  Map param2 = new HashMap<>();
+          			  param2.put("kplsh", ykpls.getKplsh());
+	          			// 全部红冲后修改
+	          			Kpspmxvo mxvo = kpspmxService.findKhcje(param2);
+	          			if (mxvo.getKhcje() == 0) {
+	          				param2.put("fpztdm", "02");
+	          				kplsService.updateFpczlx(param2);
+	          			} else {
+	          				param2.put("fpztdm", "01");
+	          				kplsService.updateFpczlx(param2);
+	          			}
+                   }
                 } else {
                     updateJyls(kpls.getDjh(), "21");
                 }
