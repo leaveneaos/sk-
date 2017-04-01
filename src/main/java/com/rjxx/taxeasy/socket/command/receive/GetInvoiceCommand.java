@@ -65,14 +65,19 @@ public class GetInvoiceCommand implements ICommand {
         params.put("fpztdm", "04");
         params.put("orderBy", "lrsj asc");
         Kpls kpls = null;
+        int count = 0;
         do {
             kpls = kplsService.findOneByParams(params);
             if (kpls == null) {
                 return;
             }
+            if (count > 0) {
+                Thread.sleep(5000);
+            }
             kpls.setFpztdm("14");
             kplsService.save(kpls);
             invoiceController.doKp(kpls.getKplsh(), false);
+            count++;
         } while (true);
     }
 }
