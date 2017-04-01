@@ -11,8 +11,8 @@ import com.rjxx.taxeasy.service.YhService;
 import com.rjxx.taxeasy.utils.ClientDesUtils;
 import com.rjxx.utils.DesUtils;
 import com.rjxx.utils.PasswordUtils;
+import com.rjxx.utils.StringUtils;
 import com.rjxx.utils.TemplateUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
@@ -103,6 +103,22 @@ public class LoginController {
                     skp.setSbcs("bw");
                 } else {
                     skp.setSbcs("hx");
+                }
+            }
+            String kplx = skp.getKplx();
+            if (StringUtils.isNotBlank(kplx)) {
+                StringBuilder kplxSB = new StringBuilder();
+                if (kplx.contains("01")) {
+                    kplxSB.append("01,");
+                }
+                if (kplx.contains("02")) {
+                    kplxSB.append("02,");
+                }
+                if (kplx.contains("12")) {
+                    kplxSB.append("12,");
+                }
+                if (kplxSB.length() > 0) {
+                    skp.setKplx(kplxSB.substring(0, kplxSB.length() - 1));
                 }
             }
         }
