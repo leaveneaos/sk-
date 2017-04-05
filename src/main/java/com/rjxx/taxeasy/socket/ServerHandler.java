@@ -54,7 +54,7 @@ public class ServerHandler extends IoHandlerAdapter {
      * @throws Exception
      */
     public static String sendMessage(int kpdid, SendCommand sendCommand, String data, String commandId) throws Exception {
-        return sendMessage(kpdid, sendCommand, data, commandId, true);
+        return sendMessage(kpdid, sendCommand, data, commandId, true, 30000);
     }
 
     /**
@@ -78,10 +78,11 @@ public class ServerHandler extends IoHandlerAdapter {
      * @param data        原数据，未加密的数据
      * @param commandId   命令id
      * @param wait        是否等待返回结果,true需要等待返回结果，false不等待返回结果
+     * @param timeout     等待超时时间
      * @return
      * @throws Exception
      */
-    public static String sendMessage(int kpdid, SendCommand sendCommand, String data, String commandId, boolean wait) throws Exception {
+    public static String sendMessage(int kpdid, SendCommand sendCommand, String data, String commandId, boolean wait, long timeout) throws Exception {
         if (StringUtils.isBlank(commandId)) {
             commandId = UUID.randomUUID().toString().replace("-", "");
         }
@@ -105,8 +106,11 @@ public class ServerHandler extends IoHandlerAdapter {
             SocketRequest socketRequest = new SocketRequest();
             socketRequest.setCommandId(commandId);
             cachedRequestMap.put(commandId, socketRequest);
+            if (timeout <= 0) {
+                timeout = 30000;
+            }
             synchronized (socketRequest) {
-                socketRequest.wait(120000);
+                socketRequest.wait(timeout);
             }
             if (socketRequest.getException() != null) {
                 throw socketRequest.getException();
