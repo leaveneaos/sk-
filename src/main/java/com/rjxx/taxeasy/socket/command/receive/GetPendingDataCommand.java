@@ -30,6 +30,6 @@ public class GetPendingDataCommand implements ICommand {
         InvoicePendingData invoicePendingData = invoiceController.generatePendingData(kpdid);
         String xml = XmlJaxbUtils.toXml(invoicePendingData);
         logger.debug(socketSession.getKpdid() + " SendPendingData:" + xml);
-        ServerHandler.sendMessage(kpdid, SendCommand.SendPendingData, xml, "", false);
+        ServerHandler.sendMessage(kpdid, SendCommand.SendPendingData, xml, "", false, 0);
     }
 }

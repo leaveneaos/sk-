@@ -166,7 +166,7 @@ public class InvoiceController {
             String kplshStr = skService.decryptSkServerParameter(p);
             int kplsh = Integer.valueOf(kplshStr);
             logger.debug("receive invoice request:" + kplsh);
-            InvoiceResponse invoiceResponse = doKp(kplsh, true);
+            InvoiceResponse invoiceResponse = doKp(kplsh, true, 120000);
             String result = XmlJaxbUtils.toXml(invoiceResponse);
             logger.debug(result);
             return result;
@@ -181,9 +181,10 @@ public class InvoiceController {
      * 执行开票
      *
      * @param kplsh
-     * @param wait  等待开票结果
+     * @param wait    等待开票结果
+     * @param timeout 等待超时时间
      */
-    public InvoiceResponse doKp(int kplsh, boolean wait) throws Exception {
+    public InvoiceResponse doKp(int kplsh, boolean wait, long timeout) throws Exception {
         Kpls kpls = kplsService.findOne(kplsh);
         if (kpls == null) {
             InvoiceResponse response = InvoiceResponseUtils.responseError("开票流水号：" + kplsh + "没有该数据");
@@ -200,7 +201,7 @@ public class InvoiceController {
         params.put("lsh", lsh);
         String content = TemplateUtils.generateContent("invoice-request.ftl", params);
         logger.debug(content);
-        String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.Invoice, content, lsh, wait);
+        String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.Invoice, content, lsh, wait, timeout);
         if (StringUtils.isBlank(result)) {
             InvoiceResponse response = InvoiceResponseUtils.responseError("客户端没有返回结果，请去开票软件确认");
             return response;

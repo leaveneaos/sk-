@@ -49,7 +49,7 @@ public class GetInvoiceCommand implements ICommand {
         //执行完所有开票动作后，重新发送待开票数据
         InvoicePendingData invoicePendingData = invoiceController.generatePendingData(kpdid);
         String xml = XmlJaxbUtils.toXml(invoicePendingData);
-        ServerHandler.sendMessage(kpdid, SendCommand.SendPendingData, xml, "", false);
+        ServerHandler.sendMessage(kpdid, SendCommand.SendPendingData, xml, "", false, 120000);
     }
 
     /**
@@ -65,19 +65,14 @@ public class GetInvoiceCommand implements ICommand {
         params.put("fpztdm", "04");
         params.put("orderBy", "lrsj asc");
         Kpls kpls = null;
-        int count = 0;
         do {
             kpls = kplsService.findOneByParams(params);
             if (kpls == null) {
                 return;
             }
-            if (count > 0) {
-                Thread.sleep(5000);
-            }
             kpls.setFpztdm("14");
             kplsService.save(kpls);
-            invoiceController.doKp(kpls.getKplsh(), false);
-            count++;
+            invoiceController.doKp(kpls.getKplsh(), true, 10000);
         } while (true);
     }
 }
