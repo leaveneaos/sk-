@@ -1,6 +1,5 @@
 package com.rjxx.taxeasy.socket.command.receive;
 
-import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
 import com.rjxx.taxeasy.domains.Jyls;
 import com.rjxx.taxeasy.domains.Kpls;
 import com.rjxx.taxeasy.service.JylsService;
@@ -8,6 +7,7 @@ import com.rjxx.taxeasy.service.KplsService;
 import com.rjxx.taxeasy.service.KpspmxService;
 import com.rjxx.taxeasy.socket.SocketSession;
 import com.rjxx.taxeasy.socket.command.ICommand;
+import com.rjxx.taxeasy.socket.domains.ReturnInvoiceFile;
 import com.rjxx.taxeasy.vo.Kpspmxvo;
 import com.rjxx.time.TimeUtil;
 import com.rjxx.utils.StringUtils;
@@ -54,18 +54,18 @@ public class ReturnInvoiceFileCommand implements ICommand {
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
         logger.debug(data);
-        InvoiceResponse response = XmlJaxbUtils.convertXmlStrToObject(InvoiceResponse.class, data);
-        String returnCode = response.getReturnCode();
+        ReturnInvoiceFile returnInvoiceFile = XmlJaxbUtils.convertXmlStrToObject(ReturnInvoiceFile.class, data);
+        String returnCode = returnInvoiceFile.getReturnCode();
         if ("0000".equals(returnCode)) {
-            boolean bulkImportResultFlag = response.isBulkImportResultFlag();
-            String content = response.getReturnMessage();
+            boolean bulkImportResultFlag = returnInvoiceFile.isBulkImportResultFlag();
+            String content = returnInvoiceFile.getFileContent();
             content = new String(Base64.decodeBase64(content), "UTF-8");
-            saveFile(content, response.getLsh());
+            saveFile(content, returnInvoiceFile.getLsh());
             if (!bulkImportResultFlag) {
                 return;
             }
             logger.debug(content);
-            String lsh = response.getLsh();
+            String lsh = returnInvoiceFile.getLsh();
             int pos = lsh.indexOf("$");
             int kplsh;
             if (pos != -1) {
