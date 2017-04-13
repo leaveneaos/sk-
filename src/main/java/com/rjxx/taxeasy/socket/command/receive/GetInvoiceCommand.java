@@ -27,6 +27,8 @@ public class GetInvoiceCommand implements ICommand {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
+    public static final String DO_INVOICE = "DO_INVOICE";
+
     @Autowired
     private KplsService kplsService;
 
@@ -35,21 +37,35 @@ public class GetInvoiceCommand implements ICommand {
 
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
-        String fpzldm = data;
-        if (StringUtils.isBlank(fpzldm)) {
-            return;
+        try {
+            Boolean isDoInvoice = (Boolean) socketSession.getSession().getAttribute(DO_INVOICE);
+            if (isDoInvoice != null && isDoInvoice) {
+                logger.warn("warning:" + socketSession.getKpdid() + " receive GetInvoiceCommand repeat");
+                return;
+            } else {
+                socketSession.getSession().setAttribute(DO_INVOICE, true);
+            }
+            String fpzldm = data;
+            if (StringUtils.isBlank(fpzldm)) {
+                return;
+            }
+            Integer kpdid = socketSession.getKpdid();
+            logger.debug("-----------receive kpdid " + kpdid + " GetInvoice request---------");
+            String[] fpzldmArr = fpzldm.split(",");
+            for (String fpzl : fpzldmArr) {
+                doKp(fpzl, kpdid);
+            }
+            logger.debug("---------kpdid " + kpdid + " complete do invoice,will send pending data---------");
+            //执行完所有开票动作后，重新发送待开票数据
+            InvoicePendingData invoicePendingData = invoiceController.generatePendingData(kpdid);
+            String xml = XmlJaxbUtils.toXml(invoicePendingData);
+            ServerHandler.sendMessage(kpdid, SendCommand.SendPendingData, xml, "", false, 120000);
+        } catch (Exception e) {
+            logger.error("", e);
+        } finally {
+            socketSession.getSession().setAttribute(DO_INVOICE, false);
         }
-        Integer kpdid = socketSession.getKpdid();
-        logger.debug("-----------receive kpdid " + kpdid + " GetInvoice request---------");
-        String[] fpzldmArr = fpzldm.split(",");
-        for (String fpzl : fpzldmArr) {
-            doKp(fpzl, kpdid);
-        }
-        logger.debug("---------kpdid " + kpdid + " complete do invoice,will send pending data---------");
-        //执行完所有开票动作后，重新发送待开票数据
-        InvoicePendingData invoicePendingData = invoiceController.generatePendingData(kpdid);
-        String xml = XmlJaxbUtils.toXml(invoicePendingData);
-        ServerHandler.sendMessage(kpdid, SendCommand.SendPendingData, xml, "", false, 120000);
+
     }
 
     /**
