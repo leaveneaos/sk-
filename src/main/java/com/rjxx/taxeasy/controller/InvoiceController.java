@@ -18,6 +18,7 @@ import com.rjxx.utils.TemplateUtils;
 import com.rjxx.utils.XmlJaxbUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -206,10 +207,31 @@ public class InvoiceController {
             InvoiceResponse response = InvoiceResponseUtils.responseError("客户端没有返回结果，请去开票软件确认");
             return response;
         }
-        InvoiceResponse invoiceResponse = XmlJaxbUtils.convertXmlStrToObject(InvoiceResponse.class, result);
-        invoiceResponse.setKpddm(kpls.getKpddm());
-        invoiceResponse.setJylsh(kpls.getJylsh());
-        return invoiceResponse;
+        if (result.contains("<Response>")) {
+            InvoiceResponse invoiceResponse = XmlJaxbUtils.convertXmlStrToObject(InvoiceResponse.class, result);
+            invoiceResponse.setKpddm(kpls.getKpddm());
+            invoiceResponse.setJylsh(kpls.getJylsh());
+            return invoiceResponse;
+        } else {
+            kpls = kplsService.findOne(kplsh);
+            InvoiceResponse invoiceResponse = new InvoiceResponse();
+            if ("00".equals(kpls.getFpztdm())) {
+                invoiceResponse.setReturnCode("0000");
+                invoiceResponse.setFpdm(kpls.getFpdm());
+                invoiceResponse.setFphm(kpls.getFphm());
+                invoiceResponse.setKprq(DateFormatUtils.format(kpls.getKprq(), "yyyy-MM-dd HH:mm:ss"));
+                invoiceResponse.setKpddm(kpls.getKpddm());
+                invoiceResponse.setJylsh(kpls.getJylsh());
+                invoiceResponse.setPrintFlag(Integer.valueOf(kpls.getPrintflag()));
+            } else if ("05".equals(kpls.getFpztdm())) {
+                invoiceResponse.setReturnCode("9999");
+                invoiceResponse.setReturnMessage(kpls.getErrorReason());
+            } else {
+                invoiceResponse.setReturnCode("9999");
+                invoiceResponse.setReturnMessage("未知异常，请联系软件服务商");
+            }
+            return invoiceResponse;
+        }
     }
 
     /**

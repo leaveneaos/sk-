@@ -8,6 +8,7 @@ import com.rjxx.taxeasy.service.KpspmxService;
 import com.rjxx.taxeasy.socket.SocketSession;
 import com.rjxx.taxeasy.socket.command.ICommand;
 import com.rjxx.taxeasy.socket.domains.ReturnInvoiceFile;
+import com.rjxx.taxeasy.utils.ParseInvoiceFileUtils;
 import com.rjxx.taxeasy.vo.Kpspmxvo;
 import com.rjxx.time.TimeUtil;
 import com.rjxx.utils.StringUtils;
@@ -15,6 +16,7 @@ import com.rjxx.utils.XmlJaxbUtils;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -80,7 +82,7 @@ public class ReturnInvoiceFileCommand implements ICommand {
             }
             String fpzldm = kpls.getFpzldm();
             if ("12".equals(fpzldm)) {
-                //按电子发票返回的结果处理
+                //解析电子发票返回的结果
                 Map<String, String> resultMap = new HashMap<>();
                 boolean suc = parseDzfpResultXml(resultMap, content);
                 if (!suc) {
@@ -131,10 +133,30 @@ public class ReturnInvoiceFileCommand implements ICommand {
                     updateJyls(kpls.getDjh(), "21");
                 }
             } else {
-                throw new Exception("批量导入开票结果返回出现异常");
+                //解析纸质票批量导入的结果
+                Map<String, String> retMap = ParseInvoiceFileUtils.parseZZPBulkImportText(content);
+                String kjjg = retMap.get("kjjg");
+                if ("0".equals(kjjg)) {
+                    kpls.setFpztdm("05");
+                    kpls.setErrorReason(retMap.get("sbyy"));
+                    kpls.setXgsj(new Date());
+                    kplsService.save(kpls);
+                    updateJyls(kpls.getDjh(), "92");
+                } else {
+                    String fpdm = retMap.get("fpdm");
+                    String fphm = retMap.get("fphm");
+                    String kprq = retMap.get("kprq");
+                    kpls.setFpdm(fpdm);
+                    kpls.setFphm(fphm);
+                    kpls.setKprq(DateUtils.parseDate(kprq, new String[]{"yyyy-MM-dd HH:mm:ss"}));
+                    kpls.setFpztdm("00");
+                    kpls.setXgsj(new Date());
+                    kplsService.save(kpls);
+                    updateJyls(kpls.getDjh(), "91");
+                }
             }
         } else {
-            throw new Exception("回写发票结果文件9999不可能");
+            throw new Exception("return invoice result file 9999 impossible");
         }
     }
 
@@ -154,9 +176,9 @@ public class ReturnInvoiceFileCommand implements ICommand {
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        String targetFile = savePath + "/" + lsh + ".xml";
+        String targetFile = savePath + "/" + lsh + ".txt";
         try {
-            FileUtils.writeStringToFile(new File(targetFile), data, "UTF-8");
+            FileUtils.writeStringToFile(new File(targetFile), data, "GBK");
         } catch (IOException e) {
             logger.error("", e);
         }
