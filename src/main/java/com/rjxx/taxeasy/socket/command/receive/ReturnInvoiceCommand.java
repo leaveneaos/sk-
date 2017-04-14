@@ -50,7 +50,7 @@ public class ReturnInvoiceCommand implements ICommand {
             kpls.setFpztdm("00");
             kpls.setErrorReason(null);
             kpls.setPrintflag("" + response.getPrintFlag());
-            kpls.setKprq(DateUtils.parseDate(response.getKprq(), "yyyy-MM-dd"));
+            kpls.setKprq(DateUtils.parseDate(response.getKprq(), "yyyy-MM-dd HH:mm:ss"));
             kpls.setXgsj(new Date());
             kpls.setXgry(1);
             kplsService.save(kpls);
