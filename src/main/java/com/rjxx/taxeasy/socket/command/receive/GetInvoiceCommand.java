@@ -88,7 +88,7 @@ public class GetInvoiceCommand implements ICommand {
             }
             kpls.setFpztdm("14");
             kplsService.save(kpls);
-            invoiceController.doKp(kpls.getKplsh(), true, 10000);
+            invoiceController.doKp(kpls.getKplsh(), true, 20000);
         } while (true);
     }
 }
