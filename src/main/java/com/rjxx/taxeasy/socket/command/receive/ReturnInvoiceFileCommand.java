@@ -1,7 +1,9 @@
 package com.rjxx.taxeasy.socket.command.receive;
 
+import com.rjxx.taxeasy.domains.ClientFile;
 import com.rjxx.taxeasy.domains.Jyls;
 import com.rjxx.taxeasy.domains.Kpls;
+import com.rjxx.taxeasy.service.ClientFileService;
 import com.rjxx.taxeasy.service.JylsService;
 import com.rjxx.taxeasy.service.KplsService;
 import com.rjxx.taxeasy.service.KpspmxService;
@@ -14,8 +16,6 @@ import com.rjxx.time.TimeUtil;
 import com.rjxx.utils.StringUtils;
 import com.rjxx.utils.XmlJaxbUtils;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.time.DateFormatUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
@@ -24,12 +24,9 @@ import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.xml.sax.InputSource;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
 
@@ -50,8 +47,8 @@ public class ReturnInvoiceFileCommand implements ICommand {
     @Autowired
     private KpspmxService kpspmxService;
 
-    @Value("${return-invoice-file.save-base-path:}")
-    private String returnFileSaveBasePath;
+    @Autowired
+    private ClientFileService clientFileService;
 
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
@@ -62,11 +59,6 @@ public class ReturnInvoiceFileCommand implements ICommand {
             boolean bulkImportResultFlag = returnInvoiceFile.isBulkImportResultFlag();
             String content = returnInvoiceFile.getFileContent();
             content = new String(Base64.decodeBase64(content), "UTF-8");
-            saveFile(content, returnInvoiceFile.getLsh());
-            if (!bulkImportResultFlag) {
-                return;
-            }
-            logger.debug(content);
             String lsh = returnInvoiceFile.getLsh();
             int pos = lsh.indexOf("$");
             int kplsh;
@@ -75,6 +67,12 @@ public class ReturnInvoiceFileCommand implements ICommand {
             } else {
                 kplsh = Integer.valueOf(lsh);
             }
+            saveFile(content, kplsh);
+            if (!bulkImportResultFlag) {
+                return;
+            }
+            logger.debug(content);
+
             Kpls kpls = kplsService.findOne(kplsh);
             if (kpls == null) {
                 logger.info(kplsh + "该条数据不存在");
@@ -164,24 +162,15 @@ public class ReturnInvoiceFileCommand implements ICommand {
      * 将文件保存到备份目录中
      *
      * @param data
-     * @param lsh
+     * @param kplsh
      */
-    private void saveFile(String data, String lsh) {
-        if (StringUtils.isBlank(returnFileSaveBasePath)) {
-            returnFileSaveBasePath = "/return_invoice_file";
-        }
-        String today = DateFormatUtils.format(new Date(), "yyyyMMdd");
-        String savePath = returnFileSaveBasePath + "/" + today.substring(0, 4) + "/" + today.substring(4, 6) + "/" + today.substring(6);
-        File dir = new File(savePath);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        String targetFile = savePath + "/" + lsh + ".txt";
-        try {
-            FileUtils.writeStringToFile(new File(targetFile), data, "GBK");
-        } catch (IOException e) {
-            logger.error("", e);
-        }
+    private void saveFile(String data, int kplsh) {
+        //解析开票流水号
+        ClientFile clientFile = new ClientFile();
+        clientFile.setRefId(kplsh);
+        clientFile.setContent(data);
+        clientFile.setLrsj(new Date());
+        clientFileService.save(clientFile);
     }
 
     /**
