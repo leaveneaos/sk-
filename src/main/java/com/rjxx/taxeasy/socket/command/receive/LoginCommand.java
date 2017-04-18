@@ -1,5 +1,7 @@
 package com.rjxx.taxeasy.socket.command.receive;
 
+import com.rjxx.taxeasy.domains.Kpls;
+import com.rjxx.taxeasy.service.KplsService;
 import com.rjxx.taxeasy.socket.SocketSession;
 import com.rjxx.taxeasy.socket.command.ICommand;
 import com.rjxx.taxeasy.socket.command.SendCommand;
@@ -18,10 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by Administrator on 2017/1/5.
@@ -36,6 +35,9 @@ public class LoginCommand implements ICommand {
 
     @Autowired
     private SkpService skpService;
+
+    @Autowired
+    private KplsService kplsService;
 
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
@@ -78,8 +80,21 @@ public class LoginCommand implements ICommand {
         socketSession.setKpdid(kpdid);
         logger.info("kpd:" + kpdid + " " + ioSession + " connect to server");
         ioSession.setAttribute("kpdid", kpdid);
+        //更新服务端状态是14的，客户端出现异常，没有开具完成的
+        Map map = new HashMap();
+        map.put("fpztdm", "14");
+        map.put("skpid", kpdid);
+        List<Kpls> kplsList = kplsService.findAllByMapParams(map);
+        if (kplsList != null && !kplsList.isEmpty()) {
+            for (Kpls kpls : kplsList) {
+                kpls.setFpztdm("04");
+                kpls.setXgsj(new Date());
+            }
+            kplsService.save(kplsList);
+        }
         String newCommandId = "";
         ioSession.write(SendCommand.SetDesKey + " " + newCommandId + " " + socketSession.getDesKey());
+
         return;
     }
 
