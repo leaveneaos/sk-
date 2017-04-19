@@ -5,6 +5,6 @@ package com.rjxx.taxeasy.socket.command;
  */
 public enum ReceiveCommand {
     //登录
-    Login, HB
+    Login, HB, ReturnUploadFile, ReturnViewFileInfo
 
 }
