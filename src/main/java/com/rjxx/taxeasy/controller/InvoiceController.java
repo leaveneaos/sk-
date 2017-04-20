@@ -2,11 +2,14 @@ package com.rjxx.taxeasy.controller;
 
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponseUtils;
+import com.rjxx.taxeasy.bizcomm.utils.SeperateInvoiceUtils;
 import com.rjxx.taxeasy.bizcomm.utils.SkService;
 import com.rjxx.taxeasy.domains.Kpls;
 import com.rjxx.taxeasy.domains.Kpspmx;
+import com.rjxx.taxeasy.domains.Skp;
 import com.rjxx.taxeasy.service.KplsService;
 import com.rjxx.taxeasy.service.KpspmxService;
+import com.rjxx.taxeasy.service.SkpService;
 import com.rjxx.taxeasy.socket.ServerHandler;
 import com.rjxx.taxeasy.socket.command.SendCommand;
 import com.rjxx.taxeasy.utils.ClientDesUtils;
@@ -46,6 +49,9 @@ public class InvoiceController {
 
     @Autowired
     private SkService skService;
+
+    @Autowired
+    private SkpService skpService;
 
     @RequestMapping(value = "/getCodeAndNo", method = {RequestMethod.GET, RequestMethod.POST})
     public String getCodeAndNo(String p) throws Exception {
@@ -247,6 +253,12 @@ public class InvoiceController {
         List<Kpspmx> kpspmxList = kpspmxService.findMxList(params);
         if (kpspmxList == null || kpspmxList.isEmpty()) {
             throw new Exception("没有商品明细");
+        }
+        int skpid = kpls.getSkpid();
+        Skp skp = skpService.findOne(skpid);
+        //文本方式，需要重新进行价税分离
+        if("1".equals(skp.getJkfs())){
+            SeperateInvoiceUtils.repeatSeparatePrice(kpspmxList);
         }
         params.put("kpls", kpls);
         params.put("kpspmxList", kpspmxList);
