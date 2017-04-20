@@ -80,18 +80,6 @@ public class LoginCommand implements ICommand {
         socketSession.setKpdid(kpdid);
         logger.info("kpd:" + kpdid + " " + ioSession + " connect to server");
         ioSession.setAttribute("kpdid", kpdid);
-        //更新服务端状态是14的，客户端出现异常，没有开具完成的
-        Map map = new HashMap();
-        map.put("fpztdm", "14");
-        map.put("skpid", kpdid);
-        List<Kpls> kplsList = kplsService.findAllByMapParams(map);
-        if (kplsList != null && !kplsList.isEmpty()) {
-            for (Kpls kpls : kplsList) {
-                kpls.setFpztdm("04");
-                kpls.setXgsj(new Date());
-            }
-            kplsService.save(kplsList);
-        }
         String newCommandId = "";
         ioSession.write(SendCommand.SetDesKey + " " + newCommandId + " " + socketSession.getDesKey());
 
