@@ -1,5 +1,6 @@
 package com.rjxx.taxeasy.socket.command.receive;
 
+import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
 import com.rjxx.taxeasy.domains.ClientFile;
 import com.rjxx.taxeasy.domains.Jyls;
 import com.rjxx.taxeasy.domains.Kpls;
@@ -50,6 +51,9 @@ public class ReturnInvoiceFileCommand implements ICommand {
     @Autowired
     private ClientFileService clientFileService;
 
+    @Autowired
+    private ParseInvoiceFileUtils parseInvoiceFileUtils;
+
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
         logger.debug(data);
@@ -68,12 +72,17 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 kplsh = Integer.valueOf(lsh);
             }
             saveFile(content, kplsh);
-            if (!bulkImportResultFlag) {
-                return;
-            }
             logger.debug(content);
 
             Kpls kpls = kplsService.findOne(kplsh);
+            if (!bulkImportResultFlag) {
+                //不是批量导入，如果原来没有结果，就将结果入库
+                if (StringUtils.isBlank(kpls.getFphm())) {
+                    InvoiceResponse response = XmlJaxbUtils.convertXmlStrToObject(InvoiceResponse.class, content);
+                    parseInvoiceFileUtils.updateInvoiceResult(response);
+                }
+                return;
+            }
             if (kpls == null) {
                 logger.info(kplsh + "该条数据不存在");
                 return;
@@ -132,7 +141,7 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 }
             } else {
                 //解析纸质票批量导入的结果
-                Map<String, String> retMap = ParseInvoiceFileUtils.parseZZPBulkImportText(content);
+                Map<String, String> retMap = parseInvoiceFileUtils.parseZZPBulkImportText(content);
                 String kjjg = retMap.get("kjjg");
                 if ("0".equals(kjjg)) {
                     kpls.setFpztdm("05");

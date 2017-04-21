@@ -79,7 +79,7 @@ public class GetInvoiceCommand implements ICommand {
         params.put("fpzldm", fpzldm);
         params.put("kpdid", kpdid);
         params.put("fpztdm", "04");
-        params.put("orderBy", "lrsj asc");
+        params.put("orderBy", "kplsh");
         Kpls kpls = null;
         do {
             kpls = kplsService.findOneByParams(params);
