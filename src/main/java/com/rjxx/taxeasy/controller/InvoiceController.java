@@ -257,11 +257,17 @@ public class InvoiceController {
         int skpid = kpls.getSkpid();
         Skp skp = skpService.findOne(skpid);
         //文本方式，需要重新进行价税分离
-        if("1".equals(skp.getJkfs())){
+        if ("1".equals(skp.getJkfs())) {
             SeperateInvoiceUtils.repeatSeparatePrice(kpspmxList);
         }
         params.put("kpls", kpls);
         params.put("kpspmxList", kpspmxList);
+        String gfyhzh = kpls.getGfyh() + "　" + kpls.getGfyhzh();
+        String gfdzdh = kpls.getGfdz() + "　" + kpls.getGfdh();
+        gfyhzh = gfyhzh.trim();
+        gfdzdh = gfdzdh.trim();
+        params.put("gfyhzh", gfyhzh);
+        params.put("gfdzdh", gfdzdh);
         String templateName = "invoice-xml.ftl";
         if ("12".equals(kpls.getFpzldm())) {
             templateName = "dzfp-xml.ftl";

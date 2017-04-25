@@ -8,8 +8,8 @@
                 <Djh>${kpls.kplsh?string('###')}</Djh>
                 <Gfmc>${kpls.gfmc!}</Gfmc>
                 <Gfsh>${kpls.gfsh!}</Gfsh>
-                <Gfyhzh>${kpls.gfyh!}　${kpls.gfyhzh!}</Gfyhzh>
-                <Gfdzdh>${kpls.gfdz!}　${kpls.gfdh!}</Gfdzdh>
+                <Gfyhzh>${gfyhzh!}</Gfyhzh>
+                <Gfdzdh>${gfdzdh!}</Gfdzdh>
                 <Bz>${kpls.bz!}</Bz>
                 <Fhr>${kpls.fhr!}</Fhr>
                 <Skr>${kpls.skr!}</Skr>
