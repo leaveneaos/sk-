@@ -262,8 +262,8 @@ public class InvoiceController {
         }
         params.put("kpls", kpls);
         params.put("kpspmxList", kpspmxList);
-        String gfyhzh = kpls.getGfyh() + "　" + kpls.getGfyhzh();
-        String gfdzdh = kpls.getGfdz() + "　" + kpls.getGfdh();
+        String gfyhzh = (kpls.getGfyh() == null ? "" : kpls.getGfyh()) + "　" + (kpls.getGfyhzh() == null ? "" : kpls.getGfyhzh());
+        String gfdzdh = (kpls.getGfdz() == null ? "" : kpls.getGfdz()) + "　" + (kpls.getGfdh() == null ? "" : kpls.getGfdh());
         gfyhzh = gfyhzh.trim();
         gfdzdh = gfdzdh.trim();
         params.put("gfyhzh", gfyhzh);
