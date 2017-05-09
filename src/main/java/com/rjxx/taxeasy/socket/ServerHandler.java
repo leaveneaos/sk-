@@ -109,8 +109,10 @@ public class ServerHandler extends IoHandlerAdapter {
             if (timeout <= 0) {
                 timeout = 30000;
             }
-            synchronized (socketRequest) {
-                socketRequest.wait(timeout);
+            if(timeout != 1){
+                synchronized (socketRequest) {
+                    socketRequest.wait(timeout);
+                }
             }
             if (socketRequest.getException() != null) {
                 throw socketRequest.getException();
