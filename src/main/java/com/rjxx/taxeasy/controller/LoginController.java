@@ -95,8 +95,18 @@ public class LoginController {
         String expireTime = DateFormatUtils.format(clientLogin.getExpireTime(), "yyyy-MM-dd");
         //获取销方信息和开票点信息
         List<Xf> xfList = xfService.getXfListByYhId(yh.getId());
+        if (xfList == null || xfList.isEmpty()) {
+            map.put("success", "false");
+            map.put("message", "该用户没有销方，请到平台进行维护");
+            return generateLoginResult(map);
+        }
         map.put("xfList", xfList);
         List<Skp> kpdList = skpService.getSkpListByYhId(yh.getId());
+        if (kpdList == null || kpdList.isEmpty()) {
+            map.put("success", "false");
+            map.put("message", "该用户没有开票点信息，请到平台进行维护");
+            return generateLoginResult(map);
+        }
         for (Skp skp : kpdList) {
             if (StringUtils.isNotBlank(skp.getSbcs())) {
                 if ("1".equals(skp.getSbcs())) {
