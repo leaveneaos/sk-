@@ -1,5 +1,6 @@
 package com.rjxx.taxeasy.socket.command.receive;
 
+import com.rjxx.taxeasy.bizcomm.utils.GeneratePdfService;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
 import com.rjxx.taxeasy.domains.ClientFile;
 import com.rjxx.taxeasy.domains.Jyls;
@@ -53,6 +54,9 @@ public class ReturnInvoiceFileCommand implements ICommand {
 
     @Autowired
     private ParseInvoiceFileUtils parseInvoiceFileUtils;
+
+    @Autowired
+    private GeneratePdfService generatePdfService;
 
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
@@ -139,6 +143,8 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 } else {
                     updateJyls(kpls.getDjh(), "21");
                 }
+                //此处开始生成pdf
+                generatePdfService.generatePdf(kplsh);
             } else {
                 //解析纸质票批量导入的结果
                 Map<String, String> retMap = parseInvoiceFileUtils.parseZZPBulkImportText(content);
@@ -168,21 +174,6 @@ public class ReturnInvoiceFileCommand implements ICommand {
     }
 
     /**
-     * 将文件保存到备份目录中
-     *
-     * @param data
-     * @param kplsh
-     */
-    private void saveFile(String data, int kplsh) {
-        //解析开票流水号
-        ClientFile clientFile = new ClientFile();
-        clientFile.setRefId(kplsh);
-        clientFile.setContent(data);
-        clientFile.setLrsj(new Date());
-        clientFileService.save(clientFile);
-    }
-
-    /**
      * 更新交易流水状态
      *
      * @param djh
@@ -195,6 +186,21 @@ public class ReturnInvoiceFileCommand implements ICommand {
             jyls.setXgsj(new Date());
             jylsService.save(jyls);
         }
+    }
+
+    /**
+     * 将文件保存到备份目录中
+     *
+     * @param data
+     * @param kplsh
+     */
+    private void saveFile(String data, int kplsh) {
+        //解析开票流水号
+        ClientFile clientFile = new ClientFile();
+        clientFile.setRefId(kplsh);
+        clientFile.setContent(data);
+        clientFile.setLrsj(new Date());
+        clientFileService.save(clientFile);
     }
 
     /**
@@ -227,7 +233,7 @@ public class ReturnInvoiceFileCommand implements ICommand {
             kpls.setXgsj(new Date());
             kplsService.save(kpls);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("", e);
         }
 
     }
