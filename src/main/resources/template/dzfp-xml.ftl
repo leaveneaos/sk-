@@ -32,8 +32,8 @@
                 <XMMC>${kpspmx.spmc}</XMMC>
                 <GGXH>${kpspmx.spggxh!}</GGXH>
                 <DW>${kpspmx.spdw!}</DW>
-                <XMSL>${(kpspmx.sps?string('#.######'))!}</XMSL>
-                <XMDJ>${(kpspmx.spdj?string('#.######'))!}</XMDJ>
+                <XMSL>${(kpspmx.sps?string('#.###############'))!}</XMSL>
+                <XMDJ>${(kpspmx.spdj?string('#.###############'))!}</XMDJ>
                 <XMJE>${kpspmx.spje?string('#.######')}</XMJE>
                 <SL>${kpspmx.spsl?string('#.######')}</SL>
                 <SE>${kpspmx.spse?string('#.######')}</SE>

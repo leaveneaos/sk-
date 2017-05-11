@@ -28,8 +28,8 @@
                         <Syyhzcbz>${kpspmx.yhslbs!0}</Syyhzcbz>
                         <Lslbz>${kpspmx.lslbs!0}</Lslbz>
                         <Yhzcsm>${yhzcbs!}</Yhzcsm>
-                        <Dj>${(kpspmx.spdj?string('#.######'))!}</Dj>
-                        <Sl>${(kpspmx.sps?string('#.######'))!}</Sl>
+                        <Dj>${(kpspmx.spdj?string('#.###############'))!}</Dj>
+                        <Sl>${(kpspmx.sps?string('#.###############'))!}</Sl>
                         <Je>${kpspmx.spje?string('#.######')}</Je>
                         <Slv>${kpspmx.spsl?string('#.######')}</Slv>
                         <Kce>${(kpspmx.kce?string('#.######'))!}</Kce>

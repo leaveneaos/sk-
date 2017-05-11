@@ -60,6 +60,10 @@ public class ParseInvoiceFileUtils {
         if (resultdjh.endsWith(",")) {
             resultdjh = resultdjh.substring(0, resultdjh.length() - 1);
         }
+        int pos111 = resultdjh.indexOf("-");
+        if (pos111 != -1) {
+            resultdjh = resultdjh.substring(0, pos111);
+        }
         retMap.put("kplsh", resultdjh);
         int pos3 = content.indexOf(",", pos2);
         startIndex = pos2 + "开具结果:".length();

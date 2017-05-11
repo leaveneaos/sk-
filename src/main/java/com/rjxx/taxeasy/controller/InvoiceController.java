@@ -15,12 +15,8 @@ import com.rjxx.taxeasy.socket.command.SendCommand;
 import com.rjxx.taxeasy.utils.ClientDesUtils;
 import com.rjxx.taxeasy.vo.FptjVo;
 import com.rjxx.taxeasy.vo.InvoicePendingData;
-import com.rjxx.utils.DesUtils;
-import com.rjxx.utils.HtmlUtils;
-import com.rjxx.utils.TemplateUtils;
-import com.rjxx.utils.XmlJaxbUtils;
+import com.rjxx.utils.*;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,9 +137,11 @@ public class InvoiceController {
             }
             Map params = new HashMap();
             params.put("kpls", kpls);
+            String lsh = kpls.getKplsh() + "$" + System.currentTimeMillis();
+            params.put("lsh", lsh);
             String content = TemplateUtils.generateContent("invoice-request.ftl", params);
             logger.debug(content);
-            String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.RepeatInvoice, content, kpls.getKplsh() + "");
+            String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.ReprintInvoice, content, kpls.getKplsh() + "");
             InvoiceResponse invoiceResponse = XmlJaxbUtils.convertXmlStrToObject(InvoiceResponse.class, result);
             invoiceResponse.setKpddm(kpls.getKpddm());
             invoiceResponse.setJylsh(kpls.getJylsh());
@@ -262,10 +260,16 @@ public class InvoiceController {
         }
         params.put("kpls", kpls);
         params.put("kpspmxList", kpspmxList);
-        String gfyhzh = (kpls.getGfyh() == null ? "" : kpls.getGfyh()) + "　" + (kpls.getGfyhzh() == null ? "" : kpls.getGfyhzh());
-        String gfdzdh = (kpls.getGfdz() == null ? "" : kpls.getGfdz()) + "　" + (kpls.getGfdh() == null ? "" : kpls.getGfdh());
+        String gfyhzh = (kpls.getGfyh() == null ? "" : kpls.getGfyh()) + (kpls.getGfyhzh() == null ? "" : kpls.getGfyhzh());
+        String gfdzdh = (kpls.getGfdz() == null ? "" : kpls.getGfdz()) + (kpls.getGfdh() == null ? "" : kpls.getGfdh());
         gfyhzh = gfyhzh.trim();
         gfdzdh = gfdzdh.trim();
+        if (StringUtils.isBlank(gfyhzh)) {
+            gfyhzh = "　";
+        }
+        if (StringUtils.isBlank(gfdzdh)) {
+            gfdzdh = "　";
+        }
         params.put("gfyhzh", gfyhzh);
         params.put("gfdzdh", gfdzdh);
         String templateName = "invoice-xml.ftl";
