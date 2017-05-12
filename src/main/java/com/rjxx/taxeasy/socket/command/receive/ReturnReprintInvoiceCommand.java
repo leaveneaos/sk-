@@ -31,6 +31,7 @@ public class ReturnReprintInvoiceCommand implements ICommand {
 
     @Override
     public void run(String commandId, String params, SocketSession socketSession) throws Exception {
+        logger.debug("ReturnReprintInvoice:" + params);
         InvoiceResponse response = XmlJaxbUtils.convertXmlStrToObject(InvoiceResponse.class, params);
         String lsh = response.getLsh();
         int kplsh = KpUtils.getKplshByLsh(lsh);
