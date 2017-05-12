@@ -18,7 +18,7 @@ import java.util.Date;
 /**
  * Created by Administrator on 2017/1/4.
  */
-@Service
+@Service("ReturnReprintInvoiceCommand")
 public class ReturnReprintInvoiceCommand implements ICommand {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
