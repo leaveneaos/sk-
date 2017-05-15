@@ -30,6 +30,7 @@
             <Sksblx>${kpd.sbcs!"bw"}</Sksblx>
             <Skph>${kpd.skph!}</Skph>
             <Kplx>${kpd.kplx!}</Kplx>
+            <Wrzs>${kpd.wrzs!"0"}</Wrzs>
         </Kpd>
         </#list>
     </KpdList>
