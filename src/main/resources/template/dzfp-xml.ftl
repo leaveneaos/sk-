@@ -3,7 +3,7 @@
     <REQUEST_COMMON_FPKJ class="REQUEST_COMMON_FPKJ">
         <COMMON_FPKJ_FPT class="COMMON_FPKJ_FPT">
             <FPQQLSH>${kpls.kplsh?string('###')}</FPQQLSH>
-            <KPLX>0</KPLX>
+            <KPLX>${kplx!"0"}</KPLX>
             <SGBZ>0</SGBZ>
             <HSBZ>0</HSBZ>
             <XSF_NSRSBH>${kpls.xfsh}</XSF_NSRSBH>

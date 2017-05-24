@@ -276,6 +276,11 @@ public class InvoiceController {
         if ("12".equals(kpls.getFpzldm())) {
             templateName = "dzfp-xml.ftl";
         }
+        if ("11".equals(kpls.getFpczlxdm())) {
+            params.put("kplx", "0");
+        } else if ("12".equals(kpls.getFpczlxdm()) || "13".equals(kpls.getFpczlxdm())) {
+            params.put("kplx", "1");
+        }
         String content = TemplateUtils.generateContent(templateName, params);
         return content;
     }

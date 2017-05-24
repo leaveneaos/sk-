@@ -54,7 +54,7 @@ public class ServerHandler extends IoHandlerAdapter {
      * @throws Exception
      */
     public static String sendMessage(int kpdid, SendCommand sendCommand, String data, String commandId) throws Exception {
-        return sendMessage(kpdid, sendCommand, data, commandId, true, 30000);
+        return sendMessage(kpdid, sendCommand, data, commandId, true, 60000);
     }
 
     /**
