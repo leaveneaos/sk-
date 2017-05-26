@@ -195,10 +195,13 @@ public class InvoiceController {
             InvoiceResponse response = InvoiceResponseUtils.responseError("开票流水号：" + kplsh + "没有该数据");
             return response;
         }
-        String xml = getInvoiceXml(kpls);
-        logger.debug("kplsh:" + kplsh + " xml:");
-        logger.debug(xml);
-        xml = Base64.encodeBase64String(xml.getBytes("UTF-8"));
+        String xml = "";
+        if ("11".equals(kpls.getFpczlxdm()) || (("12".equals(kpls.getFpczlxdm()) || "13".equals(kpls.getFpczlxdm())) && "12".equals(kpls.getFpzldm()))) {
+            xml = getInvoiceXml(kpls);
+            logger.debug("kplsh:" + kplsh + " xml:");
+            logger.debug(xml);
+            xml = Base64.encodeBase64String(xml.getBytes("UTF-8"));
+        }
         Map params = new HashMap();
         params.put("xml", xml);
         params.put("kpls", kpls);
