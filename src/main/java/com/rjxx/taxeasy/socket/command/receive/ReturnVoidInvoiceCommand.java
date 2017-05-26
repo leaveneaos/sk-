@@ -34,12 +34,8 @@ public class ReturnVoidInvoiceCommand implements ICommand {
             String kplshStr = response.getLsh();
             int kplsh = Integer.valueOf(kplshStr);
             Kpls kpls = kplsService.findOne(kplsh);
-            /*kpls.setFpdm(response.getFpdm());
-            kpls.setFphm(response.getFphm());*/
             kpls.setFpztdm("08");
-            //kpls.setPrintflag("" + response.getPrintFlag());
-            //kpls.setKprq(DateUtils.parseDate(response.getKprq(), "yyyy-MM-dd"));
-            kpls.setZfrq(DateUtils.parseDate(response.getKprq(), "yyyy-MM-dd"));
+            kpls.setZfrq(DateUtils.parseDate(response.getCancelDate(), "yyyy-MM-dd"));
             kpls.setXgsj(new Date());
             kpls.setXgry(1);
             kplsService.save(kpls);
