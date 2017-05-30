@@ -8,6 +8,7 @@ import com.rjxx.taxeasy.socket.SocketSession;
 import com.rjxx.taxeasy.socket.command.ICommand;
 import com.rjxx.taxeasy.socket.command.SendCommand;
 import com.rjxx.taxeasy.vo.InvoicePendingData;
+import com.rjxx.utils.DesUtils;
 import com.rjxx.utils.StringUtils;
 import com.rjxx.utils.XmlJaxbUtils;
 import org.slf4j.Logger;
@@ -28,6 +29,8 @@ public class GetInvoiceCommand implements ICommand {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public static final String DO_INVOICE = "DO_INVOICE";
+
+    public static final String SK_SERVER_DES_KEY = "R1j2x3x4";
 
     @Autowired
     private KplsService kplsService;
@@ -85,12 +88,22 @@ public class GetInvoiceCommand implements ICommand {
         if(kpls.getFpczlxdm().equals("14")){
             kpls.setFpztdm("10");//待作废数据
             kplsService.save(kpls);
-            invoiceController.voidInvoice(kpls.getKplsh().toString());
+            String encryptStr = encryptSkServerParameter(kpls.getKplsh() + "");
+            invoiceController.voidInvoice(encryptStr);
         }else{
             kpls.setFpztdm("14");
             kplsService.save(kpls);
             invoiceController.doKp(kpls.getKplsh(), true, 1);
         }
 
+    }
+    /**
+     * 加密税控服务参数
+     *
+     * @param params
+     * @return
+     */
+    public String encryptSkServerParameter(String params) throws Exception {
+        return DesUtils.DESEncrypt(params, SK_SERVER_DES_KEY);
     }
 }
