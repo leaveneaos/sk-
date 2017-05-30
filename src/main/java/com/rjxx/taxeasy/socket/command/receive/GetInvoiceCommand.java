@@ -51,15 +51,9 @@ public class GetInvoiceCommand implements ICommand {
             }
             Integer kpdid = socketSession.getKpdid();
             logger.debug("-----------receive kpdid " + kpdid + " GetInvoice request---------");
-//            String[] fpzldmArr = fpzldm.split(",");
-//            for (String fpzl : fpzldmArr) {
+
             doKp(fpzldm, kpdid);
-//            }
-//            logger.debug("---------kpdid " + kpdid + " complete do invoice,will send pending data---------");
-            //执行完所有开票动作后，重新发送待开票数据
-//            InvoicePendingData invoicePendingData = invoiceController.generatePendingData(kpdid);
-//            String xml = XmlJaxbUtils.toXml(invoicePendingData);
-//            ServerHandler.sendMessage(kpdid, SendCommand.SendPendingData, xml, "", false, 120000);
+
         } catch (Exception e) {
             logger.error("", e);
         } finally {
@@ -81,7 +75,6 @@ public class GetInvoiceCommand implements ICommand {
         params.put("fpztdm", "04");
         params.put("orderBy", "kplsh");
         Kpls kpls = null;
-//        do {
         kpls = kplsService.findOneByParams(params);
         if (kpls == null) {
             InvoicePendingData invoicePendingData = invoiceController.generatePendingData(kpdid);
@@ -89,9 +82,15 @@ public class GetInvoiceCommand implements ICommand {
             ServerHandler.sendMessage(kpdid, SendCommand.SendPendingData, xml, "", false, 1);
             return;
         }
-        kpls.setFpztdm("14");
-        kplsService.save(kpls);
-        invoiceController.doKp(kpls.getKplsh(), true, 1);
-//        } while (true);
+        if(kpls.getFpczlxdm().equals("14")){
+            kpls.setFpztdm("10");//待作废数据
+            kplsService.save(kpls);
+            invoiceController.voidInvoice(kpls.getKplsh().toString());
+        }else{
+            kpls.setFpztdm("14");
+            kplsService.save(kpls);
+            invoiceController.doKp(kpls.getKplsh(), true, 1);
+        }
+
     }
 }
