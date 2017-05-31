@@ -5,6 +5,8 @@ import com.rjxx.taxeasy.domains.Jyls;
 import com.rjxx.taxeasy.domains.Kpls;
 import com.rjxx.taxeasy.service.JylsService;
 import com.rjxx.taxeasy.service.KplsService;
+import com.rjxx.taxeasy.service.KpspmxService;
+import com.rjxx.taxeasy.vo.Kpspmxvo;
 import com.rjxx.utils.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,9 @@ public class ParseInvoiceFileUtils {
 
     @Autowired
     private JylsService jylsService;
+
+    @Autowired
+    private KpspmxService kpspmxService;
 
     /**
      * 解析纸质票批量导入结果的文本<br>
@@ -125,6 +130,24 @@ public class ParseInvoiceFileUtils {
             Jyls jyls = jylsService.findOne(kpls.getDjh());
             jyls.setClztdm("91");
             jylsService.save(jyls);
+            String czlxdm = kpls.getFpczlxdm();
+            if ("12".equals(czlxdm) || "13".equals(czlxdm)) {
+                if (kpls.getHkFphm() != null && kpls.getHkFpdm() != null) {
+                    kpls.setJylsh("");
+                    Kpls ykpls = kplsService.findByhzfphm(kpls);
+                    Map param2 = new HashMap<>();
+                    param2.put("kplsh", ykpls.getKplsh());
+                    // 全部红冲后修改
+                    Kpspmxvo mxvo = kpspmxService.findKhcje(param2);
+                    if (mxvo.getKhcje() == 0) {
+                        param2.put("fpztdm", "02");
+                        kplsService.updateFpczlx(param2);
+                    } else {
+                        param2.put("fpztdm", "01");
+                        kplsService.updateFpczlx(param2);
+                    }
+                }
+            }
         } else {
             String lsh = response.getLsh();
             int pos = lsh.indexOf("$");
