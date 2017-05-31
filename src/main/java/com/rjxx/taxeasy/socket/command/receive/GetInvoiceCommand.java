@@ -1,7 +1,7 @@
 package com.rjxx.taxeasy.socket.command.receive;
 
-import com.rjxx.taxeasy.controller.InvoiceController;
 import com.rjxx.taxeasy.domains.Kpls;
+import com.rjxx.taxeasy.service.InvoiceService;
 import com.rjxx.taxeasy.service.KplsService;
 import com.rjxx.taxeasy.socket.ServerHandler;
 import com.rjxx.taxeasy.socket.SocketSession;
@@ -36,7 +36,7 @@ public class GetInvoiceCommand implements ICommand {
     private KplsService kplsService;
 
     @Autowired
-    private InvoiceController invoiceController;
+    private InvoiceService invoiceService;
 
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
@@ -80,23 +80,23 @@ public class GetInvoiceCommand implements ICommand {
         Kpls kpls = null;
         kpls = kplsService.findOneByParams(params);
         if (kpls == null) {
-            InvoicePendingData invoicePendingData = invoiceController.generatePendingData(kpdid);
+            InvoicePendingData invoicePendingData = invoiceService.generatePendingData(kpdid);
             String xml = XmlJaxbUtils.toXml(invoicePendingData);
             ServerHandler.sendMessage(kpdid, SendCommand.SendPendingData, xml, "", false, 1);
             return;
         }
-        if(kpls.getFpczlxdm().equals("14")){
+        if (kpls.getFpczlxdm().equals("14")) {
             kpls.setFpztdm("10");//待作废数据
             kplsService.save(kpls);
-            String encryptStr = encryptSkServerParameter(kpls.getKplsh() + "");
-            invoiceController.voidInvoice(encryptStr);
-        }else{
+            invoiceService.voidInvoice(kpls.getKplsh());
+        } else {
             kpls.setFpztdm("14");
             kplsService.save(kpls);
-            invoiceController.doKp(kpls.getKplsh(), true, 1);
+            invoiceService.doKp(kpls.getKplsh(), true, 1);
         }
 
     }
+
     /**
      * 加密税控服务参数
      *
