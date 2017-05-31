@@ -1,6 +1,7 @@
 package com.rjxx.taxeasy.socket.command.receive;
 
 import com.rjxx.taxeasy.controller.InvoiceController;
+import com.rjxx.taxeasy.service.InvoiceService;
 import com.rjxx.taxeasy.socket.ServerHandler;
 import com.rjxx.taxeasy.socket.SocketSession;
 import com.rjxx.taxeasy.socket.command.ICommand;
@@ -24,10 +25,13 @@ public class GetPendingDataCommand implements ICommand {
     @Autowired
     private InvoiceController invoiceController;
 
+    @Autowired
+    private InvoiceService invoiceService;
+
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
         int kpdid = socketSession.getKpdid();
-        InvoicePendingData invoicePendingData = invoiceController.generatePendingData(kpdid);
+        InvoicePendingData invoicePendingData = invoiceService.generatePendingData(kpdid);
         String xml = XmlJaxbUtils.toXml(invoicePendingData);
         logger.debug(socketSession.getKpdid() + " SendPendingData:" + xml);
         ServerHandler.sendMessage(kpdid, SendCommand.SendPendingData, xml, "", false, 0);
