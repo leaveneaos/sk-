@@ -1,6 +1,5 @@
 package com.rjxx.taxeasy.socket.command.receive;
 
-import com.rjxx.taxeasy.controller.InvoiceController;
 import com.rjxx.taxeasy.service.InvoiceService;
 import com.rjxx.taxeasy.socket.ServerHandler;
 import com.rjxx.taxeasy.socket.SocketSession;
@@ -21,9 +20,6 @@ import org.springframework.stereotype.Service;
 public class GetPendingDataCommand implements ICommand {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    @Autowired
-    private InvoiceController invoiceController;
 
     @Autowired
     private InvoiceService invoiceService;

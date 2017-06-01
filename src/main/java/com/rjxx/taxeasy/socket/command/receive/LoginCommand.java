@@ -58,17 +58,19 @@ public class LoginCommand implements ICommand {
         ClientLogin clientLogin = clientLoginService.findOneByParams(paramsMap);
         //登录信息不存在或者超时了，要求重新登录
         if (clientLogin == null || clientLogin.getExpireTime().getTime() < System.currentTimeMillis()) {
+            logger.info("kpdid:" + kpdid + " session has expired,client will logout!!!");
             logout(ioSession, "License已过期");
             return;
         }
         //验证mac不通过
-        if (!clientLogin.getMacAddr().equals(macAddr)) {
-            logout(ioSession, "License已过期");
-            return;
-        }
+//        if (!clientLogin.getMacAddr().equals(macAddr)) {
+//            logout(ioSession, "License已过期");
+//            return;
+//        }
         //校验开票点
         Skp skp = skpService.findOne(kpdid);
         if (skp == null) {
+            logger.info("kpdid:" + kpdid + " not exists,client will logout!!!");
             logout(ioSession, "License已过期");
             return;
         }
