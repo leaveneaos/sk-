@@ -102,22 +102,16 @@ public class ServerHandler extends IoHandlerAdapter {
         }
         String sendMessage = sendCommand + " " + commandId + " " + data;
         session.getSession().write(sendMessage);
-        if (wait) {
+        if (wait && timeout > 0) {
             SocketRequest socketRequest = new SocketRequest();
             socketRequest.setCommandId(commandId);
             cachedRequestMap.put(commandId, socketRequest);
-            if (timeout <= 0) {
-                timeout = 30000;
-            }
-            if(timeout != 1){
-                synchronized (socketRequest) {
-                    socketRequest.wait(timeout);
-                }
+            synchronized (socketRequest) {
+                socketRequest.wait(timeout);
             }
             if (socketRequest.getException() != null) {
                 throw socketRequest.getException();
             }
-//        logger.debug("---" + kpdid + " return message:" + socketRequest.getReturnMessage());
             return socketRequest.getReturnMessage();
         }
         return null;

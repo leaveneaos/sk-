@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,7 +74,9 @@ public class GetInvoiceCommand implements ICommand {
      */
     private void doKp(String fpzldm, int kpdid) throws Exception {
         Map params = new HashMap();
-        params.put("fpzldm", fpzldm);
+        String[] fpzldmArr = fpzldm.split(",");
+        params.put("fpzldmList", Arrays.asList(fpzldmArr));
+//        params.put("fpzldm", fpzldm);
         params.put("kpdid", kpdid);
         params.put("fpztdm", "04");
         params.put("orderBy", "kplsh");
@@ -88,11 +91,11 @@ public class GetInvoiceCommand implements ICommand {
         if (kpls.getFpczlxdm().equals("14")) {
             kpls.setFpztdm("10");//待作废数据
             kplsService.save(kpls);
-            invoiceService.voidInvoice(kpls.getKplsh());
+            invoiceService.voidInvoice(kpls.getKplsh(), false, 0);
         } else {
             kpls.setFpztdm("14");
             kplsService.save(kpls);
-            invoiceService.doKp(kpls.getKplsh(), true, 1);
+            invoiceService.doKp(kpls.getKplsh(), false, 0);
         }
 
     }

@@ -160,48 +160,38 @@ public class InvoiceService {
     public InvoicePendingData generatePendingData(int kpdid) {
         InvoicePendingData result = new InvoicePendingData();
         List<FptjVo> fptjVoList = kplsService.findFpdbtjjgByKpdid(kpdid);
+        int zpkjsl = 0;
+        int ppkjsl = 0;
+        int dzpkjsl = 0;
         for (FptjVo fptjVo : fptjVoList) {
-            String fpczlxdm = fptjVo.getFpczlxdm();
             String fpzldm = fptjVo.getFpzldm();
             int cnt = fptjVo.getCnt();
-            if ("11".equals(fpczlxdm)) {
-                //开具
-                if ("01".equals(fpzldm)) {
-                    result.setZpkjsl(cnt);
-                } else if ("02".equals(fpzldm)) {
-                    result.setPpkjsl(cnt);
-                } else if ("12".equals(fpzldm)) {
-                    result.setDzpkjsl(cnt);
-                }
-            } else if ("12".equals(fpczlxdm)) {
-                //红冲
-                if ("01".equals(fpzldm)) {
-                    result.setZphcsl(cnt);
-                } else if ("02".equals(fpzldm)) {
-                    result.setPphcsl(cnt);
-                } else if ("12".equals(fpzldm)) {
-                    result.setDzphcsl(cnt);
-                }
-            } else if ("14".equals(fpczlxdm)) {
-                //作废
-                if ("01".equals(fpzldm)) {
-                    result.setZpzfsl(cnt);
-                } else if ("02".equals(fpzldm)) {
-                    result.setPpzfsl(cnt);
-                }
+            if ("01".equals(fpzldm)) {
+                zpkjsl += cnt;
+            } else if ("02".equals(fpzldm)) {
+                ppkjsl += cnt;
+            } else if ("12".equals(fpzldm)) {
+                dzpkjsl += cnt;
             }
         }
+        result.setZpkjsl(zpkjsl);
+        result.setPpkjsl(ppkjsl);
+        result.setDzpkjsl(dzpkjsl);
         result.setKpdid(kpdid);
         result.setSuccess("true");
         return result;
     }
 
     /**
+     * 作废发票
+     *
      * @param kplsh
+     * @param wait
+     * @param timeout
      * @return
      * @throws Exception
      */
-    public String voidInvoice(int kplsh) throws Exception {
+    public String voidInvoice(int kplsh, boolean wait, long timeout) throws Exception {
         try {
             logger.debug("receive void invoice request:" + kplsh);
             Kpls kpls = kplsService.findOne(kplsh);

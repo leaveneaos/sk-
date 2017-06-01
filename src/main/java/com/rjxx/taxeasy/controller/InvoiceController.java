@@ -81,7 +81,7 @@ public class InvoiceController {
             }
             String kplshStr = skService.decryptSkServerParameter(p);
             int kplsh = Integer.valueOf(kplshStr);
-            return invoiceService.voidInvoice(kplsh);
+            return invoiceService.voidInvoice(kplsh, true, 60000);
         } catch (Exception e) {
             logger.error("", e);
             InvoiceResponse response = InvoiceResponseUtils.responseError(e.getMessage());
@@ -150,7 +150,7 @@ public class InvoiceController {
             String kplshStr = skService.decryptSkServerParameter(p);
             int kplsh = Integer.valueOf(kplshStr);
             logger.debug("receive invoice request:" + kplsh);
-            InvoiceResponse invoiceResponse = invoiceService.doKp(kplsh, true, 120000);
+            InvoiceResponse invoiceResponse = invoiceService.doKp(kplsh, true, 60000);
             String result = XmlJaxbUtils.toXml(invoiceResponse);
             logger.debug(result);
             return result;
