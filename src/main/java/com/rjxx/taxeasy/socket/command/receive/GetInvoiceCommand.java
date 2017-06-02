@@ -89,7 +89,6 @@ public class GetInvoiceCommand implements ICommand {
             return;
         }
         if (kpls.getFpczlxdm().equals("14")) {
-            kpls.setFpztdm("10");//待作废数据
             kplsService.save(kpls);
             invoiceService.voidInvoice(kpls.getKplsh(), false, 0);
         } else {
