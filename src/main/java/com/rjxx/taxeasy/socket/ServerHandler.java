@@ -91,9 +91,9 @@ public class ServerHandler extends IoHandlerAdapter {
             SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
             Skp skp = skpService.findOne(kpdid);
             if (skp != null) {
-                throw new Exception("开票点：" + skp.getKpdmc() + "(" + skp.getKpddm() + ")" + "没有连上服务器");
+                throw new Exception("开票点：" + skp.getKpdmc() + "(" + skp.getKpddm() + ")" + "没有连上服务器，请去开票通客户端点击开具按钮");
             } else {
-                throw new Exception("开票点：" + kpdid + "没有连上服务器");
+                throw new Exception("开票点：" + kpdid + "没有连上服务器，请去开票通客户端点击开具按钮");
             }
         }
         //加密数据
