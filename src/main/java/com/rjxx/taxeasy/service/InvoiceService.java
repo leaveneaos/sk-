@@ -122,9 +122,7 @@ public class InvoiceService {
         int skpid = kpls.getSkpid();
         Skp skp = skpService.findOne(skpid);
         //文本方式，需要重新进行价税分离
-        if ("1".equals(skp.getJkfs())) {
-            SeperateInvoiceUtils.repeatSeparatePrice(kpspmxList);
-        }
+        SeperateInvoiceUtils.repeatSeparatePrice(kpspmxList);
         params.put("kpls", kpls);
         params.put("kpspmxList", kpspmxList);
         String gfyhzh = (kpls.getGfyh() == null ? "" : kpls.getGfyh()) + (kpls.getGfyhzh() == null ? "" : kpls.getGfyhzh());
