@@ -1,5 +1,6 @@
 package com.rjxx.taxeasy.socket.command.receive;
 
+import com.rjxx.taxeasy.bizcomm.utils.GeneratePdfService;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
 import com.rjxx.taxeasy.domains.Kpls;
 import com.rjxx.taxeasy.service.KplsService;
@@ -25,6 +26,9 @@ public class ReturnVoidInvoiceCommand implements ICommand {
     @Autowired
     private KplsService kplsService;
 
+    @Autowired
+    private GeneratePdfService generatePdfService;
+
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
         logger.info(data);
@@ -39,6 +43,9 @@ public class ReturnVoidInvoiceCommand implements ICommand {
             kpls.setXgsj(new Date());
             kpls.setXgry(1);
             kplsService.save(kpls);
+            String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
+            logger.info("回写报文"+returnmessage);
         }
+
     }
 }

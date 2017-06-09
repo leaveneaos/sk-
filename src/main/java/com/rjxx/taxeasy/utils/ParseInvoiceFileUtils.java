@@ -1,5 +1,6 @@
 package com.rjxx.taxeasy.utils;
 
+import com.rjxx.taxeasy.bizcomm.utils.GeneratePdfService;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
 import com.rjxx.taxeasy.domains.Jyls;
 import com.rjxx.taxeasy.domains.Kpls;
@@ -9,6 +10,8 @@ import com.rjxx.taxeasy.service.KpspmxService;
 import com.rjxx.taxeasy.vo.Kpspmxvo;
 import com.rjxx.utils.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +35,10 @@ public class ParseInvoiceFileUtils {
     @Autowired
     private KpspmxService kpspmxService;
 
+    @Autowired
+    private GeneratePdfService generatePdfService;
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
     /**
      * 解析纸质票批量导入结果的文本<br>
      * kjjg：开具结果，0-失败，1-成功，
@@ -148,6 +155,8 @@ public class ParseInvoiceFileUtils {
                     }
                 }
             }
+            String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
+            logger.info("回写报文"+returnmessage);
         } else {
             String lsh = response.getLsh();
             int pos = lsh.indexOf("$");
@@ -166,7 +175,10 @@ public class ParseInvoiceFileUtils {
             Jyls jyls = jylsService.findOne(kpls.getDjh());
             jyls.setClztdm("92");
             jylsService.save(jyls);
+            String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
+            logger.info("回写报文"+returnmessage);
         }
+
     }
 
 

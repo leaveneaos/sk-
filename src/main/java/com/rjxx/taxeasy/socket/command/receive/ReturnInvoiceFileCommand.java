@@ -154,6 +154,8 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 }
                 //此处开始生成pdf
                 generatePdfService.generatePdf(kplsh);
+                String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
+                logger.info("回写报文"+returnmessage);
             } else {
                 //解析纸质票批量导入的结果
                 Map<String, String> retMap = parseInvoiceFileUtils.parseZZPBulkImportText(content);
@@ -176,6 +178,8 @@ public class ReturnInvoiceFileCommand implements ICommand {
                     kplsService.save(kpls);
                     updateJyls(kpls.getDjh(), "91");
                 }
+                String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
+                logger.info("回写报文"+returnmessage);
             }
         } else {
             throw new Exception("return invoice result file 9999 impossible");
