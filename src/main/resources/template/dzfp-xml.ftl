@@ -39,9 +39,9 @@
                 <SE>${kpspmx.spse?string('#.######')}</SE>
                 <SPBM>${kpspmx.spdm}</SPBM>
                 <ZXBM>${kpspmx.zxbm!}</ZXBM>
-                <YHZCBS>${kpspmx.yhslbs!0}</YHZCBS>
-                <LSLBS>${kpspmx.lslbs!0}</LSLBS>
-                <ZZSTSGL>${yhzcbs!}</ZZSTSGL>
+                <YHZCBS>${kpspmx.yhzcbs!0}</YHZCBS>
+                <LSLBS>${kpspmx.lslbz!0}</LSLBS>
+                <ZZSTSGL>${kpspmx.yhzcmc!}</ZZSTSGL>
             </COMMON_FPKJ_XMXX>
             </#list>
         </COMMON_FPKJ_XMXXS>
