@@ -110,6 +110,14 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 if (!"0000".equals(dzfpReturnCode)) {
                     //返回结果不正确
                     String dzfpReturnMsg = resultMap.get("RETURNMSG");
+                    if ("-99 流水号重复".equals(dzfpReturnMsg)) {
+                        //返回重复结果
+                        if ("00".equals(kpls.getFpztdm())) {
+                            //状态正常，已经更新过了，不做处理了
+                            logger.warn("kplsh:" + kpls.getKplsh() + " -99 流水号重复");
+                            return;
+                        }
+                    }
                     kpls.setFpztdm("05");
                     if (StringUtils.isBlank(dzfpReturnMsg)) {
                         kpls.setErrorReason("未知异常，开票软件没有返回结果，请去开票软件确认");
@@ -229,6 +237,10 @@ public class ReturnInvoiceFileCommand implements ICommand {
             kpls.setJym(map.get("JYM"));
             String kprq = map.get("KPRQ");
             kpls.setKprq(TimeUtil.getSysDateInDate(kprq, null));
+            String bz = map.get("BZ");
+            if (StringUtils.isNotBlank(bz)) {
+                kpls.setBz(bz);
+            }
             kpls.setFpztdm("00");
             kpls.setErrorReason(null);
             kpls.setXgsj(new Date());
