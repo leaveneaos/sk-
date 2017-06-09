@@ -112,7 +112,7 @@ public class ReturnInvoiceFileCommand implements ICommand {
                     String dzfpReturnMsg = resultMap.get("RETURNMSG");
                     if ("-99 流水号重复".equals(dzfpReturnMsg)) {
                         //返回重复结果
-                        if ("00".equals(kpls.getFpztdm())) {
+                        if (StringUtils.isNotBlank(kpls.getFphm())) {
                             //状态正常，已经更新过了，不做处理了
                             logger.warn("kplsh:" + kpls.getKplsh() + " -99 流水号重复");
                             return;
