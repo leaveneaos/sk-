@@ -162,8 +162,6 @@ public class ClientDesUtils {
         HttpPost httpPost = new HttpPost(url);
         CloseableHttpResponse response = null;
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        httpClient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT,1000*60);//连接超时时间
-        httpClient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT,1000*60);//数据传输时间
         RequestConfig requestConfig = RequestConfig.custom().
                 setSocketTimeout(60*1000).setConnectTimeout(60*1000).build();
         httpPost.setConfig(requestConfig);

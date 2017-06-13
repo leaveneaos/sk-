@@ -163,8 +163,10 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
                 //输出调用结果
                 logger.info("回写报文"+returnmessage);
-                Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
-                logger.info("返回报文"+ JSON.toJSONString(returnMap));
+                if(returnmessage!=null&&!"".equals(returnmessage)){
+                    Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
+                    logger.info("返回报文"+ JSON.toJSONString(returnMap));
+                }
             } else {
                 //解析纸质票批量导入的结果
                 Map<String, String> retMap = parseInvoiceFileUtils.parseZZPBulkImportText(content);
@@ -189,8 +191,10 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 }
                 String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
                 logger.info("回写报文"+returnmessage);
-                Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
-                logger.info("返回报文"+ JSON.toJSONString(returnMap));
+                if(returnmessage!=null&&!"".equals(returnmessage)){
+                    Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
+                    logger.info("返回报文"+ JSON.toJSONString(returnMap));
+                }
             }
         } else {
             throw new Exception("return invoice result file 9999 impossible");

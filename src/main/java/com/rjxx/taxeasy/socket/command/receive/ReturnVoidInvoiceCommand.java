@@ -57,8 +57,10 @@ public class ReturnVoidInvoiceCommand implements ICommand {
             kplsService.save(kpls);
             String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
             logger.info("回写报文"+returnmessage);
-            Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
-            logger.info("返回报文"+ JSON.toJSONString(returnMap));
+            if(returnmessage!=null&&!"".equals(returnmessage)){
+                Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
+                logger.info("返回报文"+ JSON.toJSONString(returnMap));
+            }
         }
 
     }

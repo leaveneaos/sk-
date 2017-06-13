@@ -166,8 +166,10 @@ public class ParseInvoiceFileUtils {
             }
             String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
             logger.info("回写报文"+returnmessage);
-            Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
-            logger.info("返回报文"+ JSON.toJSONString(returnMap));
+            if(returnmessage!=null&&!"".equals(returnmessage)){
+                Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
+                logger.info("返回报文"+ JSON.toJSONString(returnMap));
+            }
         } else {
             String lsh = response.getLsh();
             int pos = lsh.indexOf("$");
@@ -188,8 +190,10 @@ public class ParseInvoiceFileUtils {
             jylsService.save(jyls);
             String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
             logger.info("回写报文"+returnmessage);
-            Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
-            logger.info("返回报文"+ JSON.toJSONString(returnMap));
+            if(returnmessage!=null&&!"".equals(returnmessage)){
+                Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
+                logger.info("返回报文"+ JSON.toJSONString(returnMap));
+            }
         }
 
     }
