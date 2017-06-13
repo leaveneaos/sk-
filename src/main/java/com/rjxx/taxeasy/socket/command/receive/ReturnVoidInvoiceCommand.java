@@ -61,7 +61,21 @@ public class ReturnVoidInvoiceCommand implements ICommand {
                 Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
                 logger.info("返回报文"+ JSON.toJSONString(returnMap));
             }
+        }else{
+            String kplshStr = response.getLsh();
+            int kplsh = Integer.valueOf(kplshStr);
+            Kpls kpls = kplsService.findOne(kplsh);
+            kpls.setFpztdm("05");//作废失败
+            kpls.setXgsj(new Date());
+            kpls.setXgry(1);
+            kpls.setErrorReason(response.getReturnMessage());
+            kplsService.save(kpls);
+            String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
+            logger.info("回写报文"+returnmessage);
+            if(returnmessage!=null&&!"".equals(returnmessage)){
+                Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
+                logger.info("返回报文"+ JSON.toJSONString(returnMap));
+            }
         }
-
     }
 }

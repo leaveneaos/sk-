@@ -110,6 +110,13 @@ public class ReturnInvoiceFileCommand implements ICommand {
                     kplsService.save(kpls);
                     updateJyls(kpls.getDjh(), "92");
                     logger.error("dzfp return xml error!!!kplsh:" + kplsh + ",xml:" + content);
+                    String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
+                    //输出调用结果
+                    logger.info("回写报文"+returnmessage);
+                    if(returnmessage!=null&&!"".equals(returnmessage)){
+                        Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
+                        logger.info("返回报文"+ JSON.toJSONString(returnMap));
+                    }
                     return;
                 }
                 String dzfpReturnCode = resultMap.get("RETURNCODE");
@@ -133,6 +140,14 @@ public class ReturnInvoiceFileCommand implements ICommand {
                     kplsService.save(kpls);
                     updateJyls(kpls.getDjh(), "92");
                     logger.error("dzfp return xml error!!!kplsh:" + kplsh + ",xml:" + content);
+
+                    String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
+                    //输出调用结果
+                    logger.info("回写报文"+returnmessage);
+                    if(returnmessage!=null&&!"".equals(returnmessage)){
+                        Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
+                        logger.info("返回报文"+ JSON.toJSONString(returnMap));
+                    }
                     return;
                 }
                 //保存正常结果
