@@ -162,7 +162,7 @@ public class ClientDesUtils {
         CloseableHttpResponse response = null;
         CloseableHttpClient httpClient = HttpClients.createDefault();
         RequestConfig requestConfig = RequestConfig.custom().
-                setSocketTimeout(8000).setConnectTimeout(8000).build();
+                setSocketTimeout(60*1000).setConnectTimeout(60*1000).build();
         httpPost.setConfig(requestConfig);
         httpPost.addHeader("Content-Type", "application/json");
         String strMessage = "";
