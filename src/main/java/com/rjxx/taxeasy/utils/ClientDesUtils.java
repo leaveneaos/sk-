@@ -162,7 +162,7 @@ public class ClientDesUtils {
         CloseableHttpResponse response = null;
         CloseableHttpClient httpClient = HttpClients.createDefault();
         RequestConfig requestConfig = RequestConfig.custom().
-                setSocketTimeout(2000).setConnectTimeout(2000).build();
+                setSocketTimeout(8000).setConnectTimeout(8000).build();
         httpPost.setConfig(requestConfig);
         httpPost.addHeader("Content-Type", "application/json");
         String strMessage = "";
@@ -231,13 +231,7 @@ public class ClientDesUtils {
         List<Element> childElements = root.elements();
         Map resultMap = new HashMap();
         for (Element child : childElements) {
-            if (child.elementText("ReturnCode").equals("0000")) {
-                resultMap.put("ReturnCode", child.elementText("ReturnCode"));
-                resultMap.put("ReturnMessage", child.elementText("ReturnMessage"));
-            }else if(child.elementText("ReturnCode").equals("9999")){
-                resultMap.put("ReturnCode", child.elementText("ReturnCode"));
-                resultMap.put("ReturnMessage", child.elementText("ReturnMessage"));
-            }
+            resultMap.put(child.getName(), child.getText());// 返回结果
         }
         return resultMap;
     }
