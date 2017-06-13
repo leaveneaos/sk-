@@ -74,25 +74,46 @@ public class ClientDesUtils {
 
     public static void main(String[] args) throws Exception {
         String ss="<?xml version="+'"'+"1.0"+'"'+" encoding="+'"'+"UTF-8"+'"'+" standalone="+'"'+"yes"+'"'+"?>" +
-                "<Request>" +
-                "    <OperationItem>" +
-                "        <SerialNumber>JY2017061220265324</SerialNumber>" +
-                "        <OrderNumber>Y7890666</OrderNumber>" +
-                "        <OperationType>12</OperationType>" +
-                "    </OperationItem>" +
-                "    <InvoiceItems count="+'"'+"1"+'"'+">" +
-                "        <InvoiceItem>" +
-                "            <ReturnCode>0000</ReturnCode>" +
-                "            <ReturnMessage></ReturnMessage>" +
-                "            <InvoiceCode>150003522222</InvoiceCode>" +
-                "            <InvoiceNumber>36432343</InvoiceNumber>" +
-                "            <InvoiceDate>20170612202639</InvoiceDate>" +
-                "            <InvoiceStatus>红冲发票</InvoiceStatus>" +
-                "            <Amount>-1538.46</Amount>" +
-                "            <TaxAmount>-261.54</TaxAmount>" +
-                "            <PdfUrl>http://test.datarj.com/e-invoice-file/500102010003643/20170612/fe6f4fcd-a799-4453-91ac-64c12a1ea6cf.pdf</PdfUrl>" +
-                "        </InvoiceItem>" +
-                "    </InvoiceItems>" +
+                "<Request>\n" +
+                "    <OperationItem>\n" +
+                "        <SerialNumber>JY20170613161553252</SerialNumber>\n" +
+                "        <OrderNumber>T67800</OrderNumber>\n" +
+                "        <OperationType>11</OperationType>\n" +
+                "    </OperationItem>\n" +
+                "    <InvoiceItems count=\"4\">\n" +
+                "        <InvoiceItem>\n" +
+                "            <ReturnCode>9999</ReturnCode>\n" +
+                "            <ReturnMessage>-1 金额错误</ReturnMessage>\n" +
+                "            <InvoiceDate>20170613165539</InvoiceDate>\n" +
+                "            <InvoiceStatus>开具失败</InvoiceStatus>\n" +
+                "            <Amount>45045.04</Amount>\n" +
+                "            <TaxAmount>4954.96</TaxAmount>\n" +
+                "        </InvoiceItem>\n" +
+                "        <InvoiceItem>\n" +
+                "            <ReturnCode>9999</ReturnCode>\n" +
+                "            <ReturnMessage>-1 金额错误</ReturnMessage>\n" +
+                "            <InvoiceDate>20170613165539</InvoiceDate>\n" +
+                "            <InvoiceStatus>开具失败</InvoiceStatus>\n" +
+                "            <Amount>45045.04</Amount>\n" +
+                "            <TaxAmount>4954.96</TaxAmount>\n" +
+                "        </InvoiceItem>\n" +
+                "        <InvoiceItem>\n" +
+                "            <ReturnCode>9999</ReturnCode>\n" +
+                "            <ReturnMessage>-1 金额错误</ReturnMessage>\n" +
+                "            <InvoiceDate>20170613165539</InvoiceDate>\n" +
+                "            <InvoiceStatus>开具失败</InvoiceStatus>\n" +
+                "            <Amount>45045.04</Amount>\n" +
+                "            <TaxAmount>4954.96</TaxAmount>\n" +
+                "        </InvoiceItem>\n" +
+                "        <InvoiceItem>\n" +
+                "            <ReturnCode>9999</ReturnCode>\n" +
+                "            <ReturnMessage>-1 金额错误</ReturnMessage>\n" +
+                "            <InvoiceDate>20170613165539</InvoiceDate>\n" +
+                "            <InvoiceStatus>开具失败</InvoiceStatus>\n" +
+                "            <Amount>36036.05</Amount>\n" +
+                "            <TaxAmount>3963.95</TaxAmount>\n" +
+                "        </InvoiceItem>\n" +
+                "    </InvoiceItems>\n" +
                 "</Request>";
         String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
         String key="8e37be80cd6dcd8051d589d32f4d0ff2";
@@ -111,7 +132,7 @@ public class ClientDesUtils {
         CloseableHttpResponse response = null;
         CloseableHttpClient httpClient = HttpClients.createDefault();
         RequestConfig requestConfig = RequestConfig.custom().
-                setSocketTimeout(2000).setConnectTimeout(2000).build();
+                setSocketTimeout(60*1000).setConnectionRequestTimeout(60*1000).setConnectTimeout(60*1000).build();
         httpPost.setConfig(requestConfig);
         httpPost.addHeader("Content-Type", "application/json");
         String strMessage = "";
@@ -163,7 +184,7 @@ public class ClientDesUtils {
         CloseableHttpResponse response = null;
         CloseableHttpClient httpClient = HttpClients.createDefault();
         RequestConfig requestConfig = RequestConfig.custom().
-                setSocketTimeout(60*1000).setConnectTimeout(60*1000).build();
+                setSocketTimeout(60*1000).setConnectionRequestTimeout(60*1000).setConnectTimeout(60*1000).build();
         httpPost.setConfig(requestConfig);
         httpPost.addHeader("Content-Type", "application/json");
         String strMessage = "";
