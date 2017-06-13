@@ -2,23 +2,22 @@ package com.rjxx.taxeasy.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.rjxx.taxeasy.bizcomm.utils.DataOperate;
+import com.rjxx.taxeasy.domains.Fphxwsjl;
 import com.rjxx.taxeasy.domains.Gsxx;
 import com.rjxx.taxeasy.domains.Kpls;
+import com.rjxx.taxeasy.service.FphxwsjlService;
 import com.rjxx.taxeasy.service.GsxxService;
 import com.rjxx.utils.DesUtils;
 import com.rjxx.utils.HtmlUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -29,7 +28,7 @@ import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +46,8 @@ public class ClientDesUtils {
 
     @Autowired
     private GsxxService gsxxService;
+    @Autowired
+    private FphxwsjlService fphxwsjlService;
     /**
      * 解密客户端的请求参数
      *
@@ -97,8 +98,58 @@ public class ClientDesUtils {
         String xfsh="500102010003643";
         String jylsh="201706122030";
         ClientDesUtils clientDesUtils=new ClientDesUtils();
-       // Map map= clientDesUtils.httpPost(ss,url,key,xfsh,jylsh);
-        //System.out.println(JSON.toJSON(map));
+        Kpls kpls=new Kpls();
+        kpls.setGsdm("tujia");
+        Map map= clientDesUtils.httpPost(ss,url,key,xfsh,jylsh);
+        System.out.println(JSON.toJSON(map));
+    }
+    public  Map httpPost(String sendMes,String url,String key,String xfsh,String jylsh) throws Exception {
+
+        String Secret=getSign(sendMes,key);
+        HttpPost httpPost = new HttpPost(url);
+        CloseableHttpResponse response = null;
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        RequestConfig requestConfig = RequestConfig.custom().
+                setSocketTimeout(2000).setConnectTimeout(2000).build();
+        httpPost.setConfig(requestConfig);
+        httpPost.addHeader("Content-Type", "application/json");
+        String strMessage = "";
+        BufferedReader reader = null;
+        StringBuffer buffer = new StringBuffer();
+        Map resultMap = null;
+        try {
+            Map nvps = new HashMap();
+            nvps.put("invoiceData", sendMes);
+            nvps.put("sign", Secret);
+            StringEntity requestEntity = new StringEntity(JSON.toJSONString(nvps), "utf-8");
+            httpPost.setEntity(requestEntity);
+            response = httpClient.execute(httpPost, new BasicHttpContext());
+            if (response.getStatusLine().getStatusCode() != 200) {
+                System.out.println("request url failed, http code=" + response.getStatusLine().getStatusCode()
+                        + ", url=" + url);
+                return null;
+            }
+            HttpEntity entity = response.getEntity();
+            if (entity != null) {
+                reader = new BufferedReader(new InputStreamReader(entity.getContent(), "utf-8"));
+                while ((strMessage = reader.readLine()) != null) {
+                    buffer.append(strMessage);
+                }
+            }
+            System.out.println("接收返回值:" + buffer.toString());
+            resultMap = handerReturnMes(buffer.toString());
+        } catch (IOException e) {
+            System.out.println("request url=" + url + ", exception, msg=" + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (response != null) try {
+                response.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return resultMap;
     }
     public  Map httpPost(String sendMes, Kpls kpls) throws Exception {
         Map parms=new HashMap();
@@ -138,7 +189,20 @@ public class ClientDesUtils {
                 }
             }
             System.out.println("接收返回值:" + buffer.toString());
-            //resultMap = handerReturnMes(buffer.toString());
+            resultMap = handerReturnMes(buffer.toString());
+            String returnCode=resultMap.get("ReturnCode").toString();
+            String ReturnMessage=resultMap.get("ReturnMessage").toString();
+            Fphxwsjl fphxwsjl=new Fphxwsjl();
+            fphxwsjl.setGsdm(kpls.getGsdm());
+            fphxwsjl.setEnddate(new Date());
+            fphxwsjl.setReturncode(returnCode);
+            fphxwsjl.setStartdate(new Date());
+            fphxwsjl.setSecretKey(gsxx.getSecretKey());
+            fphxwsjl.setSign(Secret);
+            fphxwsjl.setWsurl(gsxx.getWsUrl());
+            fphxwsjl.setReturncontent(sendMes);
+            fphxwsjl.setReturnmessage(ReturnMessage);
+            fphxwsjlService.save(fphxwsjl);
         } catch (IOException e) {
             System.out.println("request url=" + url + ", exception, msg=" + e.getMessage());
             e.printStackTrace();
