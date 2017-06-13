@@ -1,9 +1,12 @@
 package com.rjxx.taxeasy.utils;
 
+import com.alibaba.fastjson.JSON;
 import com.rjxx.taxeasy.bizcomm.utils.GeneratePdfService;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
+import com.rjxx.taxeasy.domains.Gsxx;
 import com.rjxx.taxeasy.domains.Jyls;
 import com.rjxx.taxeasy.domains.Kpls;
+import com.rjxx.taxeasy.service.GsxxService;
 import com.rjxx.taxeasy.service.JylsService;
 import com.rjxx.taxeasy.service.KplsService;
 import com.rjxx.taxeasy.service.KpspmxService;
@@ -37,6 +40,12 @@ public class ParseInvoiceFileUtils {
 
     @Autowired
     private GeneratePdfService generatePdfService;
+
+    @Autowired
+    private ClientDesUtils clientDesUtils;
+
+    @Autowired
+    private GsxxService gsxxService;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     /**
@@ -157,6 +166,8 @@ public class ParseInvoiceFileUtils {
             }
             String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
             logger.info("回写报文"+returnmessage);
+            Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
+            logger.info("返回报文"+ JSON.toJSONString(returnMap));
         } else {
             String lsh = response.getLsh();
             int pos = lsh.indexOf("$");
@@ -177,6 +188,8 @@ public class ParseInvoiceFileUtils {
             jylsService.save(jyls);
             String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
             logger.info("回写报文"+returnmessage);
+            Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
+            logger.info("返回报文"+ JSON.toJSONString(returnMap));
         }
 
     }

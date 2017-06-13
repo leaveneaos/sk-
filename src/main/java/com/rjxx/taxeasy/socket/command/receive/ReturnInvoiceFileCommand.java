@@ -1,17 +1,17 @@
 package com.rjxx.taxeasy.socket.command.receive;
 
+import com.alibaba.fastjson.JSON;
 import com.rjxx.taxeasy.bizcomm.utils.GeneratePdfService;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
 import com.rjxx.taxeasy.domains.ClientFile;
+import com.rjxx.taxeasy.domains.Gsxx;
 import com.rjxx.taxeasy.domains.Jyls;
 import com.rjxx.taxeasy.domains.Kpls;
-import com.rjxx.taxeasy.service.ClientFileService;
-import com.rjxx.taxeasy.service.JylsService;
-import com.rjxx.taxeasy.service.KplsService;
-import com.rjxx.taxeasy.service.KpspmxService;
+import com.rjxx.taxeasy.service.*;
 import com.rjxx.taxeasy.socket.SocketSession;
 import com.rjxx.taxeasy.socket.command.ICommand;
 import com.rjxx.taxeasy.socket.domains.ReturnInvoiceFile;
+import com.rjxx.taxeasy.utils.ClientDesUtils;
 import com.rjxx.taxeasy.utils.ParseInvoiceFileUtils;
 import com.rjxx.taxeasy.vo.Kpspmxvo;
 import com.rjxx.time.TimeUtil;
@@ -57,6 +57,12 @@ public class ReturnInvoiceFileCommand implements ICommand {
 
     @Autowired
     private GeneratePdfService generatePdfService;
+
+    @Autowired
+    private ClientDesUtils clientDesUtils;
+
+    @Autowired
+    private GsxxService gsxxService;
 
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
@@ -155,7 +161,10 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 //此处开始生成pdf
                 generatePdfService.generatePdf(kplsh);
                 String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
+                //输出调用结果
                 logger.info("回写报文"+returnmessage);
+                Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
+                logger.info("返回报文"+ JSON.toJSONString(returnMap));
             } else {
                 //解析纸质票批量导入的结果
                 Map<String, String> retMap = parseInvoiceFileUtils.parseZZPBulkImportText(content);
@@ -180,6 +189,8 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 }
                 String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
                 logger.info("回写报文"+returnmessage);
+                Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
+                logger.info("返回报文"+ JSON.toJSONString(returnMap));
             }
         } else {
             throw new Exception("return invoice result file 9999 impossible");

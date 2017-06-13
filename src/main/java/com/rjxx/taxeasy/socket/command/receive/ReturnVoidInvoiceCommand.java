@@ -1,11 +1,15 @@
 package com.rjxx.taxeasy.socket.command.receive;
 
+import com.alibaba.fastjson.JSON;
 import com.rjxx.taxeasy.bizcomm.utils.GeneratePdfService;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
+import com.rjxx.taxeasy.domains.Gsxx;
 import com.rjxx.taxeasy.domains.Kpls;
+import com.rjxx.taxeasy.service.GsxxService;
 import com.rjxx.taxeasy.service.KplsService;
 import com.rjxx.taxeasy.socket.SocketSession;
 import com.rjxx.taxeasy.socket.command.ICommand;
+import com.rjxx.taxeasy.utils.ClientDesUtils;
 import com.rjxx.utils.XmlJaxbUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
@@ -14,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2017/1/19.
@@ -28,6 +34,12 @@ public class ReturnVoidInvoiceCommand implements ICommand {
 
     @Autowired
     private GeneratePdfService generatePdfService;
+
+    @Autowired
+    private ClientDesUtils clientDesUtils;
+
+    @Autowired
+    private GsxxService gsxxService;
 
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
@@ -45,6 +57,8 @@ public class ReturnVoidInvoiceCommand implements ICommand {
             kplsService.save(kpls);
             String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
             logger.info("回写报文"+returnmessage);
+            Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
+            logger.info("返回报文"+ JSON.toJSONString(returnMap));
         }
 
     }
