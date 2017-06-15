@@ -1,5 +1,6 @@
 package com.rjxx.taxeasy.socket.command.receive;
 
+import com.rjxx.taxeasy.config.RabbitmqUtils;
 import com.rjxx.taxeasy.domains.Kpls;
 import com.rjxx.taxeasy.service.InvoiceService;
 import com.rjxx.taxeasy.service.KplsService;
@@ -8,7 +9,6 @@ import com.rjxx.taxeasy.socket.SocketSession;
 import com.rjxx.taxeasy.socket.command.ICommand;
 import com.rjxx.taxeasy.socket.command.SendCommand;
 import com.rjxx.taxeasy.vo.InvoicePendingData;
-import com.rjxx.utils.DesUtils;
 import com.rjxx.utils.StringUtils;
 import com.rjxx.utils.XmlJaxbUtils;
 import org.slf4j.Logger;
@@ -29,41 +29,58 @@ public class GetInvoiceCommand implements ICommand {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public static final String DO_INVOICE = "DO_INVOICE";
-
-    public static final String SK_SERVER_DES_KEY = "R1j2x3x4";
-
     @Autowired
     private KplsService kplsService;
 
     @Autowired
     private InvoiceService invoiceService;
 
+    @Autowired
+    private RabbitmqUtils rabbitmqUtils;
+
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
         try {
-            Boolean isDoInvoice = (Boolean) socketSession.getSession().getAttribute(DO_INVOICE);
-            if (isDoInvoice != null && isDoInvoice) {
-                logger.warn("warning:" + socketSession.getKpdid() + " receive GetInvoiceCommand repeat");
-                return;
-            } else {
-                socketSession.getSession().setAttribute(DO_INVOICE, true);
-            }
             String fpzldm = data;
             if (StringUtils.isBlank(fpzldm)) {
                 return;
             }
             Integer kpdid = socketSession.getKpdid();
             logger.debug("-----------receive kpdid " + kpdid + " GetInvoice request---------");
-
             doKp(fpzldm, kpdid);
 
         } catch (Exception e) {
             logger.error("", e);
-        } finally {
-            socketSession.getSession().setAttribute(DO_INVOICE, false);
         }
 
+    }
+
+    /**
+     * 从mq中获取数据
+     *
+     * @param kpdid
+     * @param fpzldms
+     * @return
+     */
+    private Kpls getDataFromMq(int kpdid, String fpzldms) {
+        String[] fpzldmArr = fpzldms.split(",");
+        for (String fpzldm : fpzldmArr) {
+            do {
+                String kplshStr = (String) rabbitmqUtils.receiveMsg(kpdid, fpzldm);
+                if (StringUtils.isNotBlank(kplshStr)) {
+                    int kplsh = Integer.valueOf(kplshStr);
+                    Map params = new HashMap();
+                    params.put("kplsh", kplsh);
+                    Kpls kpls = kplsService.findOneByParams(params);
+                    if (kpls != null) {
+                        return kpls;
+                    }
+                } else {
+                    break;
+                }
+            } while (true);
+        }
+        return null;
     }
 
     /**
@@ -73,15 +90,15 @@ public class GetInvoiceCommand implements ICommand {
      * @param kpdid
      */
     private void doKp(String fpzldm, int kpdid) throws Exception {
-        Map params = new HashMap();
-        String[] fpzldmArr = fpzldm.split(",");
-        params.put("fpzldmList", Arrays.asList(fpzldmArr));
-//        params.put("fpzldm", fpzldm);
-        params.put("kpdid", kpdid);
-        params.put("fpztdm", "04");
-        params.put("orderBy", "kplsh");
-        Kpls kpls = null;
-        kpls = kplsService.findOneByParams(params);
+//        Map params = new HashMap();
+//        String[] fpzldmArr = fpzldm.split(",");
+//        params.put("fpzldmList", Arrays.asList(fpzldmArr));
+////        params.put("fpzldm", fpzldm);
+//        params.put("kpdid", kpdid);
+//        params.put("fpztdm", "04");
+//        params.put("orderBy", "kplsh");
+//        Kpls kpls = kplsService.findOneByParams(params);
+        Kpls kpls = getDataFromMq(kpdid, fpzldm);
         if (kpls == null) {
             InvoicePendingData invoicePendingData = invoiceService.generatePendingData(kpdid);
             String xml = XmlJaxbUtils.toXml(invoicePendingData);
@@ -98,15 +115,5 @@ public class GetInvoiceCommand implements ICommand {
             invoiceService.doKp(kpls.getKplsh(), false, 0);
         }
 
-    }
-
-    /**
-     * 加密税控服务参数
-     *
-     * @param params
-     * @return
-     */
-    public String encryptSkServerParameter(String params) throws Exception {
-        return DesUtils.DESEncrypt(params, SK_SERVER_DES_KEY);
     }
 }
