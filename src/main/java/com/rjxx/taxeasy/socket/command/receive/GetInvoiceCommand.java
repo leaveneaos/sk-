@@ -62,7 +62,7 @@ public class GetInvoiceCommand implements ICommand {
      * @param fpzldms
      * @return
      */
-    private Kpls getDataFromMq(int kpdid, String fpzldms) {
+    private Kpls getDataFromMq(int kpdid, String fpzldms) throws Exception {
         String[] fpzldmArr = fpzldms.split(",");
         for (String fpzldm : fpzldmArr) {
             do {
