@@ -179,6 +179,11 @@ public class ClientDesUtils {
         Gsxx gsxx=gsxxService.findOneByParams(parms);
         //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
         String url=gsxx.getWsUrl();
+        String strMessage = "";
+        BufferedReader reader = null;
+        StringBuffer buffer = new StringBuffer();
+        Map resultMap = null;
+        if(url.equals("")&&url==null){
         String Secret=getSign(sendMes,gsxx.getSecretKey());
         HttpPost httpPost = new HttpPost(url);
         CloseableHttpResponse response = null;
@@ -187,10 +192,7 @@ public class ClientDesUtils {
                 setSocketTimeout(60*1000).setConnectionRequestTimeout(60*1000).setConnectTimeout(60*1000).build();
         httpPost.setConfig(requestConfig);
         httpPost.addHeader("Content-Type", "application/json");
-        String strMessage = "";
-        BufferedReader reader = null;
-        StringBuffer buffer = new StringBuffer();
-        Map resultMap = null;
+
         try {
             Map nvps = new HashMap();
             nvps.put("invoiceData", sendMes);
@@ -225,17 +227,17 @@ public class ClientDesUtils {
             fphxwsjl.setReturncontent(sendMes);
             fphxwsjl.setReturnmessage(ReturnMessage);
             fphxwsjlService.save(fphxwsjl);
-        } catch (IOException e) {
-            System.out.println("request url=" + url + ", exception, msg=" + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            if (response != null) try {
-                response.close();
             } catch (IOException e) {
+                System.out.println("request url=" + url + ", exception, msg=" + e.getMessage());
                 e.printStackTrace();
+            } finally {
+                if (response != null) try {
+                    response.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
-
         return resultMap;
     }
 
