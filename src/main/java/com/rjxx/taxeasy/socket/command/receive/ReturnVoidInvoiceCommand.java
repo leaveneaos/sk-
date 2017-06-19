@@ -92,6 +92,8 @@ public class ReturnVoidInvoiceCommand implements ICommand {
                     logger.info("返回报文"+ JSON.toJSONString(returnMap));
                 }
             }
+            kpls.setFpztdm("00");//作废失败
+            kplsService.save(kpls);
         }
     }
 }
