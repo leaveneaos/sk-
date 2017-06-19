@@ -55,11 +55,19 @@ public class ReturnVoidInvoiceCommand implements ICommand {
             kpls.setXgsj(new Date());
             kpls.setXgry(1);
             kplsService.save(kpls);
-            String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
-            logger.info("回写报文"+returnmessage);
-            if(returnmessage!=null&&!"".equals(returnmessage)){
-                Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
-                logger.info("返回报文"+ JSON.toJSONString(returnMap));
+            Map parms=new HashMap();
+            parms.put("gsdm",kpls.getGsdm());
+            Gsxx gsxx=gsxxService.findOneByParams(parms);
+            //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
+            String url=gsxx.getWsUrl();
+            if(!("").equals(url)&&url!=null){
+                String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
+                //输出调用结果
+                logger.info("回写报文"+returnmessage);
+                if(returnmessage!=null&&!"".equals(returnmessage)){
+                    Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
+                    logger.info("返回报文"+ JSON.toJSONString(returnMap));
+                }
             }
         }else{
             String kplshStr = response.getLsh();
@@ -70,11 +78,19 @@ public class ReturnVoidInvoiceCommand implements ICommand {
             kpls.setXgry(1);
             kpls.setErrorReason(response.getReturnMessage());
             kplsService.save(kpls);
-            String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
-            logger.info("回写报文"+returnmessage);
-            if(returnmessage!=null&&!"".equals(returnmessage)){
-                Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
-                logger.info("返回报文"+ JSON.toJSONString(returnMap));
+            Map parms=new HashMap();
+            parms.put("gsdm",kpls.getGsdm());
+            Gsxx gsxx=gsxxService.findOneByParams(parms);
+            //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
+            String url=gsxx.getWsUrl();
+            if(!("").equals(url)&&url!=null){
+                String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
+                //输出调用结果
+                logger.info("回写报文"+returnmessage);
+                if(returnmessage!=null&&!"".equals(returnmessage)){
+                    Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
+                    logger.info("返回报文"+ JSON.toJSONString(returnMap));
+                }
             }
         }
     }

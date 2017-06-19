@@ -164,11 +164,19 @@ public class ParseInvoiceFileUtils {
                     }
                 }
             }
-            String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
-            logger.info("回写报文"+returnmessage);
-            if(returnmessage!=null&&!"".equals(returnmessage)){
-                Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
-                logger.info("返回报文"+ JSON.toJSONString(returnMap));
+            Map parms=new HashMap();
+            parms.put("gsdm",kpls.getGsdm());
+            Gsxx gsxx=gsxxService.findOneByParams(parms);
+            //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
+            String url=gsxx.getWsUrl();
+            if(!("").equals(url)&&url!=null){
+                String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
+                //输出调用结果
+                logger.info("回写报文"+returnmessage);
+                if(returnmessage!=null&&!"".equals(returnmessage)){
+                    Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
+                    logger.info("返回报文"+ JSON.toJSONString(returnMap));
+                }
             }
         } else {
             String lsh = response.getLsh();
@@ -188,11 +196,19 @@ public class ParseInvoiceFileUtils {
             Jyls jyls = jylsService.findOne(kpls.getDjh());
             jyls.setClztdm("92");
             jylsService.save(jyls);
-            String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
-            logger.info("回写报文"+returnmessage);
-            if(returnmessage!=null&&!"".equals(returnmessage)){
-                Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
-                logger.info("返回报文"+ JSON.toJSONString(returnMap));
+            Map parms=new HashMap();
+            parms.put("gsdm",kpls.getGsdm());
+            Gsxx gsxx=gsxxService.findOneByParams(parms);
+            //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
+            String url=gsxx.getWsUrl();
+            if(!("").equals(url)&&url!=null){
+                String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
+                //输出调用结果
+                logger.info("回写报文"+returnmessage);
+                if(returnmessage!=null&&!"".equals(returnmessage)){
+                    Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
+                    logger.info("返回报文"+ JSON.toJSONString(returnMap));
+                }
             }
         }
 

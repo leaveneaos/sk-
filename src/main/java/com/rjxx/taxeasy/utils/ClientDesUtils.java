@@ -183,7 +183,7 @@ public class ClientDesUtils {
         BufferedReader reader = null;
         StringBuffer buffer = new StringBuffer();
         Map resultMap = null;
-        if(url.equals("")&&url==null){
+        if(!("").equals(url)&&url!=null){
         String Secret=getSign(sendMes,gsxx.getSecretKey());
         HttpPost httpPost = new HttpPost(url);
         CloseableHttpResponse response = null;
