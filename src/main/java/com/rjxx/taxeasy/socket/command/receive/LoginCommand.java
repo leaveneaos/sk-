@@ -52,16 +52,16 @@ public class LoginCommand implements ICommand {
             return;
         }
         //验证登录信息
-        Map paramsMap = new HashMap();
-        paramsMap.put("sessionId", sessionId);
-        paramsMap.put("orderBy", "login_time desc");
-        ClientLogin clientLogin = clientLoginService.findOneByParams(paramsMap);
-        //登录信息不存在或者超时了，要求重新登录
-        if (clientLogin == null || clientLogin.getExpireTime().getTime() < System.currentTimeMillis()) {
-            logger.info("kpdid:" + kpdid + " session has expired,client will logout!!!");
-            logout(ioSession, "License已过期");
-            return;
-        }
+//        Map paramsMap = new HashMap();
+//        paramsMap.put("sessionId", sessionId);
+//        paramsMap.put("orderBy", "login_time desc");
+//        ClientLogin clientLogin = clientLoginService.findOneByParams(paramsMap);
+//        //登录信息不存在或者超时了，要求重新登录
+//        if (clientLogin == null || clientLogin.getExpireTime().getTime() < System.currentTimeMillis()) {
+//            logger.info("kpdid:" + kpdid + " session has expired,client will logout!!!");
+//            logout(ioSession, "License已过期");
+//            return;
+//        }
         //验证mac不通过
 //        if (!clientLogin.getMacAddr().equals(macAddr)) {
 //            logout(ioSession, "License已过期");
