@@ -1,15 +1,15 @@
 package com.rjxx.taxeasy.service;
 
+import com.rabbitmq.client.Channel;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponseUtils;
 import com.rjxx.taxeasy.bizcomm.utils.SeperateInvoiceUtils;
-import com.rjxx.taxeasy.bizcomm.utils.SkService;
+import com.rjxx.taxeasy.config.RabbitmqUtils;
 import com.rjxx.taxeasy.domains.Kpls;
 import com.rjxx.taxeasy.domains.Kpspmx;
 import com.rjxx.taxeasy.domains.Skp;
 import com.rjxx.taxeasy.socket.ServerHandler;
 import com.rjxx.taxeasy.socket.command.SendCommand;
-import com.rjxx.taxeasy.vo.FptjVo;
 import com.rjxx.taxeasy.vo.InvoicePendingData;
 import com.rjxx.utils.StringUtils;
 import com.rjxx.utils.TemplateUtils;
@@ -18,6 +18,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.support.PublisherCallbackChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +45,7 @@ public class InvoiceService {
     private SkpService skpService;
 
     @Autowired
-    private SkService skService;
+    private RabbitmqUtils rabbitmqUtils;
 
     /**
      * 执行开票
@@ -77,6 +78,9 @@ public class InvoiceService {
         if (StringUtils.isBlank(result)) {
             InvoiceResponse response = InvoiceResponseUtils.responseError("客户端没有返回结果，请去开票软件确认");
             return response;
+        } else if (result.contains("开票点：") && result.contains("没有连上服务器")) {
+            kpls.setFpztdm("04");
+            kplsService.save(kpls);
         }
         if (result.contains("<Response>")) {
             InvoiceResponse invoiceResponse = XmlJaxbUtils.convertXmlStrToObject(InvoiceResponse.class, result);
@@ -157,24 +161,20 @@ public class InvoiceService {
      */
     public InvoicePendingData generatePendingData(int kpdid) {
         InvoicePendingData result = new InvoicePendingData();
-        List<FptjVo> fptjVoList = kplsService.findFpdbtjjgByKpdid(kpdid);
-        int zpkjsl = 0;
-        int ppkjsl = 0;
-        int dzpkjsl = 0;
-        for (FptjVo fptjVo : fptjVoList) {
-            String fpzldm = fptjVo.getFpzldm();
-            int cnt = fptjVo.getCnt();
-            if ("01".equals(fpzldm)) {
-                zpkjsl += cnt;
-            } else if ("02".equals(fpzldm)) {
-                ppkjsl += cnt;
-            } else if ("12".equals(fpzldm)) {
-                dzpkjsl += cnt;
-            }
+        try {
+            Channel channel = ((PublisherCallbackChannel) rabbitmqUtils.getChannel()).getDelegate();
+            String zpQueueName = rabbitmqUtils.getQueueName(kpdid, "01");
+            int zpkjsl = (int) channel.messageCount(zpQueueName);
+            result.setZpkjsl(zpkjsl);
+            String ppQueueName = rabbitmqUtils.getQueueName(kpdid, "02");
+            int ppkjsl = (int) channel.messageCount(ppQueueName);
+            result.setPpkjsl(ppkjsl);
+            String dzpQueueName = rabbitmqUtils.getQueueName(kpdid, "12");
+            int dzpkjsl = (int) channel.messageCount(dzpQueueName);
+            result.setDzpkjsl(dzpkjsl);
+        } catch (Exception e) {
+            logger.error("", e);
         }
-        result.setZpkjsl(zpkjsl);
-        result.setPpkjsl(ppkjsl);
-        result.setDzpkjsl(dzpkjsl);
         result.setKpdid(kpdid);
         result.setSuccess("true");
         return result;

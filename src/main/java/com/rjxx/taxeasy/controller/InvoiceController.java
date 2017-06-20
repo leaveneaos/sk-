@@ -150,7 +150,7 @@ public class InvoiceController {
             String kplshStr = skService.decryptSkServerParameter(p);
             int kplsh = Integer.valueOf(kplshStr);
             logger.debug("receive invoice request:" + kplsh);
-            InvoiceResponse invoiceResponse = invoiceService.doKp(kplsh, true, 60000);
+            InvoiceResponse invoiceResponse = invoiceService.doKp(kplsh, false, 0);
             String result = XmlJaxbUtils.toXml(invoiceResponse);
             logger.debug(result);
             return result;
