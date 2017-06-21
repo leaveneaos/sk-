@@ -168,7 +168,7 @@ public class ParseInvoiceFileUtils {
             parms.put("gsdm",kpls.getGsdm());
             Gsxx gsxx=gsxxService.findOneByParams(parms);
             //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
-            String url=gsxx.getWsUrl();
+            String url=gsxx.getCallbackurl();
             if(!("").equals(url)&&url!=null){
                 String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
                 //输出调用结果
@@ -200,7 +200,7 @@ public class ParseInvoiceFileUtils {
             parms.put("gsdm",kpls.getGsdm());
             Gsxx gsxx=gsxxService.findOneByParams(parms);
             //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
-            String url=gsxx.getWsUrl();
+            String url=gsxx.getCallbackurl();
             if(!("").equals(url)&&url!=null){
                 String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
                 //输出调用结果

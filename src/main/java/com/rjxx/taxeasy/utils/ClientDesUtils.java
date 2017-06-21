@@ -126,9 +126,13 @@ public class ClientDesUtils {
         System.out.println(JSON.toJSON(map));
     }
     public  Map httpPost(String sendMes,String url,String key,String xfsh,String jylsh) throws Exception {
-
+        Map parms=new HashMap();
+        parms.put("gsdm","tujia");
+        Gsxx gsxx=gsxxService.findOneByParams(parms);
+        //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
+        String url2=gsxx.getCallbackurl();
         String Secret=getSign(sendMes,key);
-        HttpPost httpPost = new HttpPost(url);
+        HttpPost httpPost = new HttpPost(url2);
         CloseableHttpResponse response = null;
         RequestConfig requestConfig = RequestConfig.custom().
                 setSocketTimeout(120*1000).setConnectionRequestTimeout(120*1000).setConnectTimeout(120*1000).build();
