@@ -73,45 +73,45 @@ public class ClientDesUtils {
     }
 
     public static void main(String[] args) throws Exception {
-        String ss="<?xml version="+'"'+"1.0"+'"'+" encoding="+'"'+"UTF-8"+'"'+" standalone="+'"'+"yes"+'"'+"?>" +
-                "<Request>\n" +
+        String ss="<Request>\n" +
                 "    <OperationItem>\n" +
-                "        <SerialNumber>JY20170613161553252</SerialNumber>\n" +
-                "        <OrderNumber>T67800</OrderNumber>\n" +
+                "        <SerialNumber>0a715e4986d44bbea3ce1eb5f6896960</SerialNumber>\n" +
+                "        <OrderNumber>3265632</OrderNumber>\n" +
                 "        <OperationType>11</OperationType>\n" +
                 "    </OperationItem>\n" +
-                "    <InvoiceItems count=\"4\">\n" +
+                "    <InvoiceItems count=\"3\">\n" +
                 "        <InvoiceItem>\n" +
-                "            <ReturnCode>9999</ReturnCode>\n" +
-                "            <ReturnMessage>-1 金额错误</ReturnMessage>\n" +
-                "            <InvoiceDate>20170613165539</InvoiceDate>\n" +
-                "            <InvoiceStatus>开具失败</InvoiceStatus>\n" +
-                "            <Amount>45045.04</Amount>\n" +
-                "            <TaxAmount>4954.96</TaxAmount>\n" +
+                "            <ReturnCode>0000</ReturnCode>\n" +
+                "            <ReturnMessage></ReturnMessage>\n" +
+                "            <InvoiceCode>150003522222</InvoiceCode>\n" +
+                "            <InvoiceNumber>36432441</InvoiceNumber>\n" +
+                "            <InvoiceDate>20170621092901</InvoiceDate>\n" +
+                "            <InvoiceStatus>正常发票</InvoiceStatus>\n" +
+                "            <Amount>9999.99</Amount>\n" +
+                "            <TaxAmount>300.0</TaxAmount>\n" +
+                "            <PdfUrl>http://test.datarj.com/e-invoice-file/500102010003643/20170621/86fdfedf-bf10-446a-a483-8079218c256c.pdf</PdfUrl>\n" +
                 "        </InvoiceItem>\n" +
                 "        <InvoiceItem>\n" +
-                "            <ReturnCode>9999</ReturnCode>\n" +
-                "            <ReturnMessage>-1 金额错误</ReturnMessage>\n" +
-                "            <InvoiceDate>20170613165539</InvoiceDate>\n" +
-                "            <InvoiceStatus>开具失败</InvoiceStatus>\n" +
-                "            <Amount>45045.04</Amount>\n" +
-                "            <TaxAmount>4954.96</TaxAmount>\n" +
+                "            <ReturnCode>0000</ReturnCode>\n" +
+                "            <ReturnMessage></ReturnMessage>\n" +
+                "            <InvoiceCode>150003522222</InvoiceCode>\n" +
+                "            <InvoiceNumber>36432442</InvoiceNumber>\n" +
+                "            <InvoiceDate>20170621092907</InvoiceDate>\n" +
+                "            <InvoiceStatus>正常发票</InvoiceStatus>\n" +
+                "            <Amount>9999.99</Amount>\n" +
+                "            <TaxAmount>300.0</TaxAmount>\n" +
+                "            <PdfUrl>http://test.datarj.com/e-invoice-file/500102010003643/20170621/74a71b65-efbe-4c12-94b5-f9c95dde2e86.pdf</PdfUrl>\n" +
                 "        </InvoiceItem>\n" +
                 "        <InvoiceItem>\n" +
-                "            <ReturnCode>9999</ReturnCode>\n" +
-                "            <ReturnMessage>-1 金额错误</ReturnMessage>\n" +
-                "            <InvoiceDate>20170613165539</InvoiceDate>\n" +
-                "            <InvoiceStatus>开具失败</InvoiceStatus>\n" +
-                "            <Amount>45045.04</Amount>\n" +
-                "            <TaxAmount>4954.96</TaxAmount>\n" +
-                "        </InvoiceItem>\n" +
-                "        <InvoiceItem>\n" +
-                "            <ReturnCode>9999</ReturnCode>\n" +
-                "            <ReturnMessage>-1 金额错误</ReturnMessage>\n" +
-                "            <InvoiceDate>20170613165539</InvoiceDate>\n" +
-                "            <InvoiceStatus>开具失败</InvoiceStatus>\n" +
-                "            <Amount>36036.05</Amount>\n" +
-                "            <TaxAmount>3963.95</TaxAmount>\n" +
+                "            <ReturnCode>0000</ReturnCode>\n" +
+                "            <ReturnMessage></ReturnMessage>\n" +
+                "            <InvoiceCode>150003522222</InvoiceCode>\n" +
+                "            <InvoiceNumber>36432443</InvoiceNumber>\n" +
+                "            <InvoiceDate>20170621092912</InvoiceDate>\n" +
+                "            <InvoiceStatus>正常发票</InvoiceStatus>\n" +
+                "            <Amount>9426.22</Amount>\n" +
+                "            <TaxAmount>282.79</TaxAmount>\n" +
+                "            <PdfUrl>http://test.datarj.com/e-invoice-file/500102010003643/20170621/839b1c2f-0317-4a88-9034-7abb22ce8035.pdf</PdfUrl>\n" +
                 "        </InvoiceItem>\n" +
                 "    </InvoiceItems>\n" +
                 "</Request>";
@@ -130,10 +130,11 @@ public class ClientDesUtils {
         String Secret=getSign(sendMes,key);
         HttpPost httpPost = new HttpPost(url);
         CloseableHttpResponse response = null;
-        CloseableHttpClient httpClient = HttpClients.createDefault();
         RequestConfig requestConfig = RequestConfig.custom().
-                setSocketTimeout(60*1000).setConnectionRequestTimeout(60*1000).setConnectTimeout(60*1000).build();
-        httpPost.setConfig(requestConfig);
+                setSocketTimeout(120*1000).setConnectionRequestTimeout(120*1000).setConnectTimeout(120*1000).build();
+        CloseableHttpClient httpClient = HttpClients.custom()
+                .setDefaultRequestConfig(requestConfig)
+                .build();
         httpPost.addHeader("Content-Type", "application/json");
         String strMessage = "";
         BufferedReader reader = null;
@@ -187,12 +188,13 @@ public class ClientDesUtils {
         String Secret=getSign(sendMes,gsxx.getSecretKey());
         HttpPost httpPost = new HttpPost(url);
         CloseableHttpResponse response = null;
-        CloseableHttpClient httpClient = HttpClients.createDefault();
         RequestConfig requestConfig = RequestConfig.custom().
-                setSocketTimeout(60*1000).setConnectionRequestTimeout(60*1000).setConnectTimeout(60*1000).build();
-        httpPost.setConfig(requestConfig);
+                setSocketTimeout(120*1000).setConnectionRequestTimeout(120*1000).setConnectTimeout(120*1000).build();
+        CloseableHttpClient httpClient = HttpClients.custom()
+                .setDefaultRequestConfig(requestConfig)
+                .build();
+        //httpPost.setConfig(requestConfig);
         httpPost.addHeader("Content-Type", "application/json");
-
         try {
             Map nvps = new HashMap();
             nvps.put("invoiceData", sendMes);
