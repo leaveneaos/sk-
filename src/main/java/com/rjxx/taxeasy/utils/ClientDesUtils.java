@@ -178,7 +178,7 @@ public class ClientDesUtils {
         parms.put("gsdm",kpls.getGsdm());
         Gsxx gsxx=gsxxService.findOneByParams(parms);
         //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
-        String url=gsxx.getWsUrl();
+        String url=gsxx.getCallbackurl();
         String strMessage = "";
         BufferedReader reader = null;
         StringBuffer buffer = new StringBuffer();
