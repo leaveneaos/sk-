@@ -76,7 +76,7 @@ public class InvoiceService {
         logger.debug(content);
         String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.Invoice, content, lsh, wait, timeout);
         if (StringUtils.isBlank(result)) {
-            InvoiceResponse response = InvoiceResponseUtils.responseError("客户端没有返回结果，请去开票软件确认");
+            InvoiceResponse response = InvoiceResponseUtils.responseSuccess("成功发送客户端");
             return response;
         } else if (result.contains("开票点：") && result.contains("没有连上服务器")) {
             kpls.setFpztdm("04");

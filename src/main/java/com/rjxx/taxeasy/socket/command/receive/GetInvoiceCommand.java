@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,14 +89,6 @@ public class GetInvoiceCommand implements ICommand {
      * @param kpdid
      */
     private void doKp(String fpzldm, int kpdid) throws Exception {
-//        Map params = new HashMap();
-//        String[] fpzldmArr = fpzldm.split(",");
-//        params.put("fpzldmList", Arrays.asList(fpzldmArr));
-////        params.put("fpzldm", fpzldm);
-//        params.put("kpdid", kpdid);
-//        params.put("fpztdm", "04");
-//        params.put("orderBy", "kplsh");
-//        Kpls kpls = kplsService.findOneByParams(params);
         Kpls kpls = getDataFromMq(kpdid, fpzldm);
         if (kpls == null) {
             InvoicePendingData invoicePendingData = invoiceService.generatePendingData(kpdid);
