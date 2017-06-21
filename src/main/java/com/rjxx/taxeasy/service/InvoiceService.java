@@ -74,7 +74,12 @@ public class InvoiceService {
         params.put("lsh", lsh);
         String content = TemplateUtils.generateContent("invoice-request.ftl", params);
         logger.debug(content);
-        String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.Invoice, content, lsh, wait, timeout);
+        String result = null;
+        try {
+            result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.Invoice, content, lsh, wait, timeout);
+        } catch (Exception e) {
+            result = e.getMessage();
+        }
         if (StringUtils.isBlank(result)) {
             InvoiceResponse response = InvoiceResponseUtils.responseSuccess("成功发送客户端");
             return response;
