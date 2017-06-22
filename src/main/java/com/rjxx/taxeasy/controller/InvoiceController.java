@@ -81,7 +81,7 @@ public class InvoiceController {
             }
             String kplshStr = skService.decryptSkServerParameter(p);
             int kplsh = Integer.valueOf(kplshStr);
-            return invoiceService.voidInvoice(kplsh, true, 60000);
+            return invoiceService.voidInvoice(kplsh, false, 60000);
         } catch (Exception e) {
             logger.error("", e);
             InvoiceResponse response = InvoiceResponseUtils.responseError(e.getMessage());

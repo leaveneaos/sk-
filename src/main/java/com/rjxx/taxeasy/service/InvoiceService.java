@@ -212,7 +212,18 @@ public class InvoiceService {
             params.put("lsh", kpls.getKplsh() + "");
             String content = TemplateUtils.generateContent("invoice-request.ftl", params);
             logger.debug(content);
-            String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.VoidInvoice, content, commandId);
+            String result=null;
+            try {
+                 result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.VoidInvoice, content, commandId,wait,timeout);
+            }catch (Exception e){
+                result=e.getMessage();
+            }
+            if (StringUtils.isBlank(result)) {
+                InvoiceResponse response = InvoiceResponseUtils.responseSuccess("成功发送客户端");
+            } else if (result.contains("开票点：") && result.contains("没有连上服务器")) {
+                kpls.setFpztdm("04");
+                kplsService.save(kpls);
+            }
             logger.debug(result);
             return result;
         } catch (Exception e) {
