@@ -177,6 +177,7 @@ public class InvoiceService {
             String dzpQueueName = rabbitmqUtils.getQueueName(kpdid, "12");
             int dzpkjsl = (int) channel.messageCount(dzpQueueName);
             result.setDzpkjsl(dzpkjsl);
+            channel.close();
         } catch (Exception e) {
             logger.error("", e);
         }
