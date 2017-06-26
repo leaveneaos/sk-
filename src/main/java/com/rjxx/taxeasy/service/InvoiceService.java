@@ -178,7 +178,9 @@ public class InvoiceService {
             int dzpkjsl = (int) channel.messageCount(dzpQueueName);
             result.setDzpkjsl(dzpkjsl);
             channel.close();
+            logger.debug(kpdid + "-----" + "zp:" + zpkjsl + ",pp:" + ppkjsl + ",dzp:" + dzpkjsl);
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("", e);
         }
         result.setKpdid(kpdid);
@@ -213,11 +215,11 @@ public class InvoiceService {
             params.put("lsh", kpls.getKplsh() + "");
             String content = TemplateUtils.generateContent("invoice-request.ftl", params);
             logger.debug(content);
-            String result=null;
+            String result = null;
             try {
-                 result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.VoidInvoice, content, commandId,wait,timeout);
-            }catch (Exception e){
-                result=e.getMessage();
+                result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.VoidInvoice, content, commandId, wait, timeout);
+            } catch (Exception e) {
+                result = e.getMessage();
             }
             if (StringUtils.isBlank(result)) {
                 InvoiceResponse response = InvoiceResponseUtils.responseSuccess("成功发送客户端");
