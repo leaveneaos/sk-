@@ -4,6 +4,7 @@ import com.rjxx.taxeasy.config.RabbitmqUtils;
 import com.rjxx.taxeasy.domains.Kpls;
 import com.rjxx.taxeasy.service.InvoiceService;
 import com.rjxx.taxeasy.service.KplsService;
+import com.rjxx.taxeasy.service.SkpService;
 import com.rjxx.taxeasy.socket.ServerHandler;
 import com.rjxx.taxeasy.socket.SocketSession;
 import com.rjxx.taxeasy.socket.command.ICommand;
@@ -37,6 +38,9 @@ public class GetInvoiceCommand implements ICommand {
     @Autowired
     private RabbitmqUtils rabbitmqUtils;
 
+    @Autowired
+    private SkpService skpService;
+
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
         try {
@@ -63,9 +67,10 @@ public class GetInvoiceCommand implements ICommand {
      */
     private Kpls getDataFromMq(int kpdid, String fpzldms) throws Exception {
         String[] fpzldmArr = fpzldms.split(",");
+        String sksbh = skpService.findOne(kpdid).getSkph();
         for (String fpzldm : fpzldmArr) {
             do {
-                String kplshStr = (String) rabbitmqUtils.receiveMsg(kpdid, fpzldm);
+                String kplshStr = (String) rabbitmqUtils.receiveMsg(sksbh, fpzldm);
                 if (StringUtils.isNotBlank(kplshStr)) {
                     int kplsh = Integer.valueOf(kplshStr);
                     Map params = new HashMap();

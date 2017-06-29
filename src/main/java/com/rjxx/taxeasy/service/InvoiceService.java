@@ -166,15 +166,16 @@ public class InvoiceService {
      */
     public InvoicePendingData generatePendingData(int kpdid) {
         InvoicePendingData result = new InvoicePendingData();
+        String skph = skpService.findOne(kpdid).getSkph();
         try {
             Channel channel = ((PublisherCallbackChannel) rabbitmqUtils.getChannel()).getDelegate();
-            String zpQueueName = rabbitmqUtils.getQueueName(kpdid, "01");
+            String zpQueueName = rabbitmqUtils.getQueueName(skph, "01");
             int zpkjsl = (int) channel.messageCount(zpQueueName);
             result.setZpkjsl(zpkjsl);
-            String ppQueueName = rabbitmqUtils.getQueueName(kpdid, "02");
+            String ppQueueName = rabbitmqUtils.getQueueName(skph, "02");
             int ppkjsl = (int) channel.messageCount(ppQueueName);
             result.setPpkjsl(ppkjsl);
-            String dzpQueueName = rabbitmqUtils.getQueueName(kpdid, "12");
+            String dzpQueueName = rabbitmqUtils.getQueueName(skph, "12");
             int dzpkjsl = (int) channel.messageCount(dzpQueueName);
             result.setDzpkjsl(dzpkjsl);
             channel.close();
