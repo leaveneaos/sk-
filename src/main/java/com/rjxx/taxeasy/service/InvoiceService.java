@@ -5,6 +5,7 @@ import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponseUtils;
 import com.rjxx.taxeasy.bizcomm.utils.SeperateInvoiceUtils;
 import com.rjxx.taxeasy.config.RabbitmqUtils;
+import com.rjxx.taxeasy.domains.Cszb;
 import com.rjxx.taxeasy.domains.Kpls;
 import com.rjxx.taxeasy.domains.Kpspmx;
 import com.rjxx.taxeasy.domains.Skp;
@@ -46,6 +47,8 @@ public class InvoiceService {
 
     @Autowired
     private RabbitmqUtils rabbitmqUtils;
+    @Autowired
+    private CszbService cszbService;
 
     /**
      * 执行开票
@@ -132,6 +135,11 @@ public class InvoiceService {
         Skp skp = skpService.findOne(skpid);
         //文本方式，需要重新进行价税分离
         SeperateInvoiceUtils.repeatSeparatePrice(kpspmxList);
+        int xfid = skp.getXfid();
+        int kpdid = skp.getId();
+        Cszb cszb = cszbService.getSpbmbbh(kpls.getGsdm(), xfid, kpdid, "spbmbbh");
+        String spbmbbh = cszb.getCsz();
+        params.put("spbmbbh",spbmbbh);
         params.put("kpls", kpls);
         params.put("kpspmxList", kpspmxList);
         String gfyhzh = (kpls.getGfyh() == null ? "" : kpls.getGfyh()) + (kpls.getGfyhzh() == null ? "" : kpls.getGfyhzh());
