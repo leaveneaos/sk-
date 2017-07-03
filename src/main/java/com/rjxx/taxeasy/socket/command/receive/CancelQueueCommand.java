@@ -37,7 +37,7 @@ public class CancelQueueCommand implements ICommand {
             }
             logger.info("------------KPLSH----------------"+kplsh);
             int posCommand=lsh.indexOf("￥");
-            String  Command=lsh.substring(posCommand, lsh.length());
+            String  Command=lsh.substring(posCommand+1, lsh.length());
             logger.info("------------命令----------------"+Command);
             if(Command.equals("ReturnVoidInvoice")||Command.equals("ReturnInvoiceFile")
                ||Command.equals("ReturnReprintInvoice")||Command.equals("ReturnInvoice")){
