@@ -40,7 +40,7 @@ public class CancelQueueCommand implements ICommand {
             String  Command=lsh.substring(posCommand+1, lsh.length());
             logger.info("------------命令----------------"+Command);
             if(Command.equals("ReturnVoidInvoice")||Command.equals("ReturnInvoiceFile")
-               ||Command.equals("ReturnReprintInvoice")||Command.equals("ReturnInvoice")){
+               ||Command.equals("ReturnReprintInvoice")||Command.equals("Invoice")){
                 Kpls kpls = kplsService.findOne(kplsh);
                 kpls.setFpztdm("04");
                 kplsService.save(kpls);
