@@ -229,7 +229,7 @@ public class ClientDesUtils {
             fphxwsjl.setStartdate(new Date());
             fphxwsjl.setSecretKey(gsxx.getSecretKey());
             fphxwsjl.setSign(Secret);
-            fphxwsjl.setWsurl(gsxx.getWsUrl());
+            fphxwsjl.setWsurl(gsxx.getCallbackurl());
             fphxwsjl.setReturncontent(sendMes);
             fphxwsjl.setReturnmessage(ReturnMessage);
             fphxwsjlService.save(fphxwsjl);
