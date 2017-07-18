@@ -1,5 +1,6 @@
 package com.rjxx.taxeasy.controller;
 
+import com.rjxx.taxeasy.bizcomm.utils.GeneratePdfService;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponseUtils;
 import com.rjxx.taxeasy.bizcomm.utils.SkService;
@@ -45,6 +46,8 @@ public class InvoiceController {
 
     @Autowired
     private InvoiceService invoiceService;
+
+
 
     @RequestMapping(value = "/getCodeAndNo", method = {RequestMethod.GET, RequestMethod.POST})
     public String getCodeAndNo(String p) throws Exception {
@@ -198,5 +201,28 @@ public class InvoiceController {
         result = DesUtils.DESEncrypt(result, DesUtils.GLOBAL_DES_KEY);
         return result;
     }
-
+    /**
+     * 重新生成pdf
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/ReCreatePdf", method = {RequestMethod.GET, RequestMethod.POST})
+    private String ReCreatePdf(String p) throws Exception {
+        try {
+            if (StringUtils.isBlank(p)) {
+                throw new Exception("参数不能为空");
+            }
+            String kplshStr = skService.decryptSkServerParameter(p);
+            int kplsh = Integer.valueOf(kplshStr);
+            logger.debug("receive invoice request:" + kplsh);
+            InvoiceResponse invoiceResponse  = invoiceService.generatePdf(kplsh);
+            String result = XmlJaxbUtils.toXml(invoiceResponse);
+            logger.debug(result);
+            return result;
+        }catch (Exception e){
+            logger.error("", e);
+            InvoiceResponse response = InvoiceResponseUtils.responseError(e.getMessage());
+            return XmlJaxbUtils.toXml(response);
+        }
+    }
 }

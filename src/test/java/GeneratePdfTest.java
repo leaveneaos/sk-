@@ -31,7 +31,7 @@ public class GeneratePdfTest {
 
     @Test
     public void testGeneratePdf() throws Exception {
-        int kplsh = 206286;
+        int kplsh = 83214;
         Kpls kpls = kplsService.findOne(kplsh);
         Map map = new HashMap();
         int xfid = kpls.getXfid();

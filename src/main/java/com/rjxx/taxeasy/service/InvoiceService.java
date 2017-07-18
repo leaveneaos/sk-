@@ -1,6 +1,7 @@
 package com.rjxx.taxeasy.service;
 
 import com.rabbitmq.client.Channel;
+import com.rjxx.taxeasy.bizcomm.utils.GeneratePdfService;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponseUtils;
 import com.rjxx.taxeasy.bizcomm.utils.SeperateInvoiceUtils;
@@ -49,6 +50,8 @@ public class InvoiceService {
     private RabbitmqUtils rabbitmqUtils;
     @Autowired
     private CszbService cszbService;
+    @Autowired
+    private GeneratePdfService generatePdfService;
 
     /**
      * 执行开票
@@ -134,7 +137,8 @@ public class InvoiceService {
         int skpid = kpls.getSkpid();
         Skp skp = skpService.findOne(skpid);
         //文本方式，需要重新进行价税分离
-        SeperateInvoiceUtils.repeatSeparatePrice(kpspmxList);
+        List<Kpspmx> kpspmxListnew=SeperateInvoiceUtils.repeatSeparatePrice(kpspmxList);
+        kpspmxService.save(kpspmxListnew);
         int xfid = skp.getXfid();
         int kpdid = skp.getId();
         Cszb cszb = cszbService.getSpbmbbh(kpls.getGsdm(), xfid, kpdid, "spbmbbh");
@@ -245,4 +249,16 @@ public class InvoiceService {
         }
     }
 
+    public  InvoiceResponse generatePdf(int kplsh) {
+        InvoiceResponse invoiceResponse=new InvoiceResponse();
+       try {
+           generatePdfService.generatePdf(kplsh);
+           invoiceResponse.setReturnCode("0000");
+       }catch (Exception e){
+           invoiceResponse.setReturnCode("9999");
+           invoiceResponse.setReturnMessage(e.getMessage());
+           e.printStackTrace();
+       }
+        return invoiceResponse;
+    }
 }
