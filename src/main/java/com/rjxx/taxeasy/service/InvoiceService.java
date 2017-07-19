@@ -137,8 +137,8 @@ public class InvoiceService {
         int skpid = kpls.getSkpid();
         Skp skp = skpService.findOne(skpid);
         //文本方式，需要重新进行价税分离
-        List<Kpspmx> kpspmxListnew=SeperateInvoiceUtils.repeatSeparatePrice(kpspmxList);
-        kpspmxService.save(kpspmxListnew);
+      /*  List<Kpspmx> kpspmxListnew=SeperateInvoiceUtils.repeatSeparatePrice(kpspmxList);
+        kpspmxService.save(kpspmxListnew);*/
         int xfid = skp.getXfid();
         int kpdid = skp.getId();
         Cszb cszb = cszbService.getSpbmbbh(kpls.getGsdm(), xfid, kpdid, "spbmbbh");
