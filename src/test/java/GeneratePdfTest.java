@@ -31,13 +31,13 @@ public class GeneratePdfTest {
 
     @Test
     public void testGeneratePdf() throws Exception {
-        int kplsh = 83214;
+        int kplsh = 98615;
         Kpls kpls = kplsService.findOne(kplsh);
         Map map = new HashMap();
         int xfid = kpls.getXfid();
         Jyls jyls = new Jyls();
         jyls.setDdh(kpls.getJylsh());
-        String sfmc = "上海";
+        String sfmc = "山东";
         map.put("SFMC",sfmc);
         map.put("FP_DM", kpls.getFpdm());
         map.put("FP_HM", kpls.getFphm());
