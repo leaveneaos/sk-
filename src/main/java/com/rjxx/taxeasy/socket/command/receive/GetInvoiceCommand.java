@@ -68,6 +68,9 @@ public class GetInvoiceCommand implements ICommand {
     private Kpls getDataFromMq(int kpdid, String fpzldms) throws Exception {
         String[] fpzldmArr = fpzldms.split(",");
         String sksbh = skpService.findOne(kpdid).getSkph();
+        if(null==sksbh||"".equals(sksbh)){
+            sksbh=skpService.findOne(kpdid).getId().toString();
+        }
         for (String fpzldm : fpzldmArr) {
             do {
                 String kplshStr = (String) rabbitmqUtils.receiveMsg(sksbh, fpzldm);

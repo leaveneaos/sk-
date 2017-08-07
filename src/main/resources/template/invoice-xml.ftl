@@ -30,9 +30,9 @@
                         <Yhzcsm>${yhzcbs!}</Yhzcsm>
                         <Dj>${(kpspmx.spdj?string('#.###############'))!}</Dj>
                         <Sl>${(kpspmx.sps?string('#.###############'))!}</Sl>
-                        <Je>${kpspmx.spje?string('#.######')}</Je>
-                        <Se>${kpspmx.spse?string('#.######')}</Se>
-                        <Slv>${kpspmx.spsl?string('#.######')}</Slv>
+                        <Je>${(kpspmx.spje?string('#.######'))!}</Je>
+                        <Se>${(kpspmx.spse?string('#.######'))!}</Se>
+                        <Slv>${(kpspmx.spsl?string('#.######'))!}</Slv>
                         <Kce>${(kpspmx.kce?string('#.######'))!}</Kce>
                     </Sph>
                     </#list>
