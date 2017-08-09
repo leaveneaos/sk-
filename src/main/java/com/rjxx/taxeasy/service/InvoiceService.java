@@ -138,14 +138,14 @@ public class InvoiceService {
         Skp skp = skpService.findOne(skpid);
         //文本方式，需要重新进行价税分离
         List<Kpspmx> kpspmxListnew=SeperateInvoiceUtils.repeatSeparatePrice(kpspmxList);
-        kpspmxService.save(kpspmxListnew);
+        //kpspmxService.save(kpspmxListnew);
         int xfid = skp.getXfid();
         int kpdid = skp.getId();
         Cszb cszb = cszbService.getSpbmbbh(kpls.getGsdm(), xfid, kpdid, "spbmbbh");
         String spbmbbh = cszb.getCsz();
         params.put("spbmbbh",spbmbbh);
         params.put("kpls", kpls);
-        params.put("kpspmxList", kpspmxList);
+        params.put("kpspmxList", kpspmxListnew);
         String gfyhzh = (kpls.getGfyh() == null ? "" : kpls.getGfyh()) + (kpls.getGfyhzh() == null ? "" : kpls.getGfyhzh());
         String gfdzdh = (kpls.getGfdz() == null ? "" : kpls.getGfdz()) + (kpls.getGfdh() == null ? "" : kpls.getGfdh());
         gfyhzh = gfyhzh.trim();
