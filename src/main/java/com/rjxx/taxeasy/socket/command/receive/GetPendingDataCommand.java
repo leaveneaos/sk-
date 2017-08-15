@@ -26,7 +26,7 @@ public class GetPendingDataCommand implements ICommand {
 
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
-        int kpdid = socketSession.getKpdid();
+        String kpdid = socketSession.getKpdid();
         InvoicePendingData invoicePendingData = invoiceService.generatePendingData(kpdid);
         String xml = XmlJaxbUtils.toXml(invoicePendingData);
 //        logger.debug(socketSession.getKpdid() + " SendPendingData:" + xml);

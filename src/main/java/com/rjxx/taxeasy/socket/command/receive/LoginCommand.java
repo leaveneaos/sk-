@@ -1,6 +1,8 @@
 package com.rjxx.taxeasy.socket.command.receive;
 
+import com.rjxx.taxeasy.domains.Cszb;
 import com.rjxx.taxeasy.domains.Kpls;
+import com.rjxx.taxeasy.service.CszbService;
 import com.rjxx.taxeasy.service.KplsService;
 import com.rjxx.taxeasy.socket.SocketSession;
 import com.rjxx.taxeasy.socket.command.ICommand;
@@ -38,16 +40,18 @@ public class LoginCommand implements ICommand {
 
     @Autowired
     private KplsService kplsService;
+    @Autowired
+    private CszbService cszbService;
 
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
         data = DesUtils.DESDecrypt(data, DesUtils.GLOBAL_DES_KEY);
         LoginInfo loginInfo = XmlJaxbUtils.convertXmlStrToObject(LoginInfo.class, data);
-        Integer kpdid = loginInfo.Kpdid;
+        String kpdid = loginInfo.Kpdid;
         String sessionId = loginInfo.SessionId;
         String macAddr = loginInfo.MacAddr;
         IoSession ioSession = socketSession.getSession();
-        if (kpdid == 0 || StringUtils.isBlank(sessionId) || StringUtils.isBlank(macAddr)) {
+        if (kpdid .equals("0") || StringUtils.isBlank(sessionId) || StringUtils.isBlank(macAddr)) {
             logout(ioSession, "非法登录");
             return;
         }
@@ -68,7 +72,7 @@ public class LoginCommand implements ICommand {
 //            return;
 //        }
         //校验开票点
-        Skp skp = skpService.findOne(kpdid);
+        Skp skp = skpService.findOne(Integer.parseInt(kpdid));
         if (skp == null) {
             logger.info("kpdid:" + kpdid + " not exists,client will logout!!!");
             logout(ioSession, "License已过期");
@@ -79,6 +83,11 @@ public class LoginCommand implements ICommand {
         String desKey = MD5Util.generatePassword(UUID.randomUUID().toString()).substring(0, 8);
         socketSession.setDesKey(desKey);
         socketSession.setLoginTime(new Date());
+        Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), null, "sfzcdkpdkp");
+        String sfzcdkpdkp = cszb.getCsz();
+        if(sfzcdkpdkp.equals("是")){
+            kpdid=skp.getSkph();
+        }
         socketSession.setKpdid(kpdid);
         logger.info("kpd:" + kpdid + " " + ioSession + " connect to server");
         ioSession.setAttribute("kpdid", kpdid);

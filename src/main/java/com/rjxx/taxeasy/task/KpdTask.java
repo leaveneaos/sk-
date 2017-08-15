@@ -14,7 +14,7 @@ public class KpdTask implements Runnable {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private Integer kpdid;
+    private String kpdid;
 
     /**
      * 普通任务
@@ -28,7 +28,7 @@ public class KpdTask implements Runnable {
 
     private boolean running = false;
 
-    public KpdTask(Integer kpdid) {
+    public KpdTask(String kpdid) {
         this.kpdid = kpdid;
     }
 

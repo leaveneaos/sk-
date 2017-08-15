@@ -35,7 +35,7 @@ public class TestController {
     private InvoiceController invoiceController;
 
     @RequestMapping(value = "/getCodeAndNo")
-    public String getCodeAndNo(int kpdid, String fplxdm) throws Exception {
+    public String getCodeAndNo(String kpdid, String fplxdm) throws Exception {
         try {
             String result = ServerHandler.sendMessage(kpdid, SendCommand.GetCodeAndNo, fplxdm);
             return result;

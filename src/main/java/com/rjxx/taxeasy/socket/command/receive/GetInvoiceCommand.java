@@ -48,7 +48,7 @@ public class GetInvoiceCommand implements ICommand {
             if (StringUtils.isBlank(fpzldm)) {
                 return;
             }
-            Integer kpdid = socketSession.getKpdid();
+            String kpdid = socketSession.getKpdid();
             logger.debug("-----------receive kpdid " + kpdid + " GetInvoice request---------");
             doKp(fpzldm, kpdid);
 
@@ -65,11 +65,11 @@ public class GetInvoiceCommand implements ICommand {
      * @param fpzldms
      * @return
      */
-    private Kpls getDataFromMq(int kpdid, String fpzldms) throws Exception {
+    private Kpls getDataFromMq(String kpdid, String fpzldms) throws Exception {
         String[] fpzldmArr = fpzldms.split(",");
-        String sksbh = skpService.findOne(kpdid).getSkph();
+        String sksbh = skpService.findOne(Integer.parseInt(kpdid)).getSkph();
         if(null==sksbh||"".equals(sksbh)){
-            sksbh=skpService.findOne(kpdid).getId().toString();
+            sksbh=skpService.findOne(Integer.parseInt(kpdid)).getId().toString();
         }
         for (String fpzldm : fpzldmArr) {
             do {
@@ -96,7 +96,7 @@ public class GetInvoiceCommand implements ICommand {
      * @param fpzldm
      * @param kpdid
      */
-    private void doKp(String fpzldm, int kpdid) throws Exception {
+    private void doKp(String fpzldm, String  kpdid) throws Exception {
         Kpls kpls = getDataFromMq(kpdid, fpzldm);
         if (kpls == null) {
             InvoicePendingData invoicePendingData = invoiceService.generatePendingData(kpdid);

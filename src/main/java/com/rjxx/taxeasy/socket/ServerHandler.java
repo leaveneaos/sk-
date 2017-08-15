@@ -28,7 +28,7 @@ public class ServerHandler extends IoHandlerAdapter {
 
     private static Logger logger = LoggerFactory.getLogger(ServerHandler.class);
 
-    private static Map<Integer, SocketSession> cachedSession = new ConcurrentHashMap<>();
+    private static Map<String, SocketSession> cachedSession = new ConcurrentHashMap<>();
 
     private static Map<String, SocketRequest> cachedRequestMap = new ConcurrentHashMap<>();
 
@@ -53,7 +53,7 @@ public class ServerHandler extends IoHandlerAdapter {
      * @return
      * @throws Exception
      */
-    public static String sendMessage(int kpdid, SendCommand sendCommand, String data, String commandId) throws Exception {
+    public static String sendMessage(String kpdid, SendCommand sendCommand, String data, String commandId) throws Exception {
         return sendMessage(kpdid, sendCommand, data, commandId, true, 60000);
     }
 
@@ -66,7 +66,7 @@ public class ServerHandler extends IoHandlerAdapter {
      * @return
      * @throws Exception
      */
-    public static String sendMessage(int kpdid, SendCommand sendCommand, String data) throws Exception {
+    public static String sendMessage(String kpdid, SendCommand sendCommand, String data) throws Exception {
         return sendMessage(kpdid, sendCommand, data, null);
     }
 
@@ -82,14 +82,14 @@ public class ServerHandler extends IoHandlerAdapter {
      * @return
      * @throws Exception
      */
-    public static String sendMessage(int kpdid, SendCommand sendCommand, String data, String commandId, boolean wait, long timeout) throws Exception {
+    public static String sendMessage(String kpdid, SendCommand sendCommand, String data, String commandId, boolean wait, long timeout) throws Exception {
         if (StringUtils.isBlank(commandId)) {
             commandId = UUID.randomUUID().toString().replace("-", "");
         }
         SocketSession session = cachedSession.get(kpdid);
         if (session == null) {
             SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
-            Skp skp = skpService.findOne(kpdid);
+            Skp skp = skpService.findOne(Integer.parseInt(kpdid));
             if (skp != null) {
                 throw new Exception("开票点：" + skp.getKpdmc() + "(" + skp.getKpddm() + ")" + "没有连上服务器，请去开票通客户端点击开具按钮");
             } else {
@@ -235,7 +235,7 @@ public class ServerHandler extends IoHandlerAdapter {
                         SocketSession socketSession = new SocketSession();
                         socketSession.setSession(session);
                         loginCommand.run(null, returnMessage, socketSession);
-                        if (socketSession.getKpdid() != null && socketSession.getKpdid() != 0) {
+                        if (socketSession.getKpdid() != null && socketSession.getKpdid() != "0") {
                             SocketSession old = cachedSession.get(socketSession.getKpdid());
                             if (old != null && old.getSession() != session) {
                                 sendMessage(old, SendCommand.Logout, "开票点已在其他地方登录！！！");
