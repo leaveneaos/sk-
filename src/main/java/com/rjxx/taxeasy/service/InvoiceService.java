@@ -186,10 +186,21 @@ public class InvoiceService {
      * @return
      */
     public InvoicePendingData generatePendingData(String kpdid) {
+        String skph=null;
         InvoicePendingData result = new InvoicePendingData();
-        String skph = skpService.findOne(Integer.parseInt(kpdid)).getSkph();
-        if(null==skph||"".equals(skph)){
-            skph=skpService.findOne(Integer.parseInt(kpdid)).getId().toString();
+        Map parms=new HashMap();
+        parms.put("kpdid",kpdid);
+        List<Skp> skpList=skpService.findSkpbySkph(parms);
+        Skp skp=skpList.get(0);
+        Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), null, "sfzcdkpdkp");
+        String sfzcdkpdkp = cszb.getCsz();
+        if(sfzcdkpdkp.equals("是")){
+            skph=kpdid;
+        }else{
+            skph = skpService.findOne(Integer.parseInt(kpdid)).getSkph();
+            if(null==skph||"".equals(skph)){
+                skph=skpService.findOne(Integer.parseInt(kpdid)).getId().toString();
+            }
         }
         try {
             Channel channel = ((PublisherCallbackChannel) rabbitmqUtils.getChannel()).getDelegate();
