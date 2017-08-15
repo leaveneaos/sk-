@@ -58,8 +58,13 @@ public class InvoiceController {
             }
             String params = skService.decryptSkServerParameter(p);
             Map<String, String> map = HtmlUtils.parseQueryString(params);
-           // int kpdid = Integer.valueOf(map.get("kpdid"));
             String kpdid = map.get("kpdid");
+            Skp skp = skpService.findOne(Integer.valueOf(map.get("kpdid")));
+            Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), null, "sfzcdkpdkp");
+            String sfzcdkpdkp = cszb.getCsz();
+            if(sfzcdkpdkp.equals("是")){
+                kpdid=skp.getSkph();
+            }
             String fplxdm = map.get("fplxdm");
             String result = ServerHandler.sendMessage(kpdid, SendCommand.GetCodeAndNo, fplxdm);
             logger.debug(result);
