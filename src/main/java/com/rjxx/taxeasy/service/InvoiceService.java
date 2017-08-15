@@ -219,7 +219,7 @@ public class InvoiceService {
             e.printStackTrace();
             logger.error("", e);
         }
-        result.setKpdid(kpdid);
+        result.setKpdid(123);
         result.setSuccess("true");
         return result;
     }
