@@ -227,7 +227,7 @@ public class ServerHandler extends IoHandlerAdapter {
                 if (arr.length > 2) {
                     returnMessage = arr[2];
                 }
-                Integer kpdid = (Integer) session.getAttribute("kpdid");
+                String kpdid = (String)session.getAttribute("kpdid");
                 if (kpdid == null) {
                     if (ReceiveCommand.Login.name().equals(commandName)) {
                         //假如是登录命令，此处处理登录命令
