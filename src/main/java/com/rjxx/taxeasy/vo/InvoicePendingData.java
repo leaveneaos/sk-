@@ -19,7 +19,7 @@ public class InvoicePendingData {
     private String message;
 
     @XmlElement(name = "Kpdid")
-    private int kpdid = 0;
+    private String kpdid = "0";
 
     @XmlElement(name = "Ppkjsl")
     private int ppkjsl = 0;
@@ -61,11 +61,11 @@ public class InvoicePendingData {
         this.message = message;
     }
 
-    public int getKpdid() {
+    public String getKpdid() {
         return kpdid;
     }
 
-    public void setKpdid(int kpdid) {
+    public void setKpdid(String kpdid) {
         this.kpdid = kpdid;
     }
 
