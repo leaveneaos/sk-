@@ -154,7 +154,7 @@ public class ServerHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionClosed(IoSession session) throws Exception {
-        Integer kpdid = (Integer) session.getAttribute("kpdid");
+        String kpdid = (String) session.getAttribute("kpdid");
         if (kpdid != null) {
             SocketSession socketSession = cachedSession.get(kpdid);
             if (session == socketSession.getSession()) {
@@ -186,7 +186,7 @@ public class ServerHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
-        Integer kpdid = (Integer) session.getAttribute("kpdid");
+        String kpdid = (String) session.getAttribute("kpdid");
         if (kpdid != null) {
             logger.info("kpd:" + kpdid + " " + session + " idle time out!!!");
         }
@@ -196,7 +196,7 @@ public class ServerHandler extends IoHandlerAdapter {
 
     @Override
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-        Integer kpdid = (Integer) session.getAttribute("kpdid");
+        String kpdid = (String) session.getAttribute("kpdid");
         if (kpdid != null) {
             logger.error("kpd:" + kpdid + " " + session + " exception caught!!!", cause);
         }
