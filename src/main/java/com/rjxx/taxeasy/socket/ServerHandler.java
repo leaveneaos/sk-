@@ -1,7 +1,9 @@
 package com.rjxx.taxeasy.socket;
 
 import com.rjxx.comm.utils.ApplicationContextUtils;
+import com.rjxx.taxeasy.domains.Cszb;
 import com.rjxx.taxeasy.domains.Skp;
+import com.rjxx.taxeasy.service.CszbService;
 import com.rjxx.taxeasy.service.SkpService;
 import com.rjxx.taxeasy.socket.command.ICommand;
 import com.rjxx.taxeasy.socket.command.ReceiveCommand;
@@ -16,9 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.util.Map;
-import java.util.Timer;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -86,10 +86,20 @@ public class ServerHandler extends IoHandlerAdapter {
         if (StringUtils.isBlank(commandId)) {
             commandId = UUID.randomUUID().toString().replace("-", "");
         }
+        String skph=null;
         SocketSession session = cachedSession.get(kpdid);
         if (session == null) {
             SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
-            Skp skp = skpService.findOne(Integer.parseInt(kpdid));
+            Map parms=new HashMap();
+            parms.put("kpdid",kpdid);
+            List<Skp> skpList=skpService.findSkpbySkph(parms);
+            Skp skp=skpList.get(0);
+            CszbService cszbService = ApplicationContextUtils.getBean(CszbService.class);
+            Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), null, "sfzcdkpdkp");
+            String sfzcdkpdkp = cszb.getCsz();
+            if(sfzcdkpdkp.equals("是")){
+                skph=kpdid;
+            }
             if (skp != null) {
                 throw new Exception("开票点：" + skp.getKpdmc() + "(" + skp.getKpddm() + ")" + "没有连上服务器，请去开票通客户端点击开具按钮");
             } else {
