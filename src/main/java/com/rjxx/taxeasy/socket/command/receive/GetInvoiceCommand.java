@@ -1,7 +1,10 @@
 package com.rjxx.taxeasy.socket.command.receive;
 
 import com.rjxx.taxeasy.config.RabbitmqUtils;
+import com.rjxx.taxeasy.domains.Cszb;
 import com.rjxx.taxeasy.domains.Kpls;
+import com.rjxx.taxeasy.domains.Skp;
+import com.rjxx.taxeasy.service.CszbService;
 import com.rjxx.taxeasy.service.InvoiceService;
 import com.rjxx.taxeasy.service.KplsService;
 import com.rjxx.taxeasy.service.SkpService;
@@ -18,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,6 +44,8 @@ public class GetInvoiceCommand implements ICommand {
 
     @Autowired
     private SkpService skpService;
+    @Autowired
+    private CszbService cszbService;
 
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
@@ -48,7 +54,7 @@ public class GetInvoiceCommand implements ICommand {
             if (StringUtils.isBlank(fpzldm)) {
                 return;
             }
-            Integer kpdid = socketSession.getKpdid();
+            String kpdid = socketSession.getKpdid();
             logger.debug("-----------receive kpdid " + kpdid + " GetInvoice request---------");
             doKp(fpzldm, kpdid);
 
@@ -65,15 +71,26 @@ public class GetInvoiceCommand implements ICommand {
      * @param fpzldms
      * @return
      */
-    private Kpls getDataFromMq(int kpdid, String fpzldms) throws Exception {
+    private Kpls getDataFromMq(String kpdid, String fpzldms) throws Exception {
         String[] fpzldmArr = fpzldms.split(",");
-        String sksbh = skpService.findOne(kpdid).getSkph();
-        if(null==sksbh||"".equals(sksbh)){
-            sksbh=skpService.findOne(kpdid).getId().toString();
+        String skph=null;
+        Map parms=new HashMap();
+        parms.put("kpdid",kpdid);
+        List<Skp> skpList=skpService.findSkpbySkph(parms);
+        Skp skp=skpList.get(0);
+        Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), null, "sfzcdkpdkp");
+        String sfzcdkpdkp = cszb.getCsz();
+        if(sfzcdkpdkp.equals("是")){
+            skph=kpdid;
+        }else{
+            skph = skpService.findOne(Integer.parseInt(kpdid)).getSkph();
+            if(null==skph||"".equals(skph)){
+                skph=skpService.findOne(Integer.parseInt(kpdid)).getId().toString();
+            }
         }
         for (String fpzldm : fpzldmArr) {
             do {
-                String kplshStr = (String) rabbitmqUtils.receiveMsg(sksbh, fpzldm);
+                String kplshStr = (String) rabbitmqUtils.receiveMsg(skph, fpzldm);
                 if (StringUtils.isNotBlank(kplshStr)) {
                     int kplsh = Integer.valueOf(kplshStr);
                     Map params = new HashMap();
@@ -96,7 +113,7 @@ public class GetInvoiceCommand implements ICommand {
      * @param fpzldm
      * @param kpdid
      */
-    private void doKp(String fpzldm, int kpdid) throws Exception {
+    private void doKp(String fpzldm, String  kpdid) throws Exception {
         Kpls kpls = getDataFromMq(kpdid, fpzldm);
         if (kpls == null) {
             InvoicePendingData invoicePendingData = invoiceService.generatePendingData(kpdid);

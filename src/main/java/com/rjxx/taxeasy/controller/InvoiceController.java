@@ -4,11 +4,10 @@ import com.rjxx.taxeasy.bizcomm.utils.GeneratePdfService;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponseUtils;
 import com.rjxx.taxeasy.bizcomm.utils.SkService;
+import com.rjxx.taxeasy.domains.Cszb;
 import com.rjxx.taxeasy.domains.Kpls;
-import com.rjxx.taxeasy.service.InvoiceService;
-import com.rjxx.taxeasy.service.KplsService;
-import com.rjxx.taxeasy.service.KpspmxService;
-import com.rjxx.taxeasy.service.SkpService;
+import com.rjxx.taxeasy.domains.Skp;
+import com.rjxx.taxeasy.service.*;
 import com.rjxx.taxeasy.socket.ServerHandler;
 import com.rjxx.taxeasy.socket.command.SendCommand;
 import com.rjxx.taxeasy.utils.ClientDesUtils;
@@ -46,6 +45,8 @@ public class InvoiceController {
 
     @Autowired
     private InvoiceService invoiceService;
+    @Autowired
+    private CszbService cszbService;
 
 
 
@@ -57,7 +58,13 @@ public class InvoiceController {
             }
             String params = skService.decryptSkServerParameter(p);
             Map<String, String> map = HtmlUtils.parseQueryString(params);
-            int kpdid = Integer.valueOf(map.get("kpdid"));
+            String kpdid = map.get("kpdid");
+            Skp skp = skpService.findOne(Integer.valueOf(map.get("kpdid")));
+            Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), null, "sfzcdkpdkp");
+            String sfzcdkpdkp = cszb.getCsz();
+            if(sfzcdkpdkp.equals("是")){
+                kpdid=skp.getSkph();
+            }
             String fplxdm = map.get("fplxdm");
             String result = ServerHandler.sendMessage(kpdid, SendCommand.GetCodeAndNo, fplxdm);
             logger.debug(result);
@@ -123,7 +130,16 @@ public class InvoiceController {
             params.put("lsh", lsh);
             String content = TemplateUtils.generateContent("invoice-request.ftl", params);
             logger.debug(content);
-            String result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.ReprintInvoice, content, kpls.getKplsh() + "");
+            Skp skp = skpService.findOne(kpls.getSkpid());
+            Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), null, "sfzcdkpdkp");
+            String sfzcdkpdkp = cszb.getCsz();
+            String kpdid=null;
+            if(sfzcdkpdkp.equals("是")){
+                kpdid=skp.getSkph();
+            }else{
+                kpdid=kpls.getSkpid().toString();
+            }
+            String result = ServerHandler.sendMessage(kpdid, SendCommand.ReprintInvoice, content, kpls.getKplsh() + "");
             InvoiceResponse invoiceResponse = XmlJaxbUtils.convertXmlStrToObject(InvoiceResponse.class, result);
             invoiceResponse.setKpddm(kpls.getKpddm());
             invoiceResponse.setJylsh(kpls.getJylsh());
@@ -184,7 +200,7 @@ public class InvoiceController {
             return generateInvoicePendingDataResult(result);
         }
         String kpdidStr = queryMap.get("kpdid");
-        int kpdid = Integer.valueOf(kpdidStr);
+        String kpdid = kpdidStr;
         result = invoiceService.generatePendingData(kpdid);
         return generateInvoicePendingDataResult(result);
     }

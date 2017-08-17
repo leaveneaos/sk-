@@ -1,7 +1,9 @@
 package com.rjxx.taxeasy.socket;
 
 import com.rjxx.comm.utils.ApplicationContextUtils;
+import com.rjxx.taxeasy.domains.Cszb;
 import com.rjxx.taxeasy.domains.Skp;
+import com.rjxx.taxeasy.service.CszbService;
 import com.rjxx.taxeasy.service.SkpService;
 import com.rjxx.taxeasy.socket.command.ICommand;
 import com.rjxx.taxeasy.socket.command.ReceiveCommand;
@@ -16,9 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.util.Map;
-import java.util.Timer;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -28,7 +28,7 @@ public class ServerHandler extends IoHandlerAdapter {
 
     private static Logger logger = LoggerFactory.getLogger(ServerHandler.class);
 
-    private static Map<Integer, SocketSession> cachedSession = new ConcurrentHashMap<>();
+    private static Map<String, SocketSession> cachedSession = new ConcurrentHashMap<>();
 
     private static Map<String, SocketRequest> cachedRequestMap = new ConcurrentHashMap<>();
 
@@ -53,7 +53,7 @@ public class ServerHandler extends IoHandlerAdapter {
      * @return
      * @throws Exception
      */
-    public static String sendMessage(int kpdid, SendCommand sendCommand, String data, String commandId) throws Exception {
+    public static String sendMessage(String kpdid, SendCommand sendCommand, String data, String commandId) throws Exception {
         return sendMessage(kpdid, sendCommand, data, commandId, true, 60000);
     }
 
@@ -66,7 +66,7 @@ public class ServerHandler extends IoHandlerAdapter {
      * @return
      * @throws Exception
      */
-    public static String sendMessage(int kpdid, SendCommand sendCommand, String data) throws Exception {
+    public static String sendMessage(String kpdid, SendCommand sendCommand, String data) throws Exception {
         return sendMessage(kpdid, sendCommand, data, null);
     }
 
@@ -82,14 +82,24 @@ public class ServerHandler extends IoHandlerAdapter {
      * @return
      * @throws Exception
      */
-    public static String sendMessage(int kpdid, SendCommand sendCommand, String data, String commandId, boolean wait, long timeout) throws Exception {
+    public static String sendMessage(String kpdid, SendCommand sendCommand, String data, String commandId, boolean wait, long timeout) throws Exception {
         if (StringUtils.isBlank(commandId)) {
             commandId = UUID.randomUUID().toString().replace("-", "");
         }
+        String skph=null;
         SocketSession session = cachedSession.get(kpdid);
         if (session == null) {
             SkpService skpService = ApplicationContextUtils.getBean(SkpService.class);
-            Skp skp = skpService.findOne(kpdid);
+            Map parms=new HashMap();
+            parms.put("kpdid",kpdid);
+            List<Skp> skpList=skpService.findSkpbySkph(parms);
+            Skp skp=skpList.get(0);
+            CszbService cszbService = ApplicationContextUtils.getBean(CszbService.class);
+            Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), null, "sfzcdkpdkp");
+            String sfzcdkpdkp = cszb.getCsz();
+            if(sfzcdkpdkp.equals("是")){
+                skph=kpdid;
+            }
             if (skp != null) {
                 throw new Exception("开票点：" + skp.getKpdmc() + "(" + skp.getKpddm() + ")" + "没有连上服务器，请去开票通客户端点击开具按钮");
             } else {
@@ -154,7 +164,7 @@ public class ServerHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionClosed(IoSession session) throws Exception {
-        Integer kpdid = (Integer) session.getAttribute("kpdid");
+        String kpdid = (String) session.getAttribute("kpdid");
         if (kpdid != null) {
             SocketSession socketSession = cachedSession.get(kpdid);
             if (session == socketSession.getSession()) {
@@ -186,7 +196,7 @@ public class ServerHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
-        Integer kpdid = (Integer) session.getAttribute("kpdid");
+        String kpdid = (String) session.getAttribute("kpdid");
         if (kpdid != null) {
             logger.info("kpd:" + kpdid + " " + session + " idle time out!!!");
         }
@@ -196,7 +206,7 @@ public class ServerHandler extends IoHandlerAdapter {
 
     @Override
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-        Integer kpdid = (Integer) session.getAttribute("kpdid");
+        String kpdid = (String) session.getAttribute("kpdid");
         if (kpdid != null) {
             logger.error("kpd:" + kpdid + " " + session + " exception caught!!!", cause);
         }
@@ -227,7 +237,7 @@ public class ServerHandler extends IoHandlerAdapter {
                 if (arr.length > 2) {
                     returnMessage = arr[2];
                 }
-                Integer kpdid = (Integer) session.getAttribute("kpdid");
+                String kpdid = (String)session.getAttribute("kpdid");
                 if (kpdid == null) {
                     if (ReceiveCommand.Login.name().equals(commandName)) {
                         //假如是登录命令，此处处理登录命令
@@ -235,7 +245,7 @@ public class ServerHandler extends IoHandlerAdapter {
                         SocketSession socketSession = new SocketSession();
                         socketSession.setSession(session);
                         loginCommand.run(null, returnMessage, socketSession);
-                        if (socketSession.getKpdid() != null && socketSession.getKpdid() != 0) {
+                        if (socketSession.getKpdid() != null && socketSession.getKpdid() != "0") {
                             SocketSession old = cachedSession.get(socketSession.getKpdid());
                             if (old != null && old.getSession() != session) {
                                 sendMessage(old, SendCommand.Logout, "开票点已在其他地方登录！！！");

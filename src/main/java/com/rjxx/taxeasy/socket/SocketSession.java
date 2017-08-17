@@ -10,7 +10,7 @@ import java.util.Date;
  */
 public class SocketSession {
 
-    private Integer kpdid;
+    private String kpdid;
 
     private String desKey;
 
@@ -18,11 +18,11 @@ public class SocketSession {
 
     private IoSession session;
 
-    public Integer getKpdid() {
+    public String getKpdid() {
         return kpdid;
     }
 
-    public void setKpdid(Integer kpdid) {
+    public void setKpdid(String kpdid) {
         this.kpdid = kpdid;
     }
 

@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class LoginInfo {
 
     @XmlElement(name = "Kpdid")
-    public Integer Kpdid;
+    public String Kpdid;
 
     @XmlElement(name = "SessionId")
     public String SessionId;

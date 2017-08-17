@@ -81,8 +81,17 @@ public class InvoiceService {
         String content = TemplateUtils.generateContent("invoice-request.ftl", params);
         logger.debug(content);
         String result = null;
+        String kpdid=null;
         try {
-            result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.Invoice, content, lsh, wait, timeout);
+            Skp skp = skpService.findOne(kpls.getSkpid());
+            Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), null, "sfzcdkpdkp");
+            String sfzcdkpdkp = cszb.getCsz();
+            if(sfzcdkpdkp.equals("是")){
+                kpdid=skp.getSkph();
+            }else{
+                kpdid=kpls.getSkpid().toString();
+            }
+            result = ServerHandler.sendMessage(kpdid, SendCommand.Invoice, content, lsh, wait, timeout);
         } catch (Exception e) {
             result = e.getMessage();
         }
@@ -176,11 +185,22 @@ public class InvoiceService {
      *
      * @return
      */
-    public InvoicePendingData generatePendingData(int kpdid) {
+    public InvoicePendingData generatePendingData(String kpdid) {
+        String skph=null;
         InvoicePendingData result = new InvoicePendingData();
-        String skph = skpService.findOne(kpdid).getSkph();
-        if(null==skph||"".equals(skph)){
-            skph=skpService.findOne(kpdid).getId().toString();
+        Map parms=new HashMap();
+        parms.put("kpdid",kpdid);
+        List<Skp> skpList=skpService.findSkpbySkph(parms);
+        Skp skp=skpList.get(0);
+        Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), null, "sfzcdkpdkp");
+        String sfzcdkpdkp = cszb.getCsz();
+        if(sfzcdkpdkp.equals("是")){
+            skph=kpdid;
+        }else{
+            skph = skpService.findOne(Integer.parseInt(kpdid)).getSkph();
+            if(null==skph||"".equals(skph)){
+                skph=skpService.findOne(Integer.parseInt(kpdid)).getId().toString();
+            }
         }
         try {
             Channel channel = ((PublisherCallbackChannel) rabbitmqUtils.getChannel()).getDelegate();
@@ -199,7 +219,7 @@ public class InvoiceService {
             e.printStackTrace();
             logger.error("", e);
         }
-        result.setKpdid(kpdid);
+        result.setKpdid(123);
         result.setSuccess("true");
         return result;
     }
@@ -232,8 +252,17 @@ public class InvoiceService {
             String content = TemplateUtils.generateContent("invoice-request.ftl", params);
             logger.debug(content);
             String result = null;
+            String kpdid=null;
             try {
-                result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.VoidInvoice, content, commandId, wait, timeout);
+                Skp skp = skpService.findOne(kpls.getSkpid());
+                Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), null, "sfzcdkpdkp");
+                String sfzcdkpdkp = cszb.getCsz();
+                if(sfzcdkpdkp.equals("是")){
+                    kpdid=skp.getSkph();
+                }else{
+                    kpdid=kpls.getSkpid().toString();
+                }
+                result = ServerHandler.sendMessage(kpdid, SendCommand.VoidInvoice, content, commandId, wait, timeout);
             } catch (Exception e) {
                 result = e.getMessage();
             }
