@@ -6,7 +6,7 @@
         <Fpsj>
             <Fp>
                 <Djh>${kpls.kplsh?string('###')}</Djh>
-                <Gfmc>${kpls.gfmc!}</Gfmc>
+                <Gfmc><![CDATA[${kpls.gfmc!}]]></Gfmc>
                 <Gfsh>${kpls.gfsh!}</Gfsh>
                 <Gfyhzh>${gfyhzh!}</Gfyhzh>
                 <Gfdzdh>${gfdzdh!}</Gfdzdh>
@@ -20,9 +20,9 @@
                     <#list kpspmxList as kpspmx>
                     <Sph>
                         <Xh>${kpspmx.spmxxh?string('###')}</Xh>
-                        <Spmc>${kpspmx.spmc}</Spmc>
-                        <Ggxh>${kpspmx.spggxh!}</Ggxh>
-                        <Jldw>${kpspmx.spdw!}</Jldw>
+                        <Spmc><![CDATA[${kpspmx.spmc!}]]></Spmc>
+                        <Ggxh><![CDATA[${kpspmx.spggxh!}]]></Ggxh>
+                        <Jldw><![CDATA[${kpspmx.spdw!}]]></Jldw>
                         <Spbm>${kpspmx.spdm}</Spbm>
                         <Qyspbm>${kpspmx.zxbm!}</Qyspbm>
                         <Syyhzcbz>${kpspmx.yhslbs!0}</Syyhzcbz>
