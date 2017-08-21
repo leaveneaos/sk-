@@ -81,8 +81,17 @@ public class InvoiceService {
         String content = TemplateUtils.generateContent("invoice-request.ftl", params);
         logger.debug(content);
         String result = null;
+        String kpdid=null;
         try {
-            result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.Invoice, content, lsh, wait, timeout);
+            Skp skp = skpService.findOne(kpls.getSkpid());
+            Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), null, "sfzcdkpdkp");
+            String sfzcdkpdkp = cszb.getCsz();
+            if(sfzcdkpdkp.equals("是")){
+                kpdid=skp.getSkph();
+            }else{
+                kpdid=kpls.getSkpid().toString();
+            }
+            result = ServerHandler.sendMessage(kpdid, SendCommand.Invoice, content, lsh, wait, timeout);
         } catch (Exception e) {
             result = e.getMessage();
         }
@@ -137,15 +146,15 @@ public class InvoiceService {
         int skpid = kpls.getSkpid();
         Skp skp = skpService.findOne(skpid);
         //文本方式，需要重新进行价税分离
-      /*  List<Kpspmx> kpspmxListnew=SeperateInvoiceUtils.repeatSeparatePrice(kpspmxList);
-        kpspmxService.save(kpspmxListnew);*/
+        List<Kpspmx> kpspmxListnew=SeperateInvoiceUtils.repeatSeparatePrice(kpspmxList);
+        //kpspmxService.save(kpspmxListnew);
         int xfid = skp.getXfid();
         int kpdid = skp.getId();
         Cszb cszb = cszbService.getSpbmbbh(kpls.getGsdm(), xfid, kpdid, "spbmbbh");
         String spbmbbh = cszb.getCsz();
         params.put("spbmbbh",spbmbbh);
         params.put("kpls", kpls);
-        params.put("kpspmxList", kpspmxList);
+        params.put("kpspmxList", kpspmxListnew);
         String gfyhzh = (kpls.getGfyh() == null ? "" : kpls.getGfyh()) + (kpls.getGfyhzh() == null ? "" : kpls.getGfyhzh());
         String gfdzdh = (kpls.getGfdz() == null ? "" : kpls.getGfdz()) + (kpls.getGfdh() == null ? "" : kpls.getGfdh());
         gfyhzh = gfyhzh.trim();
@@ -176,11 +185,22 @@ public class InvoiceService {
      *
      * @return
      */
-    public InvoicePendingData generatePendingData(int kpdid) {
+    public InvoicePendingData generatePendingData(String kpdid) {
+        String skph=null;
         InvoicePendingData result = new InvoicePendingData();
-        String skph = skpService.findOne(kpdid).getSkph();
-        if(null==skph||"".equals(skph)){
-            skph=skpService.findOne(kpdid).getId().toString();
+        Map parms=new HashMap();
+        parms.put("kpdid",kpdid);
+        List<Skp> skpList=skpService.findSkpbySkph(parms);
+        Skp skp=skpList.get(0);
+        Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), null, "sfzcdkpdkp");
+        String sfzcdkpdkp = cszb.getCsz();
+        if(sfzcdkpdkp.equals("是")){
+            skph=kpdid;
+        }else{
+            skph = skpService.findOne(Integer.parseInt(kpdid)).getSkph();
+            if(null==skph||"".equals(skph)){
+                skph=skpService.findOne(Integer.parseInt(kpdid)).getId().toString();
+            }
         }
         try {
             Channel channel = ((PublisherCallbackChannel) rabbitmqUtils.getChannel()).getDelegate();
@@ -199,7 +219,7 @@ public class InvoiceService {
             e.printStackTrace();
             logger.error("", e);
         }
-        result.setKpdid(kpdid);
+        result.setKpdid(123);
         result.setSuccess("true");
         return result;
     }
@@ -232,8 +252,17 @@ public class InvoiceService {
             String content = TemplateUtils.generateContent("invoice-request.ftl", params);
             logger.debug(content);
             String result = null;
+            String kpdid=null;
             try {
-                result = ServerHandler.sendMessage(kpls.getSkpid(), SendCommand.VoidInvoice, content, commandId, wait, timeout);
+                Skp skp = skpService.findOne(kpls.getSkpid());
+                Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), null, "sfzcdkpdkp");
+                String sfzcdkpdkp = cszb.getCsz();
+                if(sfzcdkpdkp.equals("是")){
+                    kpdid=skp.getSkph();
+                }else{
+                    kpdid=kpls.getSkpid().toString();
+                }
+                result = ServerHandler.sendMessage(kpdid, SendCommand.VoidInvoice, content, commandId, wait, timeout);
             } catch (Exception e) {
                 result = e.getMessage();
             }

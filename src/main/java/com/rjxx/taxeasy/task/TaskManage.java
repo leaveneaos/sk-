@@ -26,7 +26,7 @@ public class TaskManage {
      * @param sendCommand
      * @param message
      */
-    public void addTask(Integer kpdid, SendCommand sendCommand, String message) {
+    public void addTask(String kpdid, SendCommand sendCommand, String message) {
         KpdTask kpdTask = map.get(kpdid);
         if (kpdTask == null) {
             kpdTask = new KpdTask(kpdid);
