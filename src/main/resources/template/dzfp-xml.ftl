@@ -7,11 +7,11 @@
             <SGBZ>0</SGBZ>
             <HSBZ>0</HSBZ>
             <XSF_NSRSBH>${kpls.xfsh}</XSF_NSRSBH>
-            <XSF_MC><![CDATA[${kpls.xfmc}]]></XSF_MC>
+            <XSF_MC>${kpls.xfmc}</XSF_MC>
             <XSF_DZDH>${kpls.xfdz!}　${kpls.xfdh!}</XSF_DZDH>
             <XSF_YHZH>${kpls.xfyh!}　${kpls.xfyhzh!}</XSF_YHZH>
             <GMF_NSRSBH>${kpls.gfsh!}</GMF_NSRSBH>
-            <GMF_MC><![CDATA[${kpls.gfmc}]]></GMF_MC>
+            <GMF_MC>${kpls.gfmc}</GMF_MC>
             <GMF_DZDH>${gfdzdh!}</GMF_DZDH>
             <GMF_YHZH>${gfyhzh!}</GMF_YHZH>
             <KPR>${kpls.kpr!}</KPR>
@@ -29,9 +29,9 @@
             <#list kpspmxList as kpspmx>
             <COMMON_FPKJ_XMXX>
                 <FPHXZ>${kpspmx.fphxz!0}</FPHXZ>
-                <XMMC><![CDATA[${kpspmx.spmc}]]></XMMC>
-                <GGXH><![CDATA[${kpspmx.spggxh!}]]></GGXH>
-                <DW><![CDATA[${kpspmx.spdw!}]]></DW>
+                <XMMC>${kpspmx.spmc}</XMMC>
+                <GGXH>${kpspmx.spggxh!}</GGXH>
+                <DW>${kpspmx.spdw!}</DW>
                 <XMSL>${(kpspmx.sps?string('#.###############'))!}</XMSL>
                 <XMDJ>${(kpspmx.spdj?string('#.###############'))!}</XMDJ>
                 <XMJE>${kpspmx.spje?string('#.######')}</XMJE>
