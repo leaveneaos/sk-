@@ -3,10 +3,7 @@ package com.rjxx.taxeasy.socket.command.receive;
 import com.alibaba.fastjson.JSON;
 import com.rjxx.taxeasy.bizcomm.utils.GeneratePdfService;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
-import com.rjxx.taxeasy.domains.ClientFile;
-import com.rjxx.taxeasy.domains.Gsxx;
-import com.rjxx.taxeasy.domains.Jyls;
-import com.rjxx.taxeasy.domains.Kpls;
+import com.rjxx.taxeasy.domains.*;
 import com.rjxx.taxeasy.service.*;
 import com.rjxx.taxeasy.socket.SocketSession;
 import com.rjxx.taxeasy.socket.command.ICommand;
@@ -63,12 +60,15 @@ public class ReturnInvoiceFileCommand implements ICommand {
 
     @Autowired
     private GsxxService gsxxService;
+    @Autowired
+    private  CszbService cszbService;
 
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
         logger.debug(data);
         ReturnInvoiceFile returnInvoiceFile = XmlJaxbUtils.convertXmlStrToObject(ReturnInvoiceFile.class, data);
         String returnCode = returnInvoiceFile.getReturnCode();
+
         if ("0000".equals(returnCode)) {
             boolean bulkImportResultFlag = returnInvoiceFile.isBulkImportResultFlag();
             String content = returnInvoiceFile.getFileContent();
@@ -85,6 +85,8 @@ public class ReturnInvoiceFileCommand implements ICommand {
             logger.debug(content);
 
             Kpls kpls = kplsService.findOne(kplsh);
+            Cszb cszb = cszbService.getSpbmbbh(kpls.getGsdm(), kpls.getXfid(), kpls.getSkpid(), "kpfs");
+
             if (!bulkImportResultFlag) {
                 //不是批量导入，如果原来没有结果，就将结果入库
                 if (StringUtils.isBlank(kpls.getFphm())) {
@@ -116,7 +118,7 @@ public class ReturnInvoiceFileCommand implements ICommand {
                     //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
                     String url=gsxx.getCallbackurl();
                     if(!("").equals(url)&&url!=null){
-                        if(!kpls.equals("Family")) {
+                        if(!kpls.getGsdm().equals("Family")) {
                             String returnmessage = generatePdfService.CreateReturnMessage(kpls.getKplsh());
                             //输出调用结果
                             logger.info("回写报文" + returnmessage);
@@ -155,7 +157,7 @@ public class ReturnInvoiceFileCommand implements ICommand {
                     //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
                     String url=gsxx.getCallbackurl();
                     if(!("").equals(url)&&url!=null){
-                        if(!kpls.equals("Family")) {
+                        if(!kpls.getGsdm().equals("Family")) {
                             String returnmessage = generatePdfService.CreateReturnMessage(kpls.getKplsh());
                             //输出调用结果
                             logger.info("回写报文" + returnmessage);
@@ -198,7 +200,7 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
                 String url=gsxx.getCallbackurl();
                 if(!("").equals(url)&&url!=null){
-                    if(!kpls.equals("Family")) {
+                    if(!kpls.getGsdm().equals("Family")) {
                         String returnmessage = generatePdfService.CreateReturnMessage(kpls.getKplsh());
                         //输出调用结果
                         logger.info("回写报文" + returnmessage);
@@ -236,7 +238,7 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
                 String url=gsxx.getCallbackurl();
                 if(!("").equals(url)&&url!=null){
-                    if(!kpls.equals("Family")) {
+                    if(!kpls.getGsdm().equals("Family")) {
                         String returnmessage = generatePdfService.CreateReturnMessage(kpls.getKplsh());
                         //输出调用结果
                         logger.info("回写报文" + returnmessage);
