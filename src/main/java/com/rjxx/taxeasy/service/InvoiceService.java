@@ -1,10 +1,7 @@
 package com.rjxx.taxeasy.service;
 
 import com.rabbitmq.client.Channel;
-import com.rjxx.taxeasy.bizcomm.utils.GeneratePdfService;
-import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
-import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponseUtils;
-import com.rjxx.taxeasy.bizcomm.utils.SeperateInvoiceUtils;
+import com.rjxx.taxeasy.bizcomm.utils.*;
 import com.rjxx.taxeasy.config.RabbitmqUtils;
 import com.rjxx.taxeasy.domains.Cszb;
 import com.rjxx.taxeasy.domains.Kpls;
@@ -52,6 +49,8 @@ public class InvoiceService {
     private CszbService cszbService;
     @Autowired
     private GeneratePdfService generatePdfService;
+    @Autowired
+    private FpclService fpclService;
 
     /**
      * 执行开票
@@ -291,6 +290,19 @@ public class InvoiceService {
            invoiceResponse.setReturnMessage(e.getMessage());
            e.printStackTrace();
        }
+        return invoiceResponse;
+    }
+
+    public InvoiceResponse skServerKP(int kplsh) {
+        InvoiceResponse invoiceResponse=new InvoiceResponse();
+        try{
+            fpclService.skServerKP(kplsh);
+            invoiceResponse.setReturnCode("0000");
+        }catch (Exception e){
+            invoiceResponse.setReturnCode("9999");
+            invoiceResponse.setReturnMessage(e.getMessage());
+            e.printStackTrace();
+        }
         return invoiceResponse;
     }
 }
