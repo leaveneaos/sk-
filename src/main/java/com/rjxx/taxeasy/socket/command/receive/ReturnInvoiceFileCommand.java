@@ -118,14 +118,17 @@ public class ReturnInvoiceFileCommand implements ICommand {
                     //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
                     String url=gsxx.getCallbackurl();
                     if(!("").equals(url)&&url!=null){
-                        if(!kpls.getGsdm().equals("Family")) {
-                            String returnmessage = generatePdfService.CreateReturnMessage(kpls.getKplsh());
-                            //输出调用结果
-                            logger.info("回写报文" + returnmessage);
-                            if (returnmessage != null && !"".equals(returnmessage)) {
-                                Map returnMap = clientDesUtils.httpPost(returnmessage, kpls);
-                                logger.info("返回报文" + JSON.toJSONString(returnMap));
-                            }
+                        String returnmessage=null;
+                        if(!kpls.getGsdm().equals("Family")&&!kpls.getGsdm().equals("fwk")) {
+                            returnmessage = generatePdfService.CreateReturnMessage(kpls.getKplsh());
+                        }else if(kpls.getGsdm().equals("fwk")){
+                            returnmessage = generatePdfService.CreateReturnMessage3(kpls.getKplsh());
+                        }
+                        //输出调用结果
+                        logger.info("回写报文" + returnmessage);
+                        if (returnmessage != null && !"".equals(returnmessage)) {
+                            Map returnMap = clientDesUtils.httpPost(returnmessage, kpls);
+                            logger.info("返回报文" + JSON.toJSONString(returnMap));
                         }
                     }
                     return;
@@ -206,14 +209,17 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
                 String url=gsxx.getCallbackurl();
                 if(!("").equals(url)&&url!=null){
-                    if(!kpls.getGsdm().equals("Family")) {
-                        String returnmessage = generatePdfService.CreateReturnMessage(kpls.getKplsh());
-                        //输出调用结果
-                        logger.info("回写报文" + returnmessage);
-                        if (returnmessage != null && !"".equals(returnmessage)) {
-                            Map returnMap = clientDesUtils.httpPost(returnmessage, kpls);
-                            logger.info("返回报文" + JSON.toJSONString(returnMap));
-                        }
+                    String returnmessage=null;
+                    if(!kpls.getGsdm().equals("Family")&&!kpls.getGsdm().equals("fwk")) {
+                        returnmessage = generatePdfService.CreateReturnMessage(kpls.getKplsh());
+                    }else if(kpls.getGsdm().equals("fwk")){
+                        returnmessage = generatePdfService.CreateReturnMessage3(kpls.getKplsh());
+                    }
+                    //输出调用结果
+                    logger.info("回写报文" + returnmessage);
+                    if (returnmessage != null && !"".equals(returnmessage)) {
+                        Map returnMap = clientDesUtils.httpPost(returnmessage, kpls);
+                        logger.info("返回报文" + JSON.toJSONString(returnMap));
                     }
                 }
             } else {
@@ -244,14 +250,17 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
                 String url=gsxx.getCallbackurl();
                 if(!("").equals(url)&&url!=null){
-                    if(!kpls.getGsdm().equals("Family")) {
-                        String returnmessage = generatePdfService.CreateReturnMessage(kpls.getKplsh());
-                        //输出调用结果
-                        logger.info("回写报文" + returnmessage);
-                        if (returnmessage != null && !"".equals(returnmessage)) {
-                            Map returnMap = clientDesUtils.httpPost(returnmessage, kpls);
-                            logger.info("返回报文" + JSON.toJSONString(returnMap));
-                        }
+                    String returnmessage=null;
+                    if(!kpls.getGsdm().equals("Family")&&!kpls.getGsdm().equals("fwk")) {
+                        returnmessage = generatePdfService.CreateReturnMessage(kpls.getKplsh());
+                    }else if(kpls.getGsdm().equals("fwk")){
+                        returnmessage = generatePdfService.CreateReturnMessage3(kpls.getKplsh());
+                    }
+                    //输出调用结果
+                    logger.info("回写报文" + returnmessage);
+                    if (returnmessage != null && !"".equals(returnmessage)) {
+                        Map returnMap = clientDesUtils.httpPost(returnmessage, kpls);
+                        logger.info("返回报文" + JSON.toJSONString(returnMap));
                     }
                 }
             }
