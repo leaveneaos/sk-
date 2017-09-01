@@ -2,6 +2,7 @@ package com.rjxx.taxeasy.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.rjxx.taxeasy.bizcomm.utils.GeneratePdfService;
+import com.rjxx.taxeasy.bizcomm.utils.HttpUtils;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
 import com.rjxx.taxeasy.domains.Gsxx;
 import com.rjxx.taxeasy.domains.Jyls;
@@ -170,13 +171,20 @@ public class ParseInvoiceFileUtils {
             //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
             String url=gsxx.getCallbackurl();
             if(!("").equals(url)&&url!=null){
-                if(!kpls.getGsdm().equals("Family")){
-                    String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
+                String returnmessage=null;
+                if(!kpls.getGsdm().equals("Family")&&!kpls.getGsdm().equals("fwk")) {
+                    returnmessage = generatePdfService.CreateReturnMessage(kpls.getKplsh());
                     //输出调用结果
-                    logger.info("回写报文"+returnmessage);
-                    if(returnmessage!=null&&!"".equals(returnmessage)){
-                        Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
-                        logger.info("返回报文"+ JSON.toJSONString(returnMap));
+                    logger.info("回写报文" + returnmessage);
+                    if (returnmessage != null && !"".equals(returnmessage)) {
+                        Map returnMap = clientDesUtils.httpPost(returnmessage, kpls);
+                        logger.info("返回报文" + JSON.toJSONString(returnMap));
+                    }
+                }else if(kpls.getGsdm().equals("fwk")){
+                    returnmessage = generatePdfService.CreateReturnMessage3(kpls.getKplsh());
+                    logger.info("回写报文" + returnmessage);
+                    if (returnmessage != null && !"".equals(returnmessage)) {
+                        String ss= HttpUtils.netWebService(url,"CallBack",returnmessage,gsxx.getAppKey(),gsxx.getSecretKey());
                     }
                 }
             }
@@ -204,13 +212,20 @@ public class ParseInvoiceFileUtils {
             //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
             String url=gsxx.getCallbackurl();
             if(!("").equals(url)&&url!=null){
-                if(!kpls.getGsdm().equals("Family")){
-                    String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
+                String returnmessage=null;
+                if(!kpls.getGsdm().equals("Family")&&!kpls.getGsdm().equals("fwk")) {
+                    returnmessage = generatePdfService.CreateReturnMessage(kpls.getKplsh());
                     //输出调用结果
-                    logger.info("回写报文"+returnmessage);
-                    if(returnmessage!=null&&!"".equals(returnmessage)){
-                        Map returnMap =clientDesUtils.httpPost(returnmessage, kpls);
-                        logger.info("返回报文"+ JSON.toJSONString(returnMap));
+                    logger.info("回写报文" + returnmessage);
+                    if (returnmessage != null && !"".equals(returnmessage)) {
+                        Map returnMap = clientDesUtils.httpPost(returnmessage, kpls);
+                        logger.info("返回报文" + JSON.toJSONString(returnMap));
+                    }
+                }else if(kpls.getGsdm().equals("fwk")){
+                    returnmessage = generatePdfService.CreateReturnMessage3(kpls.getKplsh());
+                    logger.info("回写报文" + returnmessage);
+                    if (returnmessage != null && !"".equals(returnmessage)) {
+                        String ss= HttpUtils.netWebService(url,"CallBack",returnmessage,gsxx.getAppKey(),gsxx.getSecretKey());
                     }
                 }
             }
