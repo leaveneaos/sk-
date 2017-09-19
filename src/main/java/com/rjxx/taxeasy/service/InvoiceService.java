@@ -284,6 +284,9 @@ public class InvoiceService {
         InvoiceResponse invoiceResponse=new InvoiceResponse();
        try {
            generatePdfService.generatePdf(kplsh);
+           Kpls kpls = kplsService.findOne(kplsh);
+           kpls.setFpztdm("00");
+           kpls.setErrorReason("成功");
            invoiceResponse.setReturnCode("0000");
        }catch (Exception e){
            invoiceResponse.setReturnCode("9999");
