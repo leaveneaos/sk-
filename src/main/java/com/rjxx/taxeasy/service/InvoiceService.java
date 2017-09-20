@@ -194,7 +194,7 @@ public class InvoiceService {
         Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), null, "sfzcdkpdkp");
         String sfzcdkpdkp = cszb.getCsz();
         if(sfzcdkpdkp.equals("是")){
-            skph=kpdid;
+            skph=skp.getId().toString();
         }else{
             skph = skpService.findOne(Integer.parseInt(kpdid)).getSkph();
             if(null==skph||"".equals(skph)){
