@@ -193,8 +193,8 @@ public class ReturnInvoiceFileCommand implements ICommand {
                     if (kpls.getHkFphm() != null && kpls.getHkFpdm() != null) {
                         kpls.setJylsh("");
                         Kpls parms=new Kpls();
-                        parms.setFpdm(kpls.getFpdm());
-                        parms.setFphm(kpls.getFphm());
+                        parms.setFpdm(kpls.getHzyfpdm());
+                        parms.setFphm(kpls.getHzyfphm());
                         Kpls ykpls = kplsService.findByfphm(parms);
                         Map param2 = new HashMap<>();
                         param2.put("kplsh", ykpls.getKplsh());
