@@ -236,6 +236,9 @@ public class ReturnInvoiceFileCommand implements ICommand {
                              String ss= HttpUtils.netWebService(url,"CallBack",returnmessage,gsxx.getAppKey(),gsxx.getSecretKey());
                              String fwkReturnMessageStr=fwkReturnMessage(kpls);
                             String Data= HttpUtils.doPostSoap1_1("https://my337109.sapbydesign.com/sap/bc/srt/scs/sap/yyb40eysay_managegoldentaxinvo?sap-vhost=my337109.sapbydesign.com", fwkReturnMessageStr, null,"wendy","Welcome9");
+                            logger.info("----------fwk平台回写返回报文--------" + ss);
+                            logger.info("----------sap回写返回报文----------" + Data);
+
                         }
                     }
 
