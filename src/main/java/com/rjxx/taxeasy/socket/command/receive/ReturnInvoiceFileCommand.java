@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.xml.sax.InputSource;
 
 import java.io.StringReader;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -233,6 +234,8 @@ public class ReturnInvoiceFileCommand implements ICommand {
                         logger.info("回写报文" + returnmessage);
                         if (returnmessage != null && !"".equals(returnmessage)) {
                              String ss= HttpUtils.netWebService(url,"CallBack",returnmessage,gsxx.getAppKey(),gsxx.getSecretKey());
+                             String fwkReturnMessageStr=fwkReturnMessage(kpls);
+                            String Data= HttpUtils.doPostSoap1_1("https://my337109.sapbydesign.com/sap/bc/srt/scs/sap/yyb40eysay_managegoldentaxinvo?sap-vhost=my337109.sapbydesign.com", fwkReturnMessageStr, null,"wendy","Welcome9");
                         }
                     }
 
@@ -287,7 +290,30 @@ public class ReturnInvoiceFileCommand implements ICommand {
             throw new Exception("return invoice result file 9999 impossible");
         }
     }
+    public String   fwkReturnMessage(Kpls kpls) {
+        SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
+        String ss="\n" +
+                "<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:glob=\"http://sap.com/xi/SAPGlobal20/Global\">\n" +
+                "   <soap:Header/>\n" +
+                "   <soap:Body>\n" +
+                "      <glob:GoldenTaxGoldenTaxCreateRequest_sync>\n" +
+                "         <BasicMessageHeader></BasicMessageHeader>\n" +
+                "         <GoldenTax>\n" +
+                "            <CutInvID>"+kpls.getJylsh().substring(0,5)+"</CutInvID>\n" +
+                "            <GoldenTaxID>"+kpls.getFphm()+"</GoldenTaxID>\n" +
+                "            <GoldenTaxDate>\n" +
+                "               <StartDateTime>"+sim.format(kpls.getKprq())+"</StartDateTime>\n" +
+                "               <EndDateTime>"+sim.format(kpls.getKprq())+"</EndDateTime>\n" +
+                "            </GoldenTaxDate>\n" +
+                "            <GoldenTaxResult>succeed</GoldenTaxResult>\n" +
+                "            <GoldenTaxCode>"+kpls.getFpdm()+"</GoldenTaxCode>\n" +
+                "         </GoldenTax>\n" +
+                "      </glob:GoldenTaxGoldenTaxCreateRequest_sync>\n" +
+                "   </soap:Body>\n" +
+                "</soap:Envelope>";
+        return ss;
+    }
     /**
      * 更新交易流水状态
      *
