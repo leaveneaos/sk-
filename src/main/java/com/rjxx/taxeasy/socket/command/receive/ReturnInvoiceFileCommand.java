@@ -190,7 +190,7 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 String czlxdm = kpls.getFpczlxdm();
                 if ("12".equals(czlxdm) || "13".equals(czlxdm)) {
                     updateJyls(kpls.getDjh(), "91");
-                    if (kpls.getHkFphm() != null && kpls.getHkFpdm() != null) {
+                    if (kpls.getHzyfphm() != null && kpls.getHzyfpdm() != null) {
                         kpls.setJylsh("");
                         Kpls parms=new Kpls();
                         parms.setFpdm(kpls.getHzyfpdm());
