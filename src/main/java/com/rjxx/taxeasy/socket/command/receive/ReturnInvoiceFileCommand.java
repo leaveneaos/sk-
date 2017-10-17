@@ -66,27 +66,6 @@ public class ReturnInvoiceFileCommand implements ICommand {
     private GsxxService gsxxService;
     @Autowired
     private  CszbService cszbService;
-
-    /**
-     * 线程池执行任务
-     */
-    private static ThreadPoolTaskExecutor taskExecutor = null;
-    /**
-     * 多线程执行生成pdf
-     */
-    class PdfTask implements Runnable {
-
-        private int kplsh;
-        @Override
-        public void run() {
-            //synchronized (this){
-                generatePdfService.generatePdf(kplsh);
-            //}
-        }
-        public void setKplsh(int kplsh) {
-            this.kplsh = kplsh;
-        }
-    }
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
         logger.debug(data);
@@ -234,14 +213,9 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 } else {
                     updateJyls(kpls.getDjh(), "21");
                 }
-                //此处开始生成pdf  多线程生成pdf
-                PdfTask pdfTask=new PdfTask();
-                pdfTask.setKplsh(kplsh);
-                if (taskExecutor == null) {
-                    taskExecutor = ApplicationContextUtils.getBean(ThreadPoolTaskExecutor.class);
-                }
-                taskExecutor.execute(pdfTask);
-                //generatePdfService.generatePdf(kplsh);
+                //此处开始生成pdf
+
+                generatePdfService.generatePdf(kplsh);
                 Map parms=new HashMap();
                 parms.put("gsdm",kpls.getGsdm());
                 Gsxx gsxx=gsxxService.findOneByParams(parms);
