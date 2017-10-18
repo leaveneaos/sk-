@@ -297,7 +297,10 @@ public class ReturnInvoiceFileCommand implements ICommand {
     }
     public String   fwkReturnMessage(Kpls kpls) {
         SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-
+        String result="Succeed";
+        if(kpls.getFpczlxdm().equals("12")){
+            result="CancelSucceed";
+        }
         String ss="\n" +
                 "<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:glob=\"http://sap.com/xi/SAPGlobal20/Global\">\n" +
                 "   <soap:Header/>\n" +
@@ -311,7 +314,7 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 "               <StartDateTime>"+sim.format(kpls.getKprq())+"</StartDateTime>\n" +
                 "               <EndDateTime>"+sim.format(kpls.getKprq())+"</EndDateTime>\n" +
                 "            </GoldenTaxDate>\n" +
-                "            <GoldenTaxResult>succeed</GoldenTaxResult>\n" +
+                "            <GoldenTaxResult>"+result+"</GoldenTaxResult>\n" +
                 "            <GoldenTaxCode>"+kpls.getFpdm()+"</GoldenTaxCode>\n" +
                 "         </GoldenTax>\n" +
                 "      </glob:GoldenTaxGoldenTaxCreateRequest_sync>\n" +
