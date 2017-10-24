@@ -308,7 +308,7 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 "      <glob:GoldenTaxGoldenTaxCreateRequest_sync>\n" +
                 "         <BasicMessageHeader></BasicMessageHeader>\n" +
                 "         <GoldenTax>\n" +
-                "            <CutInvID>"+kpls.getJylsh().substring(0,5)+"</CutInvID>\n" +
+                "            <CutInvID>"+kpls.getJylsh()+"</CutInvID>\n" +
                 "            <GoldenTaxID>"+kpls.getFphm()+"</GoldenTaxID>\n" +
                 "            <GoldenTaxDate>\n" +
                 "               <StartDateTime>"+sim.format(kpls.getKprq())+"</StartDateTime>\n" +
