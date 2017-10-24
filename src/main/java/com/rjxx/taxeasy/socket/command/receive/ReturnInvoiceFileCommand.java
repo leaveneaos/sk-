@@ -1,6 +1,7 @@
 package com.rjxx.taxeasy.socket.command.receive;
 
 import com.alibaba.fastjson.JSON;
+import com.rjxx.comm.utils.ApplicationContextUtils;
 import com.rjxx.taxeasy.bizcomm.utils.GeneratePdfService;
 import com.rjxx.taxeasy.bizcomm.utils.HttpUtils;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
@@ -24,10 +25,12 @@ import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.xml.sax.InputSource;
 
 import java.io.StringReader;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -63,7 +66,6 @@ public class ReturnInvoiceFileCommand implements ICommand {
     private GsxxService gsxxService;
     @Autowired
     private  CszbService cszbService;
-
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
         logger.debug(data);
@@ -212,6 +214,7 @@ public class ReturnInvoiceFileCommand implements ICommand {
                     updateJyls(kpls.getDjh(), "21");
                 }
                 //此处开始生成pdf
+
                 generatePdfService.generatePdf(kplsh);
                 Map parms=new HashMap();
                 parms.put("gsdm",kpls.getGsdm());
@@ -233,9 +236,14 @@ public class ReturnInvoiceFileCommand implements ICommand {
                         logger.info("回写报文" + returnmessage);
                         if (returnmessage != null && !"".equals(returnmessage)) {
                              String ss= HttpUtils.netWebService(url,"CallBack",returnmessage,gsxx.getAppKey(),gsxx.getSecretKey());
+                             String fwkReturnMessageStr=fwkReturnMessage(kpls);
+                            logger.info("----------sap回写报文----------" + fwkReturnMessageStr);
+                            String Data= HttpUtils.doPostSoap1_2("https://my337109.sapbydesign.com/sap/bc/srt/scs/sap/yyb40eysay_managegoldentaxinvo?sap-vhost=my337109.sapbydesign.com", fwkReturnMessageStr, null,"wendy","Welcome9");
+                            logger.info("----------fwk平台回写返回报文--------" + ss);
+                            logger.info("----------sap回写返回报文----------" + Data);
+
                         }
                     }
-
                 }
             } else {
                 //解析纸质票批量导入的结果
@@ -287,7 +295,33 @@ public class ReturnInvoiceFileCommand implements ICommand {
             throw new Exception("return invoice result file 9999 impossible");
         }
     }
-
+    public String   fwkReturnMessage(Kpls kpls) {
+        SimpleDateFormat sim = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        String result="Succeed";
+        if(kpls.getFpczlxdm().equals("12")){
+            result="CancelSucceed";
+        }
+        String ss="\n" +
+                "<soap:Envelope xmlns:soap=\"http://www.w3.org/2003/05/soap-envelope\" xmlns:glob=\"http://sap.com/xi/SAPGlobal20/Global\">\n" +
+                "   <soap:Header/>\n" +
+                "   <soap:Body>\n" +
+                "      <glob:GoldenTaxGoldenTaxCreateRequest_sync>\n" +
+                "         <BasicMessageHeader></BasicMessageHeader>\n" +
+                "         <GoldenTax>\n" +
+                "            <CutInvID>"+kpls.getJylsh()+"</CutInvID>\n" +
+                "            <GoldenTaxID>"+kpls.getFphm()+"</GoldenTaxID>\n" +
+                "            <GoldenTaxDate>\n" +
+                "               <StartDateTime>"+sim.format(kpls.getKprq())+"</StartDateTime>\n" +
+                "               <EndDateTime>"+sim.format(kpls.getKprq())+"</EndDateTime>\n" +
+                "            </GoldenTaxDate>\n" +
+                "            <GoldenTaxResult>"+result+"</GoldenTaxResult>\n" +
+                "            <GoldenTaxCode>"+kpls.getFpdm()+"</GoldenTaxCode>\n" +
+                "         </GoldenTax>\n" +
+                "      </glob:GoldenTaxGoldenTaxCreateRequest_sync>\n" +
+                "   </soap:Body>\n" +
+                "</soap:Envelope>";
+        return ss;
+    }
     /**
      * 更新交易流水状态
      *
