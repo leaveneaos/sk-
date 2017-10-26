@@ -66,7 +66,7 @@ public class InvoiceService {
             return response;
         }
         String xml = "";
-        if ("11".equals(kpls.getFpczlxdm()) || (("12".equals(kpls.getFpczlxdm()) || "13".equals(kpls.getFpczlxdm())) && "12".equals(kpls.getFpzldm()))) {
+        if ("11".equals(kpls.getFpczlxdm()) || (("12".equals(kpls.getFpczlxdm()) || "13".equals(kpls.getFpczlxdm())))) {
             xml = getInvoiceXml(kpls);
             logger.debug("kplsh:" + kplsh + " xml:");
             logger.debug(xml);
