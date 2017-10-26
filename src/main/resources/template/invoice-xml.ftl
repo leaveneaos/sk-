@@ -15,6 +15,7 @@
                 <xhdwdzdh>${xfdzdh!}</xhdwdzdh>
                 <xhdwyhzh>${xfyhzh!}</xhdwyhzh>
                 <kpr>${kpls.kpr!}</kpr>
+                <zfr>${kpls.zfr!}</zfr>
                 <qdbz>${kpls.sfdyqd!}</qdbz>
                 <hjje>${(kpls.hjje?string('#.##'))!}</hjje>
                 <hjse>${(kpls.hjse?string('#.##'))!}</hjse>
