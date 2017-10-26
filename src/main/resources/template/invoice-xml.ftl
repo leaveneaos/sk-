@@ -10,6 +10,12 @@
                 <Gfsh>${kpls.gfsh!}</Gfsh>
                 <Gfyhzh>${gfyhzh!}</Gfyhzh>
                 <Gfdzdh>${gfdzdh!}</Gfdzdh>
+                <xhdwsbh>${kpls.xfsh!}</xhdwsbh>
+                <xhdwmc>${kpls.xfmc!}</xhdwmc>
+                <xhdwdzdh>${xfdzdh!}</xhdwdzdh>
+                <xhdwyhzh>${xfyhzh!}</xhdwyhzh>
+                <kpr>${kpls.kpr!}</kpr>
+                <qdbz>${kpls.sfdyqd!}</qdbz>
                 <Bz>${kpls.bz!}</Bz>
                 <Fhr>${kpls.fhr!}</Fhr>
                 <Skr>${kpls.skr!}</Skr>
@@ -20,6 +26,7 @@
                     <#list kpspmxList as kpspmx>
                     <Sph>
                         <Xh>${kpspmx.spmxxh?string('###')}</Xh>
+                        <fphxz>${kpspmx.fphxz!}</fphxz>
                         <Spmc>${kpspmx.spmc!}</Spmc>
                         <Ggxh>${kpspmx.spggxh!}</Ggxh>
                         <Jldw>${kpspmx.spdw!}</Jldw>

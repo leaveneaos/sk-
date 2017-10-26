@@ -156,16 +156,28 @@ public class InvoiceService {
         params.put("kpspmxList", kpspmxListnew);
         String gfyhzh = (kpls.getGfyh() == null ? "" : kpls.getGfyh()) + (kpls.getGfyhzh() == null ? "" : kpls.getGfyhzh());
         String gfdzdh = (kpls.getGfdz() == null ? "" : kpls.getGfdz()) + (kpls.getGfdh() == null ? "" : kpls.getGfdh());
+        String xfyhzh = (kpls.getXfyh() == null ? "" : kpls.getXfyh()) + (kpls.getXfyhzh() == null ? "" : kpls.getXfyhzh());
+        String xfdzdh = (kpls.getXfdz() == null ? "" : kpls.getXfdz()) + (kpls.getXfdh() == null ? "" : kpls.getXfdh());
         gfyhzh = gfyhzh.trim();
         gfdzdh = gfdzdh.trim();
+        xfyhzh = gfyhzh.trim();
+        xfdzdh = gfdzdh.trim();
         if (StringUtils.isBlank(gfyhzh)) {
             gfyhzh = "　";
         }
         if (StringUtils.isBlank(gfdzdh)) {
             gfdzdh = "　";
         }
+        if (StringUtils.isBlank(xfyhzh)) {
+            xfyhzh = "　";
+        }
+        if (StringUtils.isBlank(xfdzdh)) {
+            xfdzdh = "　";
+        }
         params.put("gfyhzh", gfyhzh);
         params.put("gfdzdh", gfdzdh);
+        params.put("xfyhzh", xfyhzh);
+        params.put("xfdzdh", xfdzdh);
         String templateName = "invoice-xml.ftl";
         if ("12".equals(kpls.getFpzldm())) {
             templateName = "dzfp-xml.ftl";
