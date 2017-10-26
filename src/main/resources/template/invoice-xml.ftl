@@ -16,6 +16,11 @@
                 <xhdwyhzh>${xfyhzh!}</xhdwyhzh>
                 <kpr>${kpls.kpr!}</kpr>
                 <qdbz>${kpls.sfdyqd!}</qdbz>
+                <yfpdm>${kpls.hzyfpdm!}</yfpdm>
+                <yfphm>${kpls.hzyfphm!}</yfphm>
+                <hjje>${(kpls.hjje?string('#.##'))!}</hjje>
+                <hjse>${(kpls.hjse?string('#.##'))!}</hjse>
+                <jshj>${(kpls.jshj?string('#.##'))!}</jshj>
                 <Bz>${kpls.bz!}</Bz>
                 <Fhr>${kpls.fhr!}</Fhr>
                 <Skr>${kpls.skr!}</Skr>
