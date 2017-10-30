@@ -66,7 +66,7 @@ public class InvoiceService {
             return response;
         }
         String xml = "";
-        if ("11".equals(kpls.getFpczlxdm()) || (("12".equals(kpls.getFpczlxdm()) || "13".equals(kpls.getFpczlxdm())) && "12".equals(kpls.getFpzldm()))) {
+        if ("11".equals(kpls.getFpczlxdm()) || "12".equals(kpls.getFpczlxdm()) || "13".equals(kpls.getFpczlxdm())||"14".equals(kpls.getFpczlxdm())) {
             xml = getInvoiceXml(kpls);
             logger.debug("kplsh:" + kplsh + " xml:");
             logger.debug(xml);
@@ -156,16 +156,28 @@ public class InvoiceService {
         params.put("kpspmxList", kpspmxListnew);
         String gfyhzh = (kpls.getGfyh() == null ? "" : kpls.getGfyh()) + (kpls.getGfyhzh() == null ? "" : kpls.getGfyhzh());
         String gfdzdh = (kpls.getGfdz() == null ? "" : kpls.getGfdz()) + (kpls.getGfdh() == null ? "" : kpls.getGfdh());
+        String xfyhzh = (kpls.getXfyh() == null ? "" : kpls.getXfyh()) + (kpls.getXfyhzh() == null ? "" : kpls.getXfyhzh());
+        String xfdzdh = (kpls.getXfdz() == null ? "" : kpls.getXfdz()) + (kpls.getXfdh() == null ? "" : kpls.getXfdh());
         gfyhzh = gfyhzh.trim();
         gfdzdh = gfdzdh.trim();
+        xfyhzh = gfyhzh.trim();
+        xfdzdh = gfdzdh.trim();
         if (StringUtils.isBlank(gfyhzh)) {
             gfyhzh = "　";
         }
         if (StringUtils.isBlank(gfdzdh)) {
             gfdzdh = "　";
         }
+        if (StringUtils.isBlank(xfyhzh)) {
+            xfyhzh = "　";
+        }
+        if (StringUtils.isBlank(xfdzdh)) {
+            xfdzdh = "　";
+        }
         params.put("gfyhzh", gfyhzh);
         params.put("gfdzdh", gfdzdh);
+        params.put("xfyhzh", xfyhzh);
+        params.put("xfdzdh", xfdzdh);
         String templateName = "invoice-xml.ftl";
         if ("12".equals(kpls.getFpzldm())) {
             templateName = "dzfp-xml.ftl";
@@ -236,6 +248,10 @@ public class InvoiceService {
         try {
             logger.debug("receive void invoice request:" + kplsh);
             Kpls kpls = kplsService.findOne(kplsh);
+           String  xml = getInvoiceXml(kpls);
+            logger.debug("kplsh:" + kplsh + " xml:");
+            logger.debug(xml);
+            xml = Base64.encodeBase64String(xml.getBytes("UTF-8"));
             if (kpls == null) {
                 InvoiceResponse response = InvoiceResponseUtils.responseError("开票流水号：" + kplsh + "没有该数据");
                 return XmlJaxbUtils.toXml(response);
@@ -246,6 +262,7 @@ public class InvoiceService {
             }
             Map params = new HashMap();
             params.put("kpls", kpls);
+            params.put("xml", xml);
             String commandId = kpls.getKplsh() + "$" + System.currentTimeMillis();
             params.put("lsh", kpls.getKplsh() + "");
             String content = TemplateUtils.generateContent("invoice-request.ftl", params);
