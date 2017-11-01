@@ -201,14 +201,14 @@ public class ReturnInvoiceFileCommand implements ICommand {
                         Map param2 = new HashMap<>();
                         param2.put("kplsh", ykpls.getKplsh());
                         // 全部红冲后修改
-                        Kpspmxvo mxvo = kpspmxService.findKhcje(param2);
-                        if (mxvo.getKhcje() == 0) {
+                        //Kpspmxvo mxvo = kpspmxService.findKhcje(param2);
+                        //if (mxvo.getKhcje() == 0) {
                             param2.put("fpztdm", "02");
                             kplsService.updateFpczlx(param2);
-                        } else {
+                       /* } else {
                             param2.put("fpztdm", "01");
                             kplsService.updateFpczlx(param2);
-                        }
+                        }*/
                     }
                 } else {
                     updateJyls(kpls.getDjh(), "21");
