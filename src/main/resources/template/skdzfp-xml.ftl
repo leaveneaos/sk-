@@ -11,7 +11,7 @@
             <XSF_DZDH>${kpls.xfdz!}　${kpls.xfdh!}</XSF_DZDH>
             <XSF_YHZH>${kpls.xfyh!}　${kpls.xfyhzh!}</XSF_YHZH>
             <GMF_NSRSBH>${kpls.gfsh!}</GMF_NSRSBH>
-            <GMF_MC>${kpls.gfmc}</GMF_MC>
+            <GMF_MC><![CDATA[${kpls.gfmc!}]]></GMF_MC>
             <GMF_DZDH>${gfdzdh!}</GMF_DZDH>
             <GMF_YHZH>${gfyhzh!}</GMF_YHZH>
             <KPR>${kpls.kpr!}</KPR>
