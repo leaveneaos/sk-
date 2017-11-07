@@ -25,9 +25,9 @@
             <XfKzVo>
                 <Xfid>${xfkzvo.xfid!}</Xfid>
                 <Sfdm>${xfkzvo.sfDm!}</Sfdm>
-                <Sfmc>${xf.sfMc!}</Sfmc>
-                <svrip>${xf.svrIp!}</svrip>
-                <svrport>${xf.svrPort!}</svrport>
+                <Sfmc>${xfkzvo.sfMc!}</Sfmc>
+                <svrip>${xfkzvo.svrIp!}</svrip>
+                <svrport>${xfkzvo.svrPort!}</svrport>
             </XfKzVo>
         </#list>
     </xfKzVoList>
