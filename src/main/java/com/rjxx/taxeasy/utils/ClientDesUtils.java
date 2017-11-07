@@ -38,7 +38,7 @@ import java.util.Map;
  * 解析客户端加密
  * Created by ZhangBing on 2017-03-09.
  */
-@Service
+@Service("clientDesUtils")
 public class ClientDesUtils {
 
 
