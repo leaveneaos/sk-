@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 /**
  * Created by Administrator on 2017/1/4.
  */
-@Service
+@Service("HBCommand")
 public class HBCommand implements ICommand {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());

@@ -9,6 +9,7 @@ import com.rjxx.taxeasy.service.SkpService;
 import com.rjxx.taxeasy.service.XfService;
 import com.rjxx.taxeasy.service.YhService;
 import com.rjxx.taxeasy.utils.ClientDesUtils;
+import com.rjxx.taxeasy.vo.XfKzVo;
 import com.rjxx.utils.DesUtils;
 import com.rjxx.utils.PasswordUtils;
 import com.rjxx.utils.StringUtils;
@@ -101,6 +102,10 @@ public class LoginController {
             return generateLoginResult(map);
         }
         map.put("xfList", xfList);
+        Map params2 = new HashMap();
+        params2.put("xfList", xfList);
+        List<XfKzVo> xfKzVoList = xfService.findXfkzListByXfid(params2);
+        map.put("xfKzVoList", xfKzVoList);
         List<Skp> kpdList = skpService.getSkpListByYhId(yh.getId());
         if (kpdList == null || kpdList.isEmpty()) {
             map.put("success", "false");

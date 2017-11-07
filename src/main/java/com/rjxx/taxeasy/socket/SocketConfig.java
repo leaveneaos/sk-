@@ -17,7 +17,7 @@ import java.nio.charset.Charset;
 /**
  * Created by Administrator on 2016/10/24.
  */
-@Component
+@Component("SocketConfig")
 public class SocketConfig {
 
     private static Logger logger = LoggerFactory.getLogger(SocketConfig.class);

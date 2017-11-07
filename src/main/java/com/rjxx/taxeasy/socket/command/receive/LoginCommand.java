@@ -27,7 +27,7 @@ import java.util.*;
 /**
  * Created by Administrator on 2017/1/5.
  */
-@Service
+@Service("LoginCommand")
 public class LoginCommand implements ICommand {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
