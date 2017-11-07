@@ -27,7 +27,7 @@ import java.util.Map;
  * 解析发票文件的utils
  * Created by Administrator on 2017-04-14.
  */
-@Service
+@Service("parseInvoiceFileUtils")
 public class ParseInvoiceFileUtils {
 
     @Autowired

@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by Administrator on 2017/1/5.
  */
-@Service
+@Service("taskManage")
 public class TaskManage {
 
     private Map<Integer, KpdTask> map = new ConcurrentHashMap<>();

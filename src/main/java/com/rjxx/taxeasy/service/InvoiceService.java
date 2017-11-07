@@ -29,7 +29,7 @@ import java.util.Map;
  * InvoiceController的service
  * Created by Administrator on 2017-05-31.
  */
-@Service
+@Service("invoiceService")
 public class InvoiceService {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
