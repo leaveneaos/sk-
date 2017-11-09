@@ -19,6 +19,19 @@
         </#list>
     </XfList>
     </#if>
+    <#if xfKzVoList??>
+    <xfKzVoList>
+        <#list xfKzVoList as xfkzvo>
+            <XfKzVo>
+                <Xfid>${xfkzvo.xfid!}</Xfid>
+                <Sfdm>${xfkzvo.sfDm!}</Sfdm>
+                <Sfmc>${xfkzvo.sfMc!}</Sfmc>
+                <svrip>${xfkzvo.svrIp!}</svrip>
+                <svrport>${xfkzvo.svrPort!}</svrport>
+            </XfKzVo>
+        </#list>
+    </xfKzVoList>
+    </#if>
     <#if kpdList??>
     <KpdList>
         <#list kpdList as kpd>

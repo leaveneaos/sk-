@@ -211,6 +211,11 @@
                         <!-- 不做非公用类文件及成员-->
                         <option>-dontskipnonpubliclibraryclasses</option>
                         <option>-dontskipnonpubliclibraryclassmembers</option>
+                        <option>-keepclassmembers enum  * {
+                            public static **[] values();
+                            public static ** valueOf(java.lang.String);
+                            }
+                        </option>
                         <!-- 优化时允许访问并修改有修饰符的类和类的成员 -->
                         <option>-allowaccessmodification</option>
                         <!-- 确定统一的混淆类的成员名称来增加混淆,防止冲突-->
