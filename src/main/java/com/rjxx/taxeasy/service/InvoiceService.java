@@ -122,6 +122,10 @@ public class InvoiceService {
                 invoiceResponse.setReturnCode("9999");
                 invoiceResponse.setReturnMessage(kpls.getErrorReason());
             } else {
+                if (result.contains("开票点：") && result.contains("没有连上服务器")) {
+                    kpls.setFpztdm("04");
+                    kplsService.save(kpls);
+                }
                 invoiceResponse.setReturnCode("9999");
                 invoiceResponse.setReturnMessage("未知异常，发送结果为"+result);
             }
