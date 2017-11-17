@@ -91,6 +91,7 @@ public class InvoiceService {
                 kpdid=kpls.getSkpid().toString();
             }
             result = ServerHandler.sendMessage(kpdid, SendCommand.Invoice, content, lsh, wait, timeout);
+            logger.debug("----------客户端返回结果-------------"+result);
         } catch (Exception e) {
             result = e.getMessage();
         }
@@ -121,8 +122,12 @@ public class InvoiceService {
                 invoiceResponse.setReturnCode("9999");
                 invoiceResponse.setReturnMessage(kpls.getErrorReason());
             } else {
+                if (result.contains("开票点：") && result.contains("没有连上服务器")) {
+                    kpls.setFpztdm("04");
+                    kplsService.save(kpls);
+                }
                 invoiceResponse.setReturnCode("9999");
-                invoiceResponse.setReturnMessage("未知异常，请联系软件服务商");
+                invoiceResponse.setReturnMessage("未知异常，发送结果为"+result);
             }
             return invoiceResponse;
         }
