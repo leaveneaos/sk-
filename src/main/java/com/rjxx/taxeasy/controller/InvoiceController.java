@@ -247,7 +247,7 @@ public class InvoiceController {
      * @return
      */
     @RequestMapping(value = "/SkServerKP", method = {RequestMethod.GET, RequestMethod.POST})
-    private String skServerKP(String p) throws Exception {
+    public String skServerKP(String p) throws Exception {
         try {
             if (StringUtils.isBlank(p)) {
                 throw new Exception("参数不能为空");
