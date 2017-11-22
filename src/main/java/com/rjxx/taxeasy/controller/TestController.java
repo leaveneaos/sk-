@@ -122,4 +122,12 @@ public class TestController {
         return result;
     }
 
+    @RequestMapping(value = "/Skkp")
+    public String getPendingData(int kplsh) throws Exception {
+        String encryptKplshStr = skService.encryptSkServerParameter("" + kplsh);
+        System.out.println(encryptKplshStr);
+        String result = invoiceController.skServerKP(encryptKplshStr);
+        return result;
+    }
+
 }
