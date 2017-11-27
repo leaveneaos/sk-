@@ -161,12 +161,12 @@ public class InvoiceService {
         params.put("kpspmxList", kpspmxListnew);
         String gfyhzh = (kpls.getGfyh() == null ? "" : kpls.getGfyh()) + (kpls.getGfyhzh() == null ? "" : kpls.getGfyhzh());
         String gfdzdh = (kpls.getGfdz() == null ? "" : kpls.getGfdz()) + (kpls.getGfdh() == null ? "" : kpls.getGfdh());
-        String xfyhzh = (kpls.getXfyh() == null ? "" : kpls.getXfyh()) + (kpls.getXfyhzh() == null ? "" : kpls.getXfyhzh());
+        String xfyhzh =  (kpls.getXfyh() == null ? "" : kpls.getXfyh()) + (kpls.getXfyhzh() == null ? "" : kpls.getXfyhzh());
         String xfdzdh = (kpls.getXfdz() == null ? "" : kpls.getXfdz()) + (kpls.getXfdh() == null ? "" : kpls.getXfdh());
         gfyhzh = gfyhzh.trim();
         gfdzdh = gfdzdh.trim();
-        xfyhzh = gfyhzh.trim();
-        xfdzdh = gfdzdh.trim();
+        xfyhzh = xfyhzh.trim();
+        xfdzdh = xfdzdh.trim();
         if (StringUtils.isBlank(gfyhzh)) {
             gfyhzh = "　";
         }
