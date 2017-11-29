@@ -322,6 +322,7 @@ public class InvoiceService {
            Kpls kpls = kplsService.findOne(kplsh);
            kpls.setFpztdm("00");
            kpls.setErrorReason("成功");
+           kplsService.save(kpls);
            invoiceResponse.setReturnCode("0000");
        }catch (Exception e){
            invoiceResponse.setReturnCode("9999");
