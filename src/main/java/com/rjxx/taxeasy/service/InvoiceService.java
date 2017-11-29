@@ -152,7 +152,8 @@ public class InvoiceService {
         Skp skp = skpService.findOne(skpid);
         //文本方式，需要重新进行价税分离
         List<Kpspmx> kpspmxListnew=SeperateInvoiceUtils.repeatSeparatePrice(kpspmxList);
-        if(null !=skp.getSbcs()&& !skp.getSbcs().equals("") && skp.getSbcs().equals("2")){
+        //解决不了航信xml导入6位金额相加校验，开票四舍五入后2位金额相加校验
+        /*if(null !=skp.getSbcs()&& !skp.getSbcs().equals("") && skp.getSbcs().equals("2")){
             double mxjehj =0d;
             if(!kpspmxListnew.isEmpty()){
                 for(int i =0;i<kpspmxListnew.size();i++){
@@ -162,7 +163,7 @@ public class InvoiceService {
             BigDecimal jehj = new BigDecimal(mxjehj);
             kpls.setHjje(jehj.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue());
             kpls.setHjse(kpls.getJshj()-kpls.getHjje());
-        }
+        }*/
         //kpspmxService.save(kpspmxListnew);
         int xfid = skp.getXfid();
         int kpdid = skp.getId();
