@@ -21,6 +21,7 @@ import org.springframework.amqp.rabbit.support.PublisherCallbackChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -151,6 +152,18 @@ public class InvoiceService {
         Skp skp = skpService.findOne(skpid);
         //文本方式，需要重新进行价税分离
         List<Kpspmx> kpspmxListnew=SeperateInvoiceUtils.repeatSeparatePrice(kpspmxList);
+        //解决不了航信xml导入6位金额相加校验，开票四舍五入后2位金额相加校验
+        /*if(null !=skp.getSbcs()&& !skp.getSbcs().equals("") && skp.getSbcs().equals("2")){
+            double mxjehj =0d;
+            if(!kpspmxListnew.isEmpty()){
+                for(int i =0;i<kpspmxListnew.size();i++){
+                    mxjehj = mxjehj + kpspmxListnew.get(i).getSpje();
+                }
+            }
+            BigDecimal jehj = new BigDecimal(mxjehj);
+            kpls.setHjje(jehj.setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue());
+            kpls.setHjse(kpls.getJshj()-kpls.getHjje());
+        }*/
         //kpspmxService.save(kpspmxListnew);
         int xfid = skp.getXfid();
         int kpdid = skp.getId();
@@ -309,6 +322,7 @@ public class InvoiceService {
            Kpls kpls = kplsService.findOne(kplsh);
            kpls.setFpztdm("00");
            kpls.setErrorReason("成功");
+           kplsService.save(kpls);
            invoiceResponse.setReturnCode("0000");
        }catch (Exception e){
            invoiceResponse.setReturnCode("9999");
