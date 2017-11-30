@@ -80,7 +80,7 @@ public class LoginCommand implements ICommand {
         }
 
         //验证通过，产生desKey
-        String desKey = MD5Util.generatePassword(UUID.randomUUID().toString()).substring(0, 8);
+        String desKey = MD5Util.generatePassword(kpdid).substring(0, 8);
         socketSession.setDesKey(desKey);
         socketSession.setLoginTime(new Date());
         Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), null, "sfzcdkpdkp");
