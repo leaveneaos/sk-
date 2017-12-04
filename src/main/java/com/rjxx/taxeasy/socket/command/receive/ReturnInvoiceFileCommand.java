@@ -267,6 +267,7 @@ public class ReturnInvoiceFileCommand implements ICommand {
                     Cszb cszb1 = cszbService.getSpbmbbh(kpls.getGsdm(),kpls.getXfid(),kpls.getSkpid(),"zpsfscpdf");
                     if(null !=cszb1 && cszb1.getCsz().equals("是")){
                         kpls.setJym("10497438135598948527");
+                        kpls.setSksbm("499000134531");
                         kpls.setMwq("03*6<7-4937->9/1-544>0*1<76-</+0<<**87>-+>6+462+4145-1<+86*6<7-4937->9/1-538/0*>>687-44/8>4/*>010/17196-70/2>*81");
                     }
                     kplsService.save(kpls);
