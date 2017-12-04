@@ -267,6 +267,8 @@ public class ReturnInvoiceFileCommand implements ICommand {
                     kplsService.save(kpls);
                     updateJyls(kpls.getDjh(), "91");
                 }
+                //20171204纸质专票生成pdf
+                generatePdfService.generatePdf(kplsh);
                 Map parms=new HashMap();
                 parms.put("gsdm",kpls.getGsdm());
                 Gsxx gsxx=gsxxService.findOneByParams(parms);
