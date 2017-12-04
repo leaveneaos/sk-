@@ -268,7 +268,10 @@ public class ReturnInvoiceFileCommand implements ICommand {
                     updateJyls(kpls.getDjh(), "91");
                 }
                 //20171204纸质专票生成pdf
-                generatePdfService.generatePdf(kplsh);
+                Cszb cszb1 = cszbService.getSpbmbbh(kpls.getGsdm(),kpls.getXfid(),kpls.getSkpid(),"zpsfscpdf");
+                if(null !=cszb1 && cszb1.getCsz().equals("是")){
+                    generatePdfService.generatePdf(kplsh);
+                }
                 Map parms=new HashMap();
                 parms.put("gsdm",kpls.getGsdm());
                 Gsxx gsxx=gsxxService.findOneByParams(parms);
