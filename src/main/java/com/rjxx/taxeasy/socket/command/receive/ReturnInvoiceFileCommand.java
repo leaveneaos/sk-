@@ -238,7 +238,7 @@ public class ReturnInvoiceFileCommand implements ICommand {
                              String ss= HttpUtils.netWebService(url,"CallBack",returnmessage,gsxx.getAppKey(),gsxx.getSecretKey());
                              String fwkReturnMessageStr=fwkReturnMessage(kpls);
                             logger.info("----------sap回写报文----------" + fwkReturnMessageStr);
-                            String Data= HttpUtils.doPostSoap1_2("https://my337109.sapbydesign.com/sap/bc/srt/scs/sap/yyb40eysay_managegoldentaxinvo?sap-vhost=my337109.sapbydesign.com", fwkReturnMessageStr, null,"wendy","Welcome9");
+                            String Data= HttpUtils.doPostSoap1_2(gsxx.getSapcallbackurl(), fwkReturnMessageStr, null,"Wendy","Welcome9");
                             logger.info("----------fwk平台回写返回报文--------" + ss);
                             logger.info("----------sap回写返回报文----------" + Data);
 
@@ -264,9 +264,20 @@ public class ReturnInvoiceFileCommand implements ICommand {
                     kpls.setKprq(DateUtils.parseDate(kprq, new String[]{"yyyy-MM-dd HH:mm:ss"}));
                     kpls.setFpztdm("00");
                     kpls.setXgsj(new Date());
+                    Cszb cszb1 = cszbService.getSpbmbbh(kpls.getGsdm(),kpls.getXfid(),kpls.getSkpid(),"zpsfscpdf");
+                    if(null !=cszb1 && cszb1.getCsz().equals("是")){
+                        kpls.setJym("10497438135598948527");
+                        kpls.setSksbm("499000134531");
+                        kpls.setMwq("03*6<7-4937->9/1-544>0*1<76-</+0<<**87>-+>6+462+4145-1<+86*6<7-4937->9/1-538/0*>>687-44/8>4/*>010/17196-70/2>*81");
+                    }
                     kplsService.save(kpls);
                     updateJyls(kpls.getDjh(), "91");
+                    //20171204纸质专票生成pdf
+                    if(null !=cszb1 && cszb1.getCsz().equals("是")){
+                        generatePdfService.generatePdf(kplsh);
+                    }
                 }
+
                 Map parms=new HashMap();
                 parms.put("gsdm",kpls.getGsdm());
                 Gsxx gsxx=gsxxService.findOneByParams(parms);
