@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,10 +124,12 @@ public class GetInvoiceCommand implements ICommand {
         }
         if (kpls.getFpczlxdm().equals("14")) {
             kpls.setFpztdm("14");
+            kpls.setXgsj(new Date());
             kplsService.save(kpls);
             invoiceService.voidInvoice(kpls.getKplsh(), false, 0);
         } else {
             kpls.setFpztdm("14");
+            kpls.setXgsj(new Date());
             kplsService.save(kpls);
             invoiceService.doKp(kpls.getKplsh(), false, 0);
         }
