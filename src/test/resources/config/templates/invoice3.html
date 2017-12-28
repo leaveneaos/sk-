@@ -1,0 +1,378 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<#assign x=jyspmxls?size>
+<head>
+    <meta charset="UTF-8"/>
+    <style type="text/css">
+        @page {
+            /*size: 297mm 210mm;*/
+            size: 240mm ${210+(x-7)*6}mm
+        }
+
+        @media (max-width: 240mm) {
+            @page {
+                /*size: 297mm 210mm;*/
+                size: 240mm ${210+(x-7)*6}mm;
+            }
+        }
+
+        .printed{
+            font-family: STKaiti;
+        }
+        .printed span{
+            font-family: STZhongsong;
+            font-size: 9pt;
+        }
+        .filled{
+            font-family: STZhongsong;
+            font-size: 9pt;
+        }
+        body {
+            margin-left: 1px;
+            margin-right: 1px;
+            /*font-family: Arial Unicode MS;*/
+            font-size: 13px;
+        }
+
+        span {
+            color: black;
+        }
+
+        #div {
+            width: 570px;
+            height: 595px;
+        }
+
+        #bodyer {
+            height: 400px;
+        }
+
+        h2 {
+            color: #9E520A;
+        }
+
+        .header_t1 {
+            height: 93px;
+            width: 100%;
+            margin-left: 2px;
+            padding: 0px;
+            margin-top: 5px;
+        }
+
+        .boyder_t1 {
+            border: 1px #9E520A solid;
+            margin-left: 2px;
+            margin-top: 2px;
+            width: 100%;
+        }
+
+        .boyder_t2 {
+
+            height: 80px;
+            border-bottom: 1px solid #9E520A;
+            border-collapse: collapse;
+
+        }
+
+        .boyder_td1 {
+            width: 25px;
+            height: 105px;
+            border-right: 1px solid #da731b;
+            font-size: 10pt;
+            color: #9E520A;
+        }
+
+        .boyder_td2 {
+            width: 50%;
+            height: 105px;
+            border-right: 1px solid #da731b;
+        }
+
+        .boyder_tr1 {
+            text-align: center;
+            vertical-align: top;
+            border-top: 0px solid #da731b;
+        }
+
+        .td {
+            border-right: 1px solid #da731b;
+            font-size: 10pt;
+            color: #9E520A;
+        }
+
+        .mxtd {
+            border-right: 1px solid #da731b;
+            /*font-size: 10pt;*/
+            padding: 2px;
+        }
+
+        .boyder_t3 {
+            width: 100%;
+            border-bottom: 1px solid #da731b;
+        }
+
+        .footer_t1 {
+            margin-left: 2px;
+
+            height: 65px;
+        }
+
+        .titletd {
+            font-size: 10pt;
+            color: #9E520A;
+        }
+
+        .notd {
+            font-size: 10pt;
+
+            color: black;
+        }
+
+        .notdjym {
+            font-size: 10pt;
+            color: black;
+            width: 200px;
+            padding: 5px 5px;
+        }
+
+        .title {
+            font-size: 18pt;
+
+            color: #9E520A;
+
+        }
+
+
+    </style>
+    <title>电子发票</title>
+</head>
+<body>
+<table class="d2" style="width: 800px;table-layout:fixed;">
+    <tr>
+        <td>
+            <div class="header">
+                <table class="header_t1">
+                    <tr>
+                        <td align="left" valign="bottom" class="titletd" style="width: 210px;">
+                            <img style="width: 80px;height: 80px;margin-left: 42px;"
+                                 src="data:image/jpg;base64,${base64Image}"/>
+                        </td>
+                        <td width="320px" rowspan="2" align="center" valign="top" class="title printed"
+                            style="background: url('${imagePath}/${sfmc}.png'); background-position: center; background-repeat: no-repeat;background-size: 120px 80px;">
+                            <label style="display:inline-block;">
+                                <nobr>${sfmc}增值税电子普通发票</nobr>
+                                <div style="width:100%;margin-top:20px;border-top:1px solid #da731b;border-bottom:1px solid #da731b;height:2px;"></div>
+                            </label>
+                        </td>
+
+                        <td rowspan="2" align="left" style="width: 270px;">
+                            <table width="100%">
+                                <tr>
+                                    <td class="titletd printed">发票代码：<span class="filled">${yfpdm}</span>
+                                    </td>
+                                    <td class="notd"></td>
+                                </tr>
+                                <tr>
+                                    <td class="titletd printed">发票号码：<span class="filled">${yfphm}</span></td>
+                                    <td class="notd"></td>
+                                </tr>
+                                <tr>
+                                    <td class="titletd printed">开票日期：<span class="filled">${kprq}</span></td>
+                                    <td class="notd"></td>
+                                </tr>
+                                <tr>
+                                    <td class="titletd printed">校&#160;&#160;验&#160;&#160;码：<span class="filled">${jym}</span></td>
+                                    <td class="notd"></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="left" valign="bottom" class="titletd printed">
+                            机器编号：<span class="filled">${jqbh}</span>
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+            <div class="boyder">
+                <table class="boyder_t1"
+                       style="border: solid 1px  #da731b; border-collapse: collapse" cellpadding="0"
+                       cellspacing="0">
+                    <tr>
+                        <td class="boyder_t2">
+                            <table style="width: 100%;height: 100%;table-layout:fixed;" cellspacing="0"
+                                   cellpadding="0">
+                                <tr style="height:0;">
+                                    <th style="width:25px"></th>
+                                    <th></th>
+                                    <th style="width:25px"></th>
+                                    <th style="width:310px"></th>
+                                </tr>
+                                <tr>
+                                    <td class="boyder_td1 printed" align="center">购<br/>买<br/>方</td>
+                                    <td class="boyder_td2">
+                                        <table cellpadding="2px" style="width: 100%;table-layout:fixed;">
+                                            <tr>
+                                                <td class="titletd printed">名&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;称：<span style="font-size: ${gfmcSize}pt"><![CDATA[${gfmc}]]></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="titletd printed">纳税人识别号：<span>${gfsh}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="titletd printed">地&#160;&#160;址、电&#160;&#160;话：<span style="font-size: ${gfdzdhSize}pt"><![CDATA[${gfdz}　${gfdh}]]></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="titletd printed">
+                                                    开户行及账号：<span style="font-size: ${gfyhzhSize}pt"><![CDATA[${gfyh}　${gfyhzh}]]></span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td class="boyder_td1 printed" style="text-align: center">密<br/><br/> 码<br/><br/>区
+                                    </td>
+                                    <td width="200px" align="center"
+                                        style="font-family: 'Courier New';font-size: 11pt;padding: 5px 5px;line-height: 150%;vertical-align: top;WORD-WRAP: break-word;word-break: break-all;">
+                                        <![CDATA[${fpmw1}]]><br/><![CDATA[${fpmw2}]]><br/><![CDATA[${fpmw3}]]><br/><![CDATA[${fpmw4}]]>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <table class="boyder_t3" style="width: 100%;height: 100%; table-layout: fixed;"
+                                   cellpadding="0" cellspacing="0">
+                                <tr class="boyder_tr1 printed">
+                                    <td class="td" width="228x">货物或应税劳务、服务名称</td>
+                                    <td width="102px" class="td">规格型号</td>
+                                    <td width="45px" class="td">单位</td>
+                                    <td width="80px" class="td">数量</td>
+                                    <td width="75px" class="td">单价</td>
+                                    <td width="120px" class="td">金额</td>
+                                    <td width="40px" class="td">税率</td>
+                                    <td class="titletd" width="120px">税额</td>
+                                </tr>
+                                <#list jyspmxls as js>
+                                    <tr>
+                                        <td class="mxtd filled" style="font-size: ${js.spmcSize}pt"><![CDATA[${js.spmc}]]></td>
+                                        <td class="mxtd filled" width="64px" style="font-size: ${js.spggxhSize}pt"><![CDATA[${js.spggxh}]]></td>
+                                        <td class="mxtd filled" width="50px"><![CDATA[${js.spdw}]]></td>
+                                        <td class="mxtd filled" width="30px" style="font-size: ${js.spslSize}pt;text-align:right">
+                                            <![CDATA[${js.xmsl}]]>
+                                        </td>
+                                        <td class="mxtd filled" width="110px" style="font-size: ${js.spdjSize}pt;text-align:right">
+                                            <![CDATA[${js.xmdj}]]>
+                                        </td>
+                                        <td class="mxtd filled" width="110px" style="text-align:right">
+                                            <![CDATA[${js.xmje}]]>
+                                        </td>
+                                        <td class="mxtd filled" width="30px" style="text-align:right">
+                                            <![CDATA[${js.sl}]]>
+                                        </td>
+                                        <td width="150px" class="filled" style="text-align:right">
+                                            <![CDATA[${js.se}]]>
+                                        </td>
+                                    </tr>
+                                </#list>
+                                <tr class="boyder_tr1">
+                                    <td class="td printed"><br/><br/><br/>合&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;计
+                                    </td>
+                                    <td class="td"><br/><br/><br/></td>
+                                    <td class="td"><br/><br/><br/></td>
+                                    <td class="td"><br/><br/><br/></td>
+                                    <td class="td"><br/><br/><br/></td>
+                                    <td class="td" style="text-align:right">
+                                        <br/><br/><br/>
+                                        <span class="filled">
+                                        ￥${totalAmountString}
+                                    </span>
+                                    </td>
+                                    <td class="td"><br/><br/><br/></td>
+                                    <td style="text-align:right" class="filled">
+                                        <br/><br/><br/>
+                                        ${totalTaxAmountString}
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr height="30px">
+                        <td>
+                            <table class="boyder_t3" cellpadding="2px" cellspacing="0">
+                                <tr>
+                                    <td width="205px" align="center" class="td printed">价税合计（大写）</td>
+                                    <td align="left" width="245px" valign="center" class="filled">
+                                        <img style="vertical-align:middle;width:12px;height:12px;"
+                                             src="${imagePath}/jshj.jpg"/>${jshjdx}
+                                    </td>
+                                    <td align="center" width="350px"><span style="color: #9E520A;" class="printed">（小写）</span><span class="filled">￥${totalString}</span></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <table style="width: 100%;height: 100%" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td class="boyder_td1 printed" style="text-align: center">销<br/>售<br/>方</td>
+                                    <td class="boyder_td2" style="width:430px">
+                                        <table cellpadding="2px" style="width: 100%;table-layout:fixed;">
+                                            <tr>
+                                                <td class="titletd printed">名&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;称：<span style="font-size: ${xfmcSize}pt"><![CDATA[${xfmc}]]></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="titletd printed">纳税人识别号：<span><![CDATA[${xfsh}]]></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="titletd printed">地&#160;&#160;址、电&#160;&#160;话：<span style="font-size: ${xfdzdhSize}pt"><![CDATA[${xfdz}　${xfdh}]]></span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="titletd printed">
+                                                    开户行及账号：<span style="font-size: ${xfyhzhSize}pt"><![CDATA[${xfyh}　${xfyhzh}]]></span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                    <td class="boyder_td1 printed" style="text-align: center">备<br/><br/><br/>注</td>
+                                    <td valign="top" style="width:320px" class="filled">${bz}</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div>
+                <table class="footer_t1" style="width: 100%;height: 100%">
+                    <tr>
+                        <td class="titletd printed" style="width: 30%;">收款人：<span>${skr}</span>
+
+                        </td>
+                        <td class="titletd printed" style="width: 22%;">复核：<span>${fhr}</span>
+
+                        </td>
+                        <td class="titletd printed" style="width: 23%;">开票人：<span>${kpr}</span>
+
+                        </td>
+                        <td class="titletd printed" style="width: 25%;">
+                            销货方：（章）
+                            <img style="position: absolute;bottom: 0px;left: 622px;width: 158px;height:auto;" src="${imagePath}/${xfsh}.png">
+
+                            </img>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
