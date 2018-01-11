@@ -265,4 +265,29 @@ public class InvoiceController {
             return XmlJaxbUtils.toXml(response);
         }
     }
+
+    /**
+     * 税控盒子开票
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/skBoxKP", method = {RequestMethod.GET, RequestMethod.POST})
+    public String skBoxKP(String p) throws Exception {
+        try {
+            if (StringUtils.isBlank(p)) {
+                throw new Exception("参数不能为空");
+            }
+            String kplshStr = skService.decryptSkServerParameter(p);
+            int kplsh = Integer.valueOf(kplshStr);
+            logger.debug("receive invoice request:" + kplsh);
+            InvoiceResponse invoiceResponse  = invoiceService.skBoxKP(kplsh);
+            String result = XmlJaxbUtils.toXml(invoiceResponse);
+            logger.debug(result);
+            return result;
+        }catch (Exception e){
+            logger.error("", e);
+            InvoiceResponse response = InvoiceResponseUtils.responseError(e.getMessage());
+            return XmlJaxbUtils.toXml(response);
+        }
+    }
 }

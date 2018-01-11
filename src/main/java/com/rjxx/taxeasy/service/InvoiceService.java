@@ -1,5 +1,6 @@
 package com.rjxx.taxeasy.service;
 
+import com.alibaba.fastjson.JSON;
 import com.rabbitmq.client.Channel;
 import com.rjxx.taxeasy.bizcomm.utils.*;
 import com.rjxx.taxeasy.config.RabbitmqUtils;
@@ -21,7 +22,9 @@ import org.springframework.amqp.rabbit.support.PublisherCallbackChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -343,5 +346,113 @@ public class InvoiceService {
             e.printStackTrace();
         }
         return invoiceResponse;
+    }
+
+    public InvoiceResponse skBoxKP(int kplsh) throws  Exception{
+        Kpls kpls = kplsService.findOne(kplsh);
+        Map params = new HashMap();
+        params.put("kplsh", kpls.getKplsh());
+        List<Kpspmx> kpspmxList = kpspmxService.findMxList(params);
+        if (kpspmxList == null || kpspmxList.isEmpty()) {
+            throw new Exception("没有商品明细");
+        }
+        String lsh = kpls.getKplsh() + "$" + System.currentTimeMillis();
+        params.put("lsh", lsh);
+        String result = null;
+        String kpdid=null;
+        try {
+            Skp skp = skpService.findOne(kpls.getSkpid());
+            Cszb cszb = cszbService.getSpbmbbh(skp.getGsdm(), skp.getXfid(), null, "sfzcdkpdkp");
+            String sfzcdkpdkp = cszb.getCsz();
+            if(sfzcdkpdkp.equals("是")){
+                kpdid=skp.getSkph();
+            }else{
+                kpdid=kpls.getSkpid().toString();
+            }
+            String content=getJsonKpData(kpls,kpspmxList);
+            result = ServerHandler.sendMessage(kpdid, SendCommand.BoxInvoice, content, lsh, false, 0);
+            logger.debug("----------客户端返回结果-------------"+result);
+        } catch (Exception e) {
+            result = e.getMessage();
+            e.printStackTrace();
+        }
+         return null;
+    }
+
+    private String getJsonKpData(Kpls kpls, List<Kpspmx> kpspmxList) {
+            String hex= null;
+            try {
+            Map kpdata=new HashMap();
+            kpdata.put("OpType",3);
+            kpdata.put("PurchaserName",kpls.getGfmc());
+            kpdata.put("PurchaserTaxId",kpls.getGfsh());
+            kpdata.put("TotalTax",new BigDecimal(kpls.getHjse()).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue());
+            kpdata.put("TotalAmountWithTax",new BigDecimal(kpls.getJshj()).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue());
+            kpdata.put("Payee",kpls.getSkr());
+            kpdata.put("Drawee",kpls.getKpr());
+            kpdata.put("Remark",kpls.getBz());
+            List ItemsList=new ArrayList();
+            for(Kpspmx kpspmx:kpspmxList){
+                Map itemMap=new HashMap();
+                itemMap.put("ItemName",kpspmx.getSpmc());
+                if(null!=kpspmx.getSpdj()){
+                    itemMap.put("UnitPriceWithoutTax",new BigDecimal(kpspmx.getSpdj()).setScale(3,BigDecimal.ROUND_HALF_UP).doubleValue());
+                }else{
+                    itemMap.put("UnitPriceWithoutTax","");
+                }
+                if(null!=kpspmx.getSps()){
+                    itemMap.put("Quantity",new BigDecimal(kpspmx.getSps()).setScale(3,BigDecimal.ROUND_HALF_UP).doubleValue());
+                }else{
+                    itemMap.put("Quantity","");
+                }
+                itemMap.put("AmountWithoutTax",new BigDecimal(kpspmx.getSpje()).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue());
+                itemMap.put("TaxRate",kpspmx.getSpsl());
+                itemMap.put("Tax",new BigDecimal(kpspmx.getSpse()).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue());
+                if(null!=kpspmx.getSpdj()){
+                    BigDecimal sps = new BigDecimal(kpspmx.getSps());
+                    sps = sps.setScale(2,BigDecimal.ROUND_HALF_UP);
+                    BigDecimal jshj = new BigDecimal(kpspmx.getSpje() + kpspmx.getSpse());
+                    BigDecimal djWithTax = jshj.divide(sps, 3, BigDecimal.ROUND_HALF_UP);
+                    itemMap.put("UnitPriceWithTax",djWithTax.doubleValue());
+                }else{
+                    itemMap.put("UnitPriceWithTax","");
+                }
+                itemMap.put("AmountWithTax", new BigDecimal(kpspmx.getSpje() + kpspmx.getSpse()).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue());
+                ItemsList.add(itemMap);
+            }
+            kpdata.put("Items",ItemsList);
+            kpdata.put("RequestTrackId",kpls.getKplsh());
+            String jsonStr=JSON.toJSONString(kpdata);//json数据字符串
+            logger.debug("----------json字符串-------------"+JSON.toJSONString(kpdata));
+            hex = StringUtils.bytes2HexString(jsonStr.getBytes("UTF-8"));//16进制json字符串
+            logger.debug("----------16进制json字符串-------------"+hex);
+
+            Integer length=jsonStr.getBytes().length;
+            String hexLength=length.toHexString(length);//16进制数据字节长度
+            logger.debug("----------16进制json数据字节长度-------------"+hexLength);
+
+            String hexkplsh= kpls.getKplsh().toHexString(kpls.getKplsh());//16进制的流水号
+            logger.debug("----------16进制的流水号-------------"+hexkplsh);
+
+                /**
+                 * 设备ID转16进制数据
+                 */
+            String IDhex=StringUtils.bytes2HexString("A1".getBytes("UTF-8"))+"20"+StringUtils.bytes2HexString("ABC12345".getBytes("UTF-8"));
+            logger.debug("----------设备ID转16进制数据-------------"+IDhex);
+            Integer IDlength=IDhex.getBytes().length+96;
+            /**
+             * ID属性二进制转16进制
+             */
+            String  IDlengthHex=Integer.toHexString(Integer.parseInt("011"+IDlength.toBinaryString(IDlength), 2));
+            logger.debug("----------ID属性二进制转16进制-------------"+IDlengthHex);
+            Integer total=("000501010009"+hexLength+hex).getBytes().length;//数据包总长度
+            String  tolalHex=total.toHexString(total);
+            logger.debug("----------数据包总长度转16进制-------------"+tolalHex);
+            hex="5601"+tolalHex+hexkplsh+"00"+IDlengthHex+IDhex+"000501010009"+hexLength+hex;
+            logger.debug("----------开票数据指令-------------"+hex);
+            } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return hex;
     }
 }
