@@ -10,6 +10,7 @@ import com.rjxx.taxeasy.domains.Kpspmx;
 import com.rjxx.taxeasy.domains.Skp;
 import com.rjxx.taxeasy.socket.ServerHandler;
 import com.rjxx.taxeasy.socket.command.SendCommand;
+import com.rjxx.taxeasy.utils.*;
 import com.rjxx.taxeasy.vo.InvoicePendingData;
 import com.rjxx.utils.StringUtils;
 import com.rjxx.utils.TemplateUtils;
@@ -383,7 +384,7 @@ public class InvoiceService {
             String hex= null;
             try {
             Map kpdata=new HashMap();
-            kpdata.put("OpType",3);
+            kpdata.put("OpType",2);
             kpdata.put("PurchaserName",kpls.getGfmc());
             kpdata.put("PurchaserTaxId",kpls.getGfsh());
             kpdata.put("TotalTax",new BigDecimal(kpls.getHjse()).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue());
@@ -424,7 +425,7 @@ public class InvoiceService {
             kpdata.put("RequestTrackId",kpls.getKplsh());
             String jsonStr=JSON.toJSONString(kpdata);//json数据字符串
             logger.debug("----------json字符串-------------"+JSON.toJSONString(kpdata));
-            hex = StringUtils.bytes2HexString(jsonStr.getBytes("UTF-8"));//16进制json字符串
+           /* hex = StringUtils.bytes2HexString(jsonStr.getBytes("UTF-8"));//16进制json字符串
             logger.debug("----------16进制json字符串-------------"+hex);
 
             Integer length=jsonStr.getBytes().length;
@@ -434,23 +435,38 @@ public class InvoiceService {
             String hexkplsh= kpls.getKplsh().toHexString(kpls.getKplsh());//16进制的流水号
             logger.debug("----------16进制的流水号-------------"+hexkplsh);
 
-                /**
+                *//**
                  * 设备ID转16进制数据
-                 */
+                 *//*
             String IDhex=StringUtils.bytes2HexString("A1".getBytes("UTF-8"))+"20"+StringUtils.bytes2HexString("ABC12345".getBytes("UTF-8"));
             logger.debug("----------设备ID转16进制数据-------------"+IDhex);
             Integer IDlength=IDhex.getBytes().length+96;
-            /**
+            *//**
              * ID属性二进制转16进制
-             */
+             *//*
             String  IDlengthHex=Integer.toHexString(Integer.parseInt("011"+IDlength.toBinaryString(IDlength), 2));
             logger.debug("----------ID属性二进制转16进制-------------"+IDlengthHex);
             Integer total=("000501010009"+hexLength+hex).getBytes().length;//数据包总长度
             String  tolalHex=total.toHexString(total);
             logger.debug("----------数据包总长度转16进制-------------"+tolalHex);
-            hex="5601"+tolalHex+hexkplsh+"00"+IDlengthHex+IDhex+"000501010009"+hexLength+hex;
+            hex="5601"+tolalHex+hexkplsh+"00"+IDlengthHex+IDhex+"000501010009"+hexLength+hex;*/
+            CmdStru.CmdPackStru pack = localCmdBody.getInstance().Pack_CMD_Json(CmdParam.CMD_THIRDINVOICE_COMMON_FPKJ,jsonStr,CmdParam.TAG_FILE_UTF8);
+                //CmdStru.CmdPackStru pack = localCmdBody.getInstance().Pack_CMD_FPCX_CSYY(CmdParam.CMD_THIRDINVOICE_COMMON_FPCX,2220);
+
+                if (pack.isSuccess) {
+                    logger.info("[SendFPKJ_CSYY]1：FlowNum=" + pack.Header.flowNum
+                            + ",发送UDP包成功");
+                    hex= ManageUtil.byteToHexString(pack.TotalData);
+                    //UDPComm.getInstance().InitSocket();
+                    boolean f=  UDPComm.getInstance().Send(pack.TotalData);
+                    System.out.println(f);
+                } else {
+                    logger.info("[SendFPKJ_CSYY]1：FlowNum=" + pack.Header.flowNum
+                            + ",打包失败");
+                    hex="";
+                }
             logger.debug("----------开票数据指令-------------"+hex);
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
             e.printStackTrace();
         }
         return hex;
