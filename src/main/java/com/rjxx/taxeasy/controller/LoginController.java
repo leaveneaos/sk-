@@ -54,7 +54,7 @@ public class LoginController {
     @Value("${socket.port:5672}")
     private int MQport;
 
-    @Value("${rabbitmq.queueName:queue_result_invoice}")
+    @Value("${rabbitmq.queueName:'queue_result_invoice'}")
     private int MQqueueName;
 
     @Value("${rabbitmq.username}")
