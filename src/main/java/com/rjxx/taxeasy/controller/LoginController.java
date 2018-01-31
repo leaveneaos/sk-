@@ -54,17 +54,17 @@ public class LoginController {
     @Value("${socket.port:5672}")
     private int MQport;
 
-    @Value("${rabbitmq.queueName:'queue_result_invoice'}")
-    private int MQqueueName;
+    @Value("${rabbitmq.queueName:queue_result_invoice}")
+    private String MQqueueName;
 
     @Value("${rabbitmq.username}")
-    private int MQaccount;
+    private String MQaccount;
 
     @Value("${rabbitmq.password}")
-    private int MQpassword;
+    private String MQpassword;
 
     @Value("${rabbitmq.virtualHost}")
-    private int MQvhost;
+    private String MQvhost;
     /**
      * 客户端登录
      *
