@@ -55,7 +55,7 @@
     <MQ>
         <MQhost>${MQhost!}</MQhost>
         <MQport>${MQport!}</MQport>
-        <MQqueryName>${MQqueryName!}</MQqueryName>
+        <MQqueueName>${MQqueueName!}</MQqueueName>
         <MQaccount>${MQaccount!}</MQaccount>
         <MQpassword>${MQpassword!}</MQpassword>
         <MQvhost>${MQvhost!}</MQvhost>
