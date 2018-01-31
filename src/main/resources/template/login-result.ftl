@@ -52,4 +52,12 @@
         </#list>
     </KpdList>
     </#if>
+    <MQ>
+        <MQhost>${MQhost!}</MQhost>
+        <MQport>${MQport!}</MQport>
+        <MQqueryName>${MQqueryName!}</MQqueryName>
+        <MQaccount>${MQaccount!}</MQaccount>
+        <MQpassword>${MQpassword!}</MQpassword>
+        <MQvhost>${MQvhost!}</MQvhost>
+    </MQ>
 </TaxEasyLicense>

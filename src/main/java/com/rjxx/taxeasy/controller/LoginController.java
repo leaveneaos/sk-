@@ -48,6 +48,23 @@ public class LoginController {
     @Autowired
     private SkpService skpService;
 
+    @Value("${rabbitmq.address}")
+    private String MQhost;
+
+    @Value("${socket.port:5672}")
+    private int MQport;
+
+    @Value("${rabbitmq.queueName:queue_result_invoice}")
+    private int MQqueueName;
+
+    @Value("${rabbitmq.username}")
+    private int MQaccount;
+
+    @Value("${rabbitmq.password}")
+    private int MQpassword;
+
+    @Value("${rabbitmq.virtualHost}")
+    private int MQvhost;
     /**
      * 客户端登录
      *
@@ -141,6 +158,12 @@ public class LoginController {
         map.put("success", "true");
         map.put("sessionId", sessionId);
         map.put("expireTime", expireTime);
+        map.put("MQhost", MQhost);
+        map.put("MQport", MQport);
+        map.put("MQaccount", MQaccount);
+        map.put("MQpassword", MQpassword);
+        map.put("MQvhost", MQvhost);
+        map.put("MQqueueName", MQqueueName);
         return generateLoginResult(map);
     }
 
