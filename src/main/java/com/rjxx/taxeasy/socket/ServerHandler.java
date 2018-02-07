@@ -191,7 +191,7 @@ public class ServerHandler extends IoHandlerAdapter {
 
     @Override
     public void messageSent(IoSession session, Object message) throws Exception {
-//        logger.info("message:" + message);
+       logger.info("服务端发送信息成功  message:" + message);
     }
 
     @Override
