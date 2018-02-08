@@ -216,35 +216,6 @@ public class ReturnInvoiceFileCommand implements ICommand {
                 //此处开始生成pdf
 
                 generatePdfService.generatePdf(kplsh);
-                Map parms=new HashMap();
-                parms.put("gsdm",kpls.getGsdm());
-                Gsxx gsxx=gsxxService.findOneByParams(parms);
-                //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
-                String url=gsxx.getCallbackurl();
-                if(!("").equals(url)&&url!=null){
-                    String returnmessage=null;
-                    if(!kpls.getGsdm().equals("Family")&&!kpls.getGsdm().equals("fwk")) {
-                        returnmessage = generatePdfService.CreateReturnMessage(kpls.getKplsh());
-                        //输出调用结果
-                        logger.info("回写报文" + returnmessage);
-                        if (returnmessage != null && !"".equals(returnmessage)) {
-                            Map returnMap = clientDesUtils.httpPost(returnmessage, kpls);
-                            logger.info("返回报文" + JSON.toJSONString(returnMap));
-                        }
-                    }else if(kpls.getGsdm().equals("fwk")){
-                        returnmessage = generatePdfService.CreateReturnMessage3(kpls.getKplsh());
-                        logger.info("回写报文" + returnmessage);
-                        if (returnmessage != null && !"".equals(returnmessage)) {
-                             String ss= HttpUtils.netWebService(url,"CallBack",returnmessage,gsxx.getAppKey(),gsxx.getSecretKey());
-                             String fwkReturnMessageStr=fwkReturnMessage(kpls);
-                            logger.info("----------sap回写报文----------" + fwkReturnMessageStr);
-                            String Data= HttpUtils.doPostSoap1_2(gsxx.getSapcallbackurl(), fwkReturnMessageStr, null,"Wendy","Welcome9");
-                            logger.info("----------fwk平台回写返回报文--------" + ss);
-                            logger.info("----------sap回写返回报文----------" + Data);
-
-                        }
-                    }
-                }
             } else {
                 //解析纸质票批量导入的结果
                 Map<String, String> retMap = parseInvoiceFileUtils.parseZZPBulkImportText(content);
