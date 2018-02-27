@@ -37,7 +37,7 @@
                         <Spbm>${kpspmx.spdm}</Spbm>
                         <Qyspbm>${kpspmx.zxbm!}</Qyspbm>
                         <Syyhzcbz>${kpspmx.yhzcmc!}</Syyhzcbz>
-                        <Lslbz>${kpspmx.lslbz!}</Lslbz>
+                        <Lslbz>${kpspmx.lslbz!0}</Lslbz>
                         <Yhzcsm>${kpspmx.yhzcbs!0}</Yhzcsm>
                         <Dj>${(kpspmx.spdj?string('#.###############'))!}</Dj>
                         <Sl>${(kpspmx.sps?string('#.###############'))!}</Sl>
