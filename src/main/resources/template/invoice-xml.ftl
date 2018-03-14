@@ -36,8 +36,18 @@
                         <Jldw>${kpspmx.spdw!}</Jldw>
                         <Spbm>${kpspmx.spdm}</Spbm>
                         <Qyspbm>${kpspmx.zxbm!}</Qyspbm>
-                        <Syyhzcbz>${kpspmx.yhzcbs!0}</Syyhzcbz>
-                        <Lslbz>${kpspmx.lslbz!0}</Lslbz>
+                        <Syyhzcbz>
+                        <#if (kpspmx.yhzcbs)??>
+                        <#if kpspmx.yhzcbs!="">
+                           ${kpspmx.yhzcbs!}
+                        <#else>
+                          0
+                        </#if>
+                        <#else>
+                           ${kpspmx.yhzcbs!"0"}
+                        </#if>
+                        </Syyhzcbz>
+                        <Lslbz>${kpspmx.lslbz!}</Lslbz>
                         <Yhzcsm>${kpspmx.yhzcmc!}</Yhzcsm>
                         <Dj>${(kpspmx.spdj?string('#.###############'))!}</Dj>
                         <Sl>${(kpspmx.sps?string('#.###############'))!}</Sl>
