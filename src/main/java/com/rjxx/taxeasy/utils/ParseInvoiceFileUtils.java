@@ -177,7 +177,7 @@ public class ParseInvoiceFileUtils {
                     //输出调用结果
                     logger.info("回写报文" + returnmessage);
                     if (returnmessage != null && !"".equals(returnmessage)) {
-                        Map returnMap = clientDesUtils.httpPost(returnmessage, kpls);
+                        Map returnMap = generatePdfService.httpPost(returnmessage, kpls);
                         logger.info("返回报文" + JSON.toJSONString(returnMap));
                     }
                 }else if(kpls.getGsdm().equals("fwk")){
@@ -218,7 +218,7 @@ public class ParseInvoiceFileUtils {
                     //输出调用结果
                     logger.info("回写报文" + returnmessage);
                     if (returnmessage != null && !"".equals(returnmessage)) {
-                        Map returnMap = clientDesUtils.httpPost(returnmessage, kpls);
+                        Map returnMap = generatePdfService.httpPost(returnmessage, kpls);
                         logger.info("返回报文" + JSON.toJSONString(returnMap));
                     }
                 }else if(kpls.getGsdm().equals("fwk")){
