@@ -20,6 +20,7 @@
                 <hjje>${(kpls.hjje?string('#.##'))!}</hjje>
                 <hjse>${(kpls.hjse?string('#.##'))!}</hjse>
                 <jshj>${(kpls.jshj?string('#.##'))!}</jshj>
+                <hsslbs>${kpls.zsfs!"0"}</hsslbs>
                 <Bz>${kpls.bz!}</Bz>
                 <Fhr>${kpls.fhr!}</Fhr>
                 <Skr>${kpls.skr!}</Skr>
