@@ -41,17 +41,7 @@
                 <SE>${kpspmx.spse?string('#.######')}</SE>
                 <SPBM>${kpspmx.spdm}</SPBM>
                 <ZXBM>${kpspmx.zxbm!}</ZXBM>
-                <YHZCBS>
-                    <#if (kpspmx.yhzcbs)??>
-                        <#if kpspmx.yhzcbs!="">
-                        ${kpspmx.yhzcbs!}
-                        <#else>
-                            0
-                        </#if>
-                    <#else>
-                    ${kpspmx.yhzcbs!"0"}
-                    </#if>
-                </YHZCBS>
+                <YHZCBS><#if (kpspmx.yhzcbs)??><#if kpspmx.yhzcbs!="">${kpspmx.yhzcbs!}<#else>0</#if><#else>${kpspmx.yhzcbs!"0"}</#if></YHZCBS>
                 <LSLBS>${kpspmx.lslbz!}</LSLBS>
                 <ZZSTSGL>${kpspmx.yhzcmc!}</ZZSTSGL>
             </COMMON_FPKJ_XMXX>
