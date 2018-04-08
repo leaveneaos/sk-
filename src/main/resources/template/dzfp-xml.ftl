@@ -43,7 +43,7 @@
                 <YHZCBS><#if (kpspmx.yhzcbs)??><#if kpspmx.yhzcbs!="">${kpspmx.yhzcbs!}<#else>0</#if><#else>${kpspmx.yhzcbs!"0"}</#if></YHZCBS>
                 <LSLBS>${kpspmx.lslbz!}</LSLBS>
                 <ZZSTSGL>${kpspmx.yhzcmc!}</ZZSTSGL>
-                <KCE><#if (kpspmx.kce)??><#if kpspmx.kce!="">${(kpspmx.kce!?string('#.######'))!}<#else>0</#if><#else>${kpspmx.kce!"0.00"}</#if></KCE>
+                <KCE><#if (kpspmx.kce)??>${(kpspmx.kce!?string('#.######'))!"0.00"}<#else>${kpspmx.kce!"0.00"}</#if></KCE>
             </COMMON_FPKJ_XMXX>
             </#list>
         </COMMON_FPKJ_XMXXS>
