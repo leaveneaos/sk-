@@ -23,7 +23,7 @@
             <JSHJ>${(kpls.jshj?string('#.######'))!}</JSHJ>
             <HJJE>${(kpls.hjje!?string('#.######'))!}</HJJE>
             <HJSE>${(kpls.hjse!?string('#.######'))!}</HJSE>
-            <KCE><#if (kce)??>${(kce!?string('#.######'))!}<#else></#if></KCE>
+            <KCE><#if kce??>${kce!?string('#.######')!}<#else></#if></KCE>
             <BZ>${kpls.bz!}</BZ>
             <BMB_BBH>${spbmbbh!"12.0"}</BMB_BBH>
         </COMMON_FPKJ_FPT>
