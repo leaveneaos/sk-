@@ -6,6 +6,7 @@
             <KPLX>${kplx!"0"}</KPLX>
             <SGBZ>0</SGBZ>
             <HSBZ>0</HSBZ>
+            <ZSFS>${zsfs!"0"}</ZSFS>
             <XSF_NSRSBH>${kpls.xfsh}</XSF_NSRSBH>
             <XSF_MC>${kpls.xfmc}</XSF_MC>
             <XSF_DZDH>${kpls.xfdz!}　${kpls.xfdh!}</XSF_DZDH>
@@ -22,6 +23,7 @@
             <JSHJ>${(kpls.jshj?string('#.######'))!}</JSHJ>
             <HJJE>${(kpls.hjje!?string('#.######'))!}</HJJE>
             <HJSE>${(kpls.hjse!?string('#.######'))!}</HJSE>
+            <KCE>${(kce!?string('#.######'))!}</KCE>
             <BZ>${kpls.bz!}</BZ>
             <BMB_BBH>${spbmbbh!"12.0"}</BMB_BBH>
         </COMMON_FPKJ_FPT>
@@ -39,7 +41,7 @@
                 <SE>${kpspmx.spse?string('#.######')}</SE>
                 <SPBM>${kpspmx.spdm}</SPBM>
                 <ZXBM>${kpspmx.zxbm!}</ZXBM>
-                <YHZCBS>${kpspmx.yhzcbs!0}</YHZCBS>
+                <YHZCBS><#if (kpspmx.yhzcbs)??><#if kpspmx.yhzcbs!="">${kpspmx.yhzcbs!}<#else>0</#if><#else>${kpspmx.yhzcbs!"0"}</#if></YHZCBS>
                 <LSLBS>${kpspmx.lslbz!}</LSLBS>
                 <ZZSTSGL>${kpspmx.yhzcmc!}</ZZSTSGL>
             </COMMON_FPKJ_XMXX>

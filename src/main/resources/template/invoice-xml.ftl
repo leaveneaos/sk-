@@ -20,6 +20,7 @@
                 <hjje>${(kpls.hjje?string('#.##'))!}</hjje>
                 <hjse>${(kpls.hjse?string('#.##'))!}</hjse>
                 <jshj>${(kpls.jshj?string('#.##'))!}</jshj>
+                <hsslbs>${kpls.zsfs!"0"}</hsslbs>
                 <Bz>${kpls.bz!}</Bz>
                 <Fhr>${kpls.fhr!}</Fhr>
                 <Skr>${kpls.skr!}</Skr>
@@ -36,9 +37,9 @@
                         <Jldw>${kpspmx.spdw!}</Jldw>
                         <Spbm>${kpspmx.spdm}</Spbm>
                         <Qyspbm>${kpspmx.zxbm!}</Qyspbm>
-                        <Syyhzcbz>${kpspmx.yhzcmc!}</Syyhzcbz>
-                        <Lslbz>${kpspmx.lslbz!0}</Lslbz>
-                        <Yhzcsm>${kpspmx.yhzcbs!0}</Yhzcsm>
+                        <Syyhzcbz><#if (kpspmx.yhzcbs)??><#if kpspmx.yhzcbs!="">${kpspmx.yhzcbs!}<#else>0</#if><#else>${kpspmx.yhzcbs!"0"}</#if></Syyhzcbz>
+                        <Lslbz>${kpspmx.lslbz!}</Lslbz>
+                        <Yhzcsm>${kpspmx.yhzcmc!}</Yhzcsm>
                         <Dj>${(kpspmx.spdj?string('#.###############'))!}</Dj>
                         <Sl>${(kpspmx.sps?string('#.###############'))!}</Sl>
                         <Je>${(kpspmx.spje?string('#.######'))!}</Je>
