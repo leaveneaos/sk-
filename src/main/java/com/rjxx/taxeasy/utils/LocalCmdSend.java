@@ -90,7 +90,7 @@ public class LocalCmdSend {
 
                     String Content = ManageUtil.ReadTxtFile(catchDir);
 
-                    CmdStru.CmdPackStru pack = localCmdBody.getInstance().Pack_CMD_Json(CmdParam.CMD_THIRDINVOICE_COMMON_FPKJ,Content,CmdParam.TAG_FILE_UTF8);
+                    CmdStru.CmdPackStru pack = localCmdBody.getInstance().Pack_CMD_Json(CmdParam.CMD_THIRDINVOICE_COMMON_FPKJ,Content,CmdParam.TAG_FILE_UTF8,1234);
 
                     if (pack.isSuccess) {
 
@@ -120,7 +120,7 @@ public class LocalCmdSend {
 
     }
 
-    public void SendFPCX(final long RequestTrackId)
+    public void SendFPCX(final long RequestTrackId, final int kplsh)
     {
         InvoiceApp.catcheThreadPool.execute(new Runnable() {
 
@@ -129,7 +129,7 @@ public class LocalCmdSend {
 
                 try
                 {
-                    CmdStru.CmdPackStru pack = localCmdBody.getInstance().Pack_CMD_FPCX_CSYY(CmdParam.CMD_THIRDINVOICE_COMMON_FPCX,RequestTrackId);
+                    CmdStru.CmdPackStru pack = localCmdBody.getInstance().Pack_CMD_FPCX_CSYY(CmdParam.CMD_THIRDINVOICE_COMMON_FPCX,RequestTrackId, kplsh);
 
                     if (pack.isSuccess) {
 

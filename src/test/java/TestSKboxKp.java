@@ -22,7 +22,7 @@ public class TestSKboxKp {
     @Test
     public void test(){
         try {
-            InvoiceResponse invoiceResponse= invoiceService.skBoxKP(1631);
+            InvoiceResponse invoiceResponse= invoiceService.skBoxKP(8637);
         } catch (Exception e) {
             e.printStackTrace();
         }
