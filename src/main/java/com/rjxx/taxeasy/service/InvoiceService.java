@@ -23,7 +23,6 @@ import org.springframework.amqp.rabbit.support.PublisherCallbackChannel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -371,8 +370,8 @@ public class InvoiceService {
                 kpdid=kpls.getSkpid().toString();
             }
             String content=getJsonKpData(kpls,kpspmxList);
-            result = ServerHandler.sendMessage(kpdid, SendCommand.BoxInvoice, content, lsh, false, 0);
-            logger.debug("----------客户端返回结果-------------"+result);
+            //result = ServerHandler.sendMessage(kpdid, SendCommand.BoxInvoice, content, lsh, false, 0);
+            //logger.debug("----------客户端返回结果-------------"+result);
         } catch (Exception e) {
             result = e.getMessage();
             e.printStackTrace();
@@ -384,7 +383,7 @@ public class InvoiceService {
             String hex= null;
             try {
             Map kpdata=new HashMap();
-            kpdata.put("OpType",2);
+            kpdata.put("OpType",3);
             kpdata.put("PurchaserName",kpls.getGfmc());
             kpdata.put("PurchaserTaxId",kpls.getGfsh());
             kpdata.put("TotalTax",new BigDecimal(kpls.getHjse()).setScale(2,BigDecimal.ROUND_HALF_UP).doubleValue());
@@ -392,6 +391,7 @@ public class InvoiceService {
             kpdata.put("Payee",kpls.getSkr());
             kpdata.put("Drawee",kpls.getKpr());
             kpdata.put("Remark",kpls.getBz());
+
             List ItemsList=new ArrayList();
             for(Kpspmx kpspmx:kpspmxList){
                 Map itemMap=new HashMap();
@@ -450,7 +450,7 @@ public class InvoiceService {
             String  tolalHex=total.toHexString(total);
             logger.debug("----------数据包总长度转16进制-------------"+tolalHex);
             hex="5601"+tolalHex+hexkplsh+"00"+IDlengthHex+IDhex+"000501010009"+hexLength+hex;*/
-            CmdStru.CmdPackStru pack = localCmdBody.getInstance().Pack_CMD_Json(CmdParam.CMD_THIRDINVOICE_COMMON_FPKJ,jsonStr,CmdParam.TAG_FILE_UTF8);
+            CmdStru.CmdPackStru pack = localCmdBody.getInstance().Pack_CMD_Json(CmdParam.CMD_THIRDINVOICE_COMMON_FPKJ,jsonStr,CmdParam.TAG_FILE_UTF8,kpls.getKplsh());
                 //CmdStru.CmdPackStru pack = localCmdBody.getInstance().Pack_CMD_FPCX_CSYY(CmdParam.CMD_THIRDINVOICE_COMMON_FPCX,2220);
 
                 if (pack.isSuccess) {

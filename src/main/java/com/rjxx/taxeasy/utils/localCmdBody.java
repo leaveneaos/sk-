@@ -21,7 +21,7 @@ public class localCmdBody {
 
 
 
-    public CmdStru.CmdPackStru Pack_CMD_Json(int CmdId, String data,short TagFile){
+    public CmdStru.CmdPackStru Pack_CMD_Json(int CmdId, String data,short TagFile,int kplsh){
 
         CmdStru.CmdPackStru pack=new CmdStru().new CmdPackStru();
 
@@ -53,14 +53,14 @@ public class localCmdBody {
 
         //byte[]BodyBuf=(byte[])res.obj;
 
-        PackBody(pack,BodyBuf,CmdParam.ENCRYPT_NONE);
+        PackBody(pack,BodyBuf,CmdParam.ENCRYPT_NONE,kplsh);
 
         return pack;
     }
 
-    public void PackBody(CmdStru.CmdPackStru pack, byte[]buf, byte encryptType)
+    public void PackBody(CmdStru.CmdPackStru pack, byte[]buf, byte encryptType,int kplsh)
     {
-        PackBody(pack,buf,encryptType,false,-1);
+        PackBody(pack,buf,encryptType,true,kplsh);
 
     }
     public void PackBody(CmdStru.CmdPackStru pack, byte[]buf,byte encryptType, boolean IsClientFlowNum, int ClientFlowNum){
@@ -100,7 +100,7 @@ public class localCmdBody {
 
 
 
-    public CmdStru.CmdPackStru Pack_CMD_FPCX_CSYY(int CmdId, long RequestTrackId){
+    public CmdStru.CmdPackStru Pack_CMD_FPCX_CSYY(int CmdId, long RequestTrackId,int kplsh){
 
         CmdStru.CmdPackStru pack=new CmdStru().new CmdPackStru();
 
@@ -119,7 +119,7 @@ public class localCmdBody {
 
         //byte[]BodyBuf=(byte[])res.obj;
 
-        PackBody(pack,BodyBuf,CmdParam.ENCRYPT_NONE);
+        PackBody(pack,BodyBuf,CmdParam.ENCRYPT_NONE,kplsh);
 
         return pack;
     }
