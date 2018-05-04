@@ -5,6 +5,7 @@ import com.rjxx.comm.utils.ApplicationContextUtils;
 import com.rjxx.taxeasy.bizcomm.utils.GeneratePdfService;
 import com.rjxx.taxeasy.bizcomm.utils.HttpUtils;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
+import com.rjxx.taxeasy.bizcomm.utils.SaveGfxxUtil;
 import com.rjxx.taxeasy.domains.*;
 import com.rjxx.taxeasy.service.*;
 import com.rjxx.taxeasy.socket.SocketSession;
@@ -66,6 +67,8 @@ public class ReturnInvoiceFileCommand implements ICommand {
     private GsxxService gsxxService;
     @Autowired
     private  CszbService cszbService;
+    @Autowired
+    private SaveGfxxUtil saveGfxxUtil;
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
         logger.debug(data);
@@ -247,6 +250,9 @@ public class ReturnInvoiceFileCommand implements ICommand {
                     if(null !=cszb1 && cszb1.getCsz().equals("是")){
                         generatePdfService.generatePdf(kplsh);
                     }
+                    //开具成功后写入购方管理 gfxx
+                    saveGfxxUtil.saveGfxx(kpls.getXfid(),kpls.getGsdm(),kpls.getGfmc(),kpls.getGfsh(),kpls.getGfdz(),kpls.getGfdh(),
+                            kpls.getGfyh(),kpls.getGfyhzh(),kpls.getGfemail());
                 }
 
                 Map parms=new HashMap();
