@@ -36,7 +36,7 @@
                 <XMSL>${(kpspmx.sps?string('#.###############'))!}</XMSL>
                 <XMDJ>${(kpspmx.spdj?string('#.###############'))!}</XMDJ>
                 <XMJE>${kpspmx.spje?string('#.######')}</XMJE>
-                <SL>${kpspmx.spsl?string('#.######')}</SL>
+                <SL>${kpspmx.spsl?string('#0.00####')}</SL>
                 <SE>${kpspmx.spse?string('#.######')}</SE>
                 <SPBM>${kpspmx.spdm}</SPBM>
                 <ZXBM>${kpspmx.zxbm!}</ZXBM>
