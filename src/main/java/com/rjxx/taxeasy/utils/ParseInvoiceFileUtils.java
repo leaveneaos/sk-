@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.rjxx.taxeasy.bizcomm.utils.GeneratePdfService;
 import com.rjxx.taxeasy.bizcomm.utils.HttpUtils;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
+import com.rjxx.taxeasy.bizcomm.utils.SaveGfxxUtil;
 import com.rjxx.taxeasy.domains.Gsxx;
 import com.rjxx.taxeasy.domains.Jyls;
 import com.rjxx.taxeasy.domains.Kpls;
@@ -47,6 +48,8 @@ public class ParseInvoiceFileUtils {
 
     @Autowired
     private GsxxService gsxxService;
+    @Autowired
+    private SaveGfxxUtil saveGfxxUtil;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     /**
@@ -188,6 +191,9 @@ public class ParseInvoiceFileUtils {
                     }
                 }
             }
+            //开具成功后写入购方管理 gfxx
+            saveGfxxUtil.saveGfxx(kpls.getXfid(),kpls.getGsdm(),kpls.getGfmc(),kpls.getGfsh(),kpls.getGfdz(),kpls.getGfdh(),
+                    kpls.getGfyh(),kpls.getGfyhzh(),kpls.getGfemail());
         } else {
             String lsh = response.getLsh();
             int pos = lsh.indexOf("$");
