@@ -50,7 +50,8 @@ public class UploadFpkcxxController {
             if(StringUtils.isBlank(uploadData)){
                 return ResponeseUtils.error("数据解密失败");
             }
-            String result = uploadFpckxxService.UploadFpckxx(uploadData);
+            String invoiceResponse = uploadFpckxxService.UploadFpckxx(uploadData);
+            String result = XmlJaxbUtils.toXml(invoiceResponse);
             logger.debug(result);
             return result;
         } catch (Exception e) {
