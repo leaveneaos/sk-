@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
+import org.springframework.web.bind.annotation.ResponseBody;
 
 
 /**
@@ -38,6 +38,7 @@ public class UploadFpkcxxController {
      * @throws Exception
      */
     @RequestMapping(value = "/getuploadFpkcxx", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
     public String getuploadFpkcxx(String p) throws Exception {
         logger.info("进入-upload---------------------"+p);
         if (StringUtils.isBlank(p)) {
