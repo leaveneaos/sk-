@@ -259,7 +259,7 @@ public class InvoiceController {
             logger.debug(result);
             return result;
         }catch (Exception e){
-            logger.error("", e);
+            logger.error("调用税控服务器失败："+e.getMessage(), e);
             InvoiceResponse response = InvoiceResponseUtils.responseError(e.getMessage());
             return XmlJaxbUtils.toXml(response);
         }
