@@ -363,7 +363,7 @@ public class ReturnInvoiceFileCommand implements ICommand {
             kpls.setSksbm(map.get("JQBH"));
             kpls.setMwq(map.get("FP_MW"));
             kpls.setJym(map.get("JYM"));
-            String kprq = map.get("KPRQ");
+            String kprq = map.get("KPRQ").substring(0,14);
             kpls.setKprq(TimeUtil.getSysDateInDate(kprq, null));
             String bz = map.get("BZ");
             if (StringUtils.isNotBlank(bz)) {
