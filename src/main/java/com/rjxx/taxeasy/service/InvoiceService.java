@@ -366,8 +366,11 @@ public class InvoiceService {
             resultMap=fpclService.DzfphttpPost(queryStr, url, kpls.getDjh() + "$" + kpls.getKplsh(), kpls.getXfsh(),
                     kpls.getJylsh(),2);
             fpclService.updateKpls(resultMap);
+            String returncode = resultMap.get("RETURNCODE").toString();
+            invoiceResponse.setReturnCode(returncode);
         }catch (Exception e){
             //Kpls kpls=kplsService.findOne(Integer.parseInt(key));
+            invoiceResponse.setReturnCode("9999");
             kpls.setFpztdm("04");
             kpls.setErrorReason(e.getMessage());
             kplsService.save(kpls);
