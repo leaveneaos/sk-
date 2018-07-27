@@ -362,6 +362,7 @@ public class InvoiceService {
                     + "<FPQQLSH>"+kplsh+"</FPQQLSH>"
                     + "</REQUEST_COMMON_FPCX>"
                     + "</business>";
+            logger.info("调用税控服务器电子发票查询接口：kplsh+"+kplsh+",查询报文="+queryStr);
             resultMap=fpclService.DzfphttpPost(queryStr, url, kpls.getDjh() + "$" + kpls.getKplsh(), kpls.getXfsh(),
                     kpls.getJylsh(),2);
             fpclService.updateKpls(resultMap);
