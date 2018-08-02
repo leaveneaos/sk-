@@ -171,25 +171,27 @@ public class ParseInvoiceFileUtils {
             parms.put("gsdm",kpls.getGsdm());
             Gsxx gsxx=gsxxService.findOneByParams(parms);
             //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
-            String url=gsxx.getCallbackurl();
-            if(!("").equals(url)&&url!=null){
-                String returnmessage=null;
-                if(!kpls.getGsdm().equals("Family")&&!kpls.getGsdm().equals("fwk")) {
-                    returnmessage = fphxUtil.CreateReturnMessage(kpls.getKplsh());
-                    //输出调用结果
-                    logger.info("回写报文" + returnmessage);
-                    if (returnmessage != null && !"".equals(returnmessage)) {
-                        Map returnMap = fphxUtil.httpPost(returnmessage, kpls);
-                        logger.info("返回报文" + JSON.toJSONString(returnMap));
-                    }
-                }else if(kpls.getGsdm().equals("fwk")){
-                    returnmessage = fphxUtil.CreateReturnMessage3(kpls.getKplsh());
-                    logger.info("回写报文" + returnmessage);
-                    if (returnmessage != null && !"".equals(returnmessage)) {
-                        String ss= HttpUtils.netWebService(url,"CallBack",returnmessage,gsxx.getAppKey(),gsxx.getSecretKey());
-                    }
-                }
-            }
+            //回写
+             fphxUtil.fphx(kpls, jyls, gsxx);
+//            String url=gsxx.getCallbackurl();
+//            if(!("").equals(url)&&url!=null){
+//                String returnmessage=null;
+//                if(!kpls.getGsdm().equals("Family")&&!kpls.getGsdm().equals("fwk")) {
+//                    returnmessage = fphxUtil.CreateReturnMessage(kpls.getKplsh());
+//                    //输出调用结果
+//                    logger.info("回写报文" + returnmessage);
+//                    if (returnmessage != null && !"".equals(returnmessage)) {
+//                        Map returnMap = fphxUtil.httpPost(returnmessage, kpls);
+//                        logger.info("返回报文" + JSON.toJSONString(returnMap));
+//                    }
+//                }else if(kpls.getGsdm().equals("fwk")){
+//                    returnmessage = fphxUtil.CreateReturnMessage3(kpls.getKplsh());
+//                    logger.info("回写报文" + returnmessage);
+//                    if (returnmessage != null && !"".equals(returnmessage)) {
+//                        String ss= HttpUtils.netWebService(url,"CallBack",returnmessage,gsxx.getAppKey(),gsxx.getSecretKey());
+//                    }
+//                }
+//            }
             //开具成功后写入购方管理 gfxx
             saveGfxxUtil.saveGfxx(kpls.getXfid(),kpls.getGsdm(),kpls.getGfmc(),kpls.getGfsh(),kpls.getGfdz(),kpls.getGfdh(),
                     kpls.getGfyh(),kpls.getGfyhzh(),kpls.getGfemail());
