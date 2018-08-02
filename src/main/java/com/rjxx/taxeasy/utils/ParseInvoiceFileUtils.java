@@ -213,29 +213,30 @@ public class ParseInvoiceFileUtils {
             Jyls jyls = jylsService.findOne(kpls.getDjh());
             jyls.setClztdm("92");
             jylsService.save(jyls);
-            Map parms=new HashMap();
-            parms.put("gsdm",kpls.getGsdm());
-            Gsxx gsxx=gsxxService.findOneByParams(parms);
+            //失败不回写
+            //Map parms=new HashMap();
+            //parms.put("gsdm",kpls.getGsdm());
+            //Gsxx gsxx=gsxxService.findOneByParams(parms);
             //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
-            String url=gsxx.getCallbackurl();
-            if(!("").equals(url)&&url!=null){
-                String returnmessage=null;
-                if(!kpls.getGsdm().equals("Family")&&!kpls.getGsdm().equals("fwk")) {
-                    returnmessage = fphxUtil.CreateReturnMessage(kpls.getKplsh());
-                    //输出调用结果
-                    logger.info("回写报文" + returnmessage);
-                    if (returnmessage != null && !"".equals(returnmessage)) {
-                        Map returnMap = fphxUtil.httpPost(returnmessage, kpls);
-                        logger.info("返回报文" + JSON.toJSONString(returnMap));
-                    }
-                }else if(kpls.getGsdm().equals("fwk")){
-                    returnmessage = fphxUtil.CreateReturnMessage3(kpls.getKplsh());
-                    logger.info("回写报文" + returnmessage);
-                    if (returnmessage != null && !"".equals(returnmessage)) {
-                        String ss= HttpUtils.netWebService(url,"CallBack",returnmessage,gsxx.getAppKey(),gsxx.getSecretKey());
-                    }
-                }
-            }
+//            String url=gsxx.getCallbackurl();
+//            if(!("").equals(url)&&url!=null){
+//                String returnmessage=null;
+//                if(!kpls.getGsdm().equals("Family")&&!kpls.getGsdm().equals("fwk")) {
+//                    returnmessage = fphxUtil.CreateReturnMessage(kpls.getKplsh());
+//                    //输出调用结果
+//                    logger.info("回写报文" + returnmessage);
+//                    if (returnmessage != null && !"".equals(returnmessage)) {
+//                        Map returnMap = fphxUtil.httpPost(returnmessage, kpls);
+//                        logger.info("返回报文" + JSON.toJSONString(returnMap));
+//                    }
+//                }else if(kpls.getGsdm().equals("fwk")){
+//                    returnmessage = fphxUtil.CreateReturnMessage3(kpls.getKplsh());
+//                    logger.info("回写报文" + returnmessage);
+//                    if (returnmessage != null && !"".equals(returnmessage)) {
+//                        String ss= HttpUtils.netWebService(url,"CallBack",returnmessage,gsxx.getAppKey(),gsxx.getSecretKey());
+//                    }
+//                }
+//            }
         }
 
     }
