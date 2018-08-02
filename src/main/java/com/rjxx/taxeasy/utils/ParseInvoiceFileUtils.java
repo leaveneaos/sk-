@@ -1,17 +1,12 @@
 package com.rjxx.taxeasy.utils;
 
 import com.alibaba.fastjson.JSON;
-import com.rjxx.taxeasy.bizcomm.utils.GeneratePdfService;
-import com.rjxx.taxeasy.bizcomm.utils.HttpUtils;
-import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
-import com.rjxx.taxeasy.bizcomm.utils.SaveGfxxUtil;
+import com.rjxx.taxeasy.bizcomm.utils.*;
+import com.rjxx.taxeasy.domains.Cszb;
 import com.rjxx.taxeasy.domains.Gsxx;
 import com.rjxx.taxeasy.domains.Jyls;
 import com.rjxx.taxeasy.domains.Kpls;
-import com.rjxx.taxeasy.service.GsxxService;
-import com.rjxx.taxeasy.service.JylsService;
-import com.rjxx.taxeasy.service.KplsService;
-import com.rjxx.taxeasy.service.KpspmxService;
+import com.rjxx.taxeasy.service.*;
 import com.rjxx.taxeasy.vo.Kpspmxvo;
 import com.rjxx.utils.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -41,15 +36,16 @@ public class ParseInvoiceFileUtils {
     private KpspmxService kpspmxService;
 
     @Autowired
-    private GeneratePdfService generatePdfService;
-
-    @Autowired
-    private ClientDesUtils clientDesUtils;
+    private CszbService cszbService;
 
     @Autowired
     private GsxxService gsxxService;
     @Autowired
     private SaveGfxxUtil saveGfxxUtil;
+    @Autowired
+    private FphxUtil fphxUtil;
+    @Autowired
+    private GeneratePdfService generatePdfService;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
     /**
@@ -146,6 +142,14 @@ public class ParseInvoiceFileUtils {
             } else {
                 kpls.setErrorReason(null);
             }
+
+            Cszb cszb1 = cszbService.getSpbmbbh(kpls.getGsdm(),kpls.getXfid(),kpls.getSkpid(),"zpsfscpdf");
+            if(null !=cszb1 && cszb1.getCsz().equals("是")){
+                kpls.setJym("10497438135598948527");
+                kpls.setSksbm("499000134531");
+                kpls.setMwq("03*6<7-4937->9/1-544>0*1<76-</+0<<**87>-+>6+462+4145-1<+86*6<7-4937->9/1-538/0*>>687-44/8>4/*>010/17196-70/2>*81");
+            }
+
             kplsService.save(kpls);
             Jyls jyls = jylsService.findOne(kpls.getDjh());
             jyls.setClztdm("91");
@@ -168,29 +172,38 @@ public class ParseInvoiceFileUtils {
                     }
                 }
             }
-            Map parms=new HashMap();
-            parms.put("gsdm",kpls.getGsdm());
-            Gsxx gsxx=gsxxService.findOneByParams(parms);
-            //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
-            String url=gsxx.getCallbackurl();
-            if(!("").equals(url)&&url!=null){
-                String returnmessage=null;
-                if(!kpls.getGsdm().equals("Family")&&!kpls.getGsdm().equals("fwk")) {
-                    returnmessage = generatePdfService.CreateReturnMessage(kpls.getKplsh());
-                    //输出调用结果
-                    logger.info("回写报文" + returnmessage);
-                    if (returnmessage != null && !"".equals(returnmessage)) {
-                        Map returnMap = generatePdfService.httpPost(returnmessage, kpls);
-                        logger.info("返回报文" + JSON.toJSONString(returnMap));
-                    }
-                }else if(kpls.getGsdm().equals("fwk")){
-                    returnmessage = generatePdfService.CreateReturnMessage3(kpls.getKplsh());
-                    logger.info("回写报文" + returnmessage);
-                    if (returnmessage != null && !"".equals(returnmessage)) {
-                        String ss= HttpUtils.netWebService(url,"CallBack",returnmessage,gsxx.getAppKey(),gsxx.getSecretKey());
-                    }
-                }
+
+
+            if(null !=cszb1 && cszb1.getCsz().equals("是")){
+                generatePdfService.generatePdf(kplsh);
+            }else {
+                //回写
+                Map parms=new HashMap();
+                parms.put("gsdm",kpls.getGsdm());
+                Gsxx gsxx=gsxxService.findOneByParams(parms);
+                //Jyls jyls = jylsService.findOne(kpls.getDjh());
+                fphxUtil.fphx(kpls,jyls,gsxx);
             }
+            //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
+//            String url=gsxx.getCallbackurl();
+//            if(!("").equals(url)&&url!=null){
+//                String returnmessage=null;
+//                if(!kpls.getGsdm().equals("Family")&&!kpls.getGsdm().equals("fwk")) {
+//                    returnmessage = fphxUtil.CreateReturnMessage(kpls.getKplsh());
+//                    //输出调用结果
+//                    logger.info("回写报文" + returnmessage);
+//                    if (returnmessage != null && !"".equals(returnmessage)) {
+//                        Map returnMap = fphxUtil.httpPost(returnmessage, kpls);
+//                        logger.info("返回报文" + JSON.toJSONString(returnMap));
+//                    }
+//                }else if(kpls.getGsdm().equals("fwk")){
+//                    returnmessage = fphxUtil.CreateReturnMessage3(kpls.getKplsh());
+//                    logger.info("回写报文" + returnmessage);
+//                    if (returnmessage != null && !"".equals(returnmessage)) {
+//                        String ss= HttpUtils.netWebService(url,"CallBack",returnmessage,gsxx.getAppKey(),gsxx.getSecretKey());
+//                    }
+//                }
+//            }
             //开具成功后写入购方管理 gfxx
             saveGfxxUtil.saveGfxx(kpls.getXfid(),kpls.getGsdm(),kpls.getGfmc(),kpls.getGfsh(),kpls.getGfdz(),kpls.getGfdh(),
                     kpls.getGfyh(),kpls.getGfyhzh(),kpls.getGfemail());
@@ -212,29 +225,30 @@ public class ParseInvoiceFileUtils {
             Jyls jyls = jylsService.findOne(kpls.getDjh());
             jyls.setClztdm("92");
             jylsService.save(jyls);
-            Map parms=new HashMap();
-            parms.put("gsdm",kpls.getGsdm());
-            Gsxx gsxx=gsxxService.findOneByParams(parms);
+            //失败不回写
+            //Map parms=new HashMap();
+            //parms.put("gsdm",kpls.getGsdm());
+            //Gsxx gsxx=gsxxService.findOneByParams(parms);
             //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
-            String url=gsxx.getCallbackurl();
-            if(!("").equals(url)&&url!=null){
-                String returnmessage=null;
-                if(!kpls.getGsdm().equals("Family")&&!kpls.getGsdm().equals("fwk")) {
-                    returnmessage = generatePdfService.CreateReturnMessage(kpls.getKplsh());
-                    //输出调用结果
-                    logger.info("回写报文" + returnmessage);
-                    if (returnmessage != null && !"".equals(returnmessage)) {
-                        Map returnMap = generatePdfService.httpPost(returnmessage, kpls);
-                        logger.info("返回报文" + JSON.toJSONString(returnMap));
-                    }
-                }else if(kpls.getGsdm().equals("fwk")){
-                    returnmessage = generatePdfService.CreateReturnMessage3(kpls.getKplsh());
-                    logger.info("回写报文" + returnmessage);
-                    if (returnmessage != null && !"".equals(returnmessage)) {
-                        String ss= HttpUtils.netWebService(url,"CallBack",returnmessage,gsxx.getAppKey(),gsxx.getSecretKey());
-                    }
-                }
-            }
+//            String url=gsxx.getCallbackurl();
+//            if(!("").equals(url)&&url!=null){
+//                String returnmessage=null;
+//                if(!kpls.getGsdm().equals("Family")&&!kpls.getGsdm().equals("fwk")) {
+//                    returnmessage = fphxUtil.CreateReturnMessage(kpls.getKplsh());
+//                    //输出调用结果
+//                    logger.info("回写报文" + returnmessage);
+//                    if (returnmessage != null && !"".equals(returnmessage)) {
+//                        Map returnMap = fphxUtil.httpPost(returnmessage, kpls);
+//                        logger.info("返回报文" + JSON.toJSONString(returnMap));
+//                    }
+//                }else if(kpls.getGsdm().equals("fwk")){
+//                    returnmessage = fphxUtil.CreateReturnMessage3(kpls.getKplsh());
+//                    logger.info("回写报文" + returnmessage);
+//                    if (returnmessage != null && !"".equals(returnmessage)) {
+//                        String ss= HttpUtils.netWebService(url,"CallBack",returnmessage,gsxx.getAppKey(),gsxx.getSecretKey());
+//                    }
+//                }
+//            }
         }
 
     }

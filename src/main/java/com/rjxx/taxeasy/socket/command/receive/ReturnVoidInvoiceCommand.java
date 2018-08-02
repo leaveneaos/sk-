@@ -1,6 +1,7 @@
 package com.rjxx.taxeasy.socket.command.receive;
 
 import com.alibaba.fastjson.JSON;
+import com.rjxx.taxeasy.bizcomm.utils.FphxUtil;
 import com.rjxx.taxeasy.bizcomm.utils.GeneratePdfService;
 import com.rjxx.taxeasy.bizcomm.utils.InvoiceResponse;
 import com.rjxx.taxeasy.domains.Gsxx;
@@ -41,6 +42,9 @@ public class ReturnVoidInvoiceCommand implements ICommand {
     @Autowired
     private GsxxService gsxxService;
 
+    @Autowired
+    private FphxUtil fphxUtil;
+
     @Override
     public void run(String commandId, String data, SocketSession socketSession) throws Exception {
         logger.info(data);
@@ -61,7 +65,7 @@ public class ReturnVoidInvoiceCommand implements ICommand {
             //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
             String url=gsxx.getCallbackurl();
             if(!("").equals(url)&&url!=null){
-                String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
+                String returnmessage=fphxUtil.CreateReturnMessage(kpls.getKplsh());
                 //输出调用结果
                 logger.info("回写报文"+returnmessage);
                 if(returnmessage!=null&&!"".equals(returnmessage)){
@@ -84,7 +88,7 @@ public class ReturnVoidInvoiceCommand implements ICommand {
             //String url="https://vrapi.fvt.tujia.com/Invoice/CallBack";
             String url=gsxx.getCallbackurl();
             if(!("").equals(url)&&url!=null){
-                String returnmessage=generatePdfService.CreateReturnMessage(kpls.getKplsh());
+                String returnmessage=fphxUtil.CreateReturnMessage(kpls.getKplsh());
                 //输出调用结果
                 logger.info("回写报文"+returnmessage);
                 if(returnmessage!=null&&!"".equals(returnmessage)){

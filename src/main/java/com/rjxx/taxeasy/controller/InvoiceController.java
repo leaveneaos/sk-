@@ -266,6 +266,31 @@ public class InvoiceController {
     }
 
     /**
+     * 税控服务器电子发票查询
+     * @param
+     * @return
+     */
+    @RequestMapping(value = "/SkServerQuery", method = {RequestMethod.GET, RequestMethod.POST})
+    public String skServerQuery(String p) throws Exception {
+        try {
+            if (StringUtils.isBlank(p)) {
+                throw new Exception("参数不能为空");
+            }
+            String kplshStr = skService.decryptSkServerParameter(p);
+            int kplsh = Integer.valueOf(kplshStr);
+            //logger.debug("receive invoice request:" + kplsh);
+            InvoiceResponse invoiceResponse  = invoiceService.skServerQuery(kplsh);
+            String result = XmlJaxbUtils.toXml(invoiceResponse);
+            logger.info("税控服务器查询接口返回:"+"kplsh="+kplsh+",result="+result);
+            return result;
+        }catch (Exception e){
+            logger.info("调用税控服务器查询接口失败："+e.getMessage(), e);
+            InvoiceResponse response = InvoiceResponseUtils.responseError(e.getMessage());
+            return XmlJaxbUtils.toXml(response);
+        }
+    }
+
+    /**
      * 税控盒子开票
      * @param
      * @return
