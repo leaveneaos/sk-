@@ -338,8 +338,13 @@ public class InvoiceService {
     public InvoiceResponse skServerKP(int kplsh) {
         InvoiceResponse invoiceResponse=new InvoiceResponse();
         try{
-            fpclService.skServerKP(kplsh);
-            invoiceResponse.setReturnCode("0000");
+            String result = fpclService.skServerKP(kplsh);
+            if(result.equals("1")){
+                invoiceResponse.setReturnCode("0000");
+            }else{
+                invoiceResponse.setReturnCode("9999");
+            }
+
         }catch (Exception e){
             invoiceResponse.setReturnCode("9999");
             invoiceResponse.setReturnMessage(e.getMessage());
