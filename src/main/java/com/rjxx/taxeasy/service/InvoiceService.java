@@ -367,6 +367,7 @@ public class InvoiceService {
                     kpls.getJylsh(),2);
             fpclService.updateKpls(resultMap);
             String returncode = resultMap.get("RETURNCODE").toString();
+            invoiceResponse.setFphm(resultMap.get("FP_HM").toString());
             invoiceResponse.setReturnCode(returncode);
         }catch (Exception e){
             //Kpls kpls=kplsService.findOne(Integer.parseInt(key));
