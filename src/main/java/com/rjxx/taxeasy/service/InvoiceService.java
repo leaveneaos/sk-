@@ -371,9 +371,9 @@ public class InvoiceService {
         }catch (Exception e){
             //Kpls kpls=kplsService.findOne(Integer.parseInt(key));
             invoiceResponse.setReturnCode("9999");
-            kpls.setFpztdm("04");
+            /*kpls.setFpztdm("04");
             kpls.setErrorReason(e.getMessage());
-            kplsService.save(kpls);
+            kplsService.save(kpls);*/
             e.printStackTrace();
         }
         return invoiceResponse;
