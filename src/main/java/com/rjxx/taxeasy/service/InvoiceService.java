@@ -364,11 +364,13 @@ public class InvoiceService {
                     + "</business>";
             logger.info("调用税控服务器电子发票查询接口：kplsh+"+kplsh+",查询报文="+queryStr);
             resultMap=fpclService.DzfphttpPost(queryStr, url, kpls.getDjh() + "$" + kpls.getKplsh(), kpls.getXfsh(),
-                    kpls.getJylsh(),2);
-            fpclService.updateKpls(resultMap);
-            String returncode = resultMap.get("RETURNCODE").toString();
-            invoiceResponse.setFphm(resultMap.get("FP_HM").toString());
-            invoiceResponse.setReturnCode(returncode);
+                    kpls.getJylsh(),1);
+            if(null !=resultMap){
+                fpclService.updateKpls(resultMap);
+                String returncode = resultMap.get("RETURNCODE").toString();
+                invoiceResponse.setFphm(resultMap.get("FP_HM").toString());
+                invoiceResponse.setReturnCode(returncode);
+            }
         }catch (Exception e){
             //Kpls kpls=kplsService.findOne(Integer.parseInt(key));
             invoiceResponse.setReturnCode("9999");
