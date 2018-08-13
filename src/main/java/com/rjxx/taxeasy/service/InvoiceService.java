@@ -338,8 +338,13 @@ public class InvoiceService {
     public InvoiceResponse skServerKP(int kplsh) {
         InvoiceResponse invoiceResponse=new InvoiceResponse();
         try{
-            fpclService.skServerKP(kplsh);
-            invoiceResponse.setReturnCode("0000");
+            String result = fpclService.skServerKP(kplsh);
+            if(result.equals("1")){
+                invoiceResponse.setReturnCode("0000");
+            }else{
+                invoiceResponse.setReturnCode("9999");
+            }
+
         }catch (Exception e){
             invoiceResponse.setReturnCode("9999");
             invoiceResponse.setReturnMessage(e.getMessage());
@@ -364,16 +369,19 @@ public class InvoiceService {
                     + "</business>";
             logger.info("调用税控服务器电子发票查询接口：kplsh+"+kplsh+",查询报文="+queryStr);
             resultMap=fpclService.DzfphttpPost(queryStr, url, kpls.getDjh() + "$" + kpls.getKplsh(), kpls.getXfsh(),
-                    kpls.getJylsh(),2);
-            fpclService.updateKpls(resultMap);
-            String returncode = resultMap.get("RETURNCODE").toString();
-            invoiceResponse.setReturnCode(returncode);
+                    kpls.getJylsh(),1);
+            if(null !=resultMap){
+                fpclService.updateKpls(resultMap);
+                String returncode = resultMap.get("RETURNCODE").toString();
+                invoiceResponse.setFphm(resultMap.get("FP_HM").toString());
+                invoiceResponse.setReturnCode(returncode);
+            }
         }catch (Exception e){
             //Kpls kpls=kplsService.findOne(Integer.parseInt(key));
             invoiceResponse.setReturnCode("9999");
-            kpls.setFpztdm("04");
+            /*kpls.setFpztdm("04");
             kpls.setErrorReason(e.getMessage());
-            kplsService.save(kpls);
+            kplsService.save(kpls);*/
             e.printStackTrace();
         }
         return invoiceResponse;
