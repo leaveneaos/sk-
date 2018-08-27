@@ -356,6 +356,7 @@ public class InvoiceService {
 
     public InvoiceResponse skServerQuery(int kplsh) {
         InvoiceResponse invoiceResponse=new InvoiceResponse();
+        invoiceResponse.setReturnCode("0000");
         Kpls kpls = kplsService.findOne(kplsh);
         Cszb cszb2 = cszbService.getSpbmbbh(kpls.getGsdm(), kpls.getXfid(), kpls.getSkpid(), "skurl");
         String url = cszb2.getCsz();
@@ -370,13 +371,16 @@ public class InvoiceService {
             logger.info("调用税控服务器电子发票查询接口：kplsh+"+kplsh+",查询报文="+queryStr);
             resultMap=fpclService.DzfphttpPost(queryStr, url, kpls.getDjh() + "$" + kpls.getKplsh(), kpls.getXfsh(),
                     kpls.getJylsh(),1);
-            if(null !=resultMap){
+            if(null !=resultMap && !resultMap.isEmpty()){
                 String returncode = resultMap.get("RETURNCODE").toString();
                 if(returncode.equals("0000")){
                     fpclService.updateKpls(resultMap);
                 }
-                invoiceResponse.setFphm(resultMap.get("FP_HM").toString());
+                //invoiceResponse.setFphm(resultMap.get("FP_HM").toString());
                 invoiceResponse.setReturnCode(returncode);
+            }else{
+                //查询服务器超时
+                invoiceResponse.setReturnCode("9990");
             }
         }catch (Exception e){
             //Kpls kpls=kplsService.findOne(Integer.parseInt(key));
