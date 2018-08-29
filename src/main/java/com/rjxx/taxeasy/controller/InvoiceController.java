@@ -253,10 +253,10 @@ public class InvoiceController {
             }
             String kplshStr = skService.decryptSkServerParameter(p);
             int kplsh = Integer.valueOf(kplshStr);
-            logger.debug("receive invoice request:" + kplsh);
+            logger.info("receive invoice request:" + kplsh);
             InvoiceResponse invoiceResponse  = invoiceService.skServerKP(kplsh);
             String result = XmlJaxbUtils.toXml(invoiceResponse);
-            logger.debug(result);
+            //logger.info(result);
             return result;
         }catch (Exception e){
             logger.error("调用税控服务器失败："+e.getMessage(), e);
@@ -281,7 +281,7 @@ public class InvoiceController {
             //logger.debug("receive invoice request:" + kplsh);
             InvoiceResponse invoiceResponse  = invoiceService.skServerQuery(kplsh);
             String result = XmlJaxbUtils.toXml(invoiceResponse);
-            logger.info("税控服务器查询接口返回:"+"kplsh="+kplsh+",result="+result);
+            //logger.info("税控服务器查询接口返回:"+"kplsh="+kplsh+",result="+result);
             return result;
         }catch (Exception e){
             logger.info("调用税控服务器查询接口失败："+e.getMessage(), e);
